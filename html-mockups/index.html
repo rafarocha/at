@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🛰️ Visão Geral — Mapa &amp; Indicadores em Tempo Real</title>
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<style>
+  :root {
+    --bg: #0a0e14; --bg-card: #141a24; --bg-card-2: #1a2230; --bg-chip: #19212c;
+    --border: #2a3342; --fg: #eef2f7; --fg-muted: #a8b3c2; --fg-sub: #7c8798;
+    --accent: #5eaaff; --accent-dim: rgba(94,170,255,0.14);
+    --green: #3ecf82; --green-dim: rgba(62,207,130,0.14);
+    --amber: #e3ab3f; --amber-dim: rgba(227,171,63,0.14);
+    --red: #ff6b6b; --red-dim: rgba(255,107,107,0.14);
+    --purple: #c792ea; --purple-dim: rgba(199,146,234,0.14);
+    --gray: #6b7686; --gray-dim: rgba(107,118,134,0.18);
+    --mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; margin:0; padding:0; }
+  body { background: var(--bg); color: var(--fg); font-family: var(--sans); font-size: 15px; line-height: 1.55; font-weight: 500; padding: 16px 14px 60px; }
+  .wrap { max-width: 1180px; margin: 0 auto; }
+
+  .top-nav { display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
+  .nav-item { flex:1; min-width:140px; text-align:center; background:var(--bg-card); border:1px solid var(--border); border-radius:10px; padding:9px 10px; font-size:12.5px; font-weight:800; color:var(--fg-muted); text-decoration:none; }
+  .nav-item.active { background:var(--accent-dim); color:var(--accent); border-color:var(--accent); }
+
+  header.hero { background: linear-gradient(160deg, var(--bg-card) 0%, var(--bg-card-2) 100%); border:1px solid var(--border); border-radius:16px; padding:16px 18px; margin-bottom:16px; display:flex; flex-wrap:wrap; gap:14px; align-items:center; justify-content:space-between; }
+  header.hero h1 { font-size:19px; font-weight:800; letter-spacing:-0.2px; }
+  header.hero .sub { color:var(--fg-muted); font-size:12.5px; font-weight:600; margin-top:2px; }
+  .clock-box { display:flex; align-items:center; gap:10px; }
+  .clock { font-family: var(--mono); font-size:20px; font-weight:800; color: var(--accent); background: var(--bg); border:1px solid var(--border); border-radius:10px; padding:8px 14px; }
+  .refresh-btn { background: var(--accent-dim); color: var(--accent); border:1px solid var(--border); border-radius:8px; padding:8px 12px; font-weight:800; font-size:12.5px; cursor:pointer; font-family: var(--sans); }
+  .last-sync { font-size:11px; color: var(--fg-sub); font-weight:700; margin-top:4px; }
+
+  #errorBanner { display:none; background: var(--red-dim); border:1px solid var(--red); color: var(--red); border-radius:10px; padding:10px 14px; font-size:13px; font-weight:700; margin-bottom:14px; }
+
+  section.block { background: var(--bg-card); border:1px solid var(--border); border-radius:14px; padding:14px 14px 12px; margin-bottom:16px; }
+  section.block h2 { font-size:14.5px; font-weight:800; margin-bottom:4px; display:flex; align-items:center; gap:7px; }
+  section.block .section-sub { color: var(--fg-sub); font-size: 11.5px; font-weight:700; margin-bottom: 12px; }
+
+  .top-grid { display:grid; grid-template-columns: minmax(0,1.25fr) minmax(0,1fr); gap: 16px; }
+  @media (max-width: 820px) { .top-grid { grid-template-columns: 1fr; } }
+
+  .map-caption { font-size:11.5px; color:var(--fg-sub); font-weight:700; margin-bottom:10px; }
+  .map-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(84px,1fr)); gap:8px; }
+  .room { position:relative; background:var(--bg-card-2); border:1px solid var(--border); border-radius:10px; padding:10px 6px 8px; text-align:center; cursor:pointer; text-decoration:none; color:var(--fg); transition:border-color .15s; }
+  .room:hover { border-color: var(--accent); }
+  .room .pin { position:absolute; top:-8px; right:-6px; width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; border:2px solid var(--bg-card); }
+  .room .pin.ok { background: var(--green); }
+  .room .pin.warn { background: var(--amber); }
+  .room .pin.late { background: var(--red); }
+  .room .pin.wait { background: var(--gray); }
+  .room .rnum { font-family: var(--mono); font-weight:800; font-size:16px; }
+  .room .rlabel { font-size:9.5px; color:var(--fg-sub); font-weight:700; text-transform:uppercase; letter-spacing:.3px; }
+  .map-legend { display:flex; flex-wrap:wrap; gap:12px; font-size:11px; color:var(--fg-muted); margin-top:12px; }
+  .map-legend span { display:flex; align-items:center; gap:5px; }
+  .legend-dot { width:9px; height:9px; border-radius:50%; display:inline-block; }
+
+  .charts-col { display:flex; flex-direction:column; gap:12px; }
+  .chart-card { background: var(--bg-card-2); border:1px solid var(--border); border-radius:10px; padding:10px 12px 6px; }
+  .chart-card .chart-title { font-size:12px; font-weight:800; color:var(--fg-muted); margin-bottom:2px; }
+  .chart-card .chart-value { font-family: var(--mono); font-size:15px; font-weight:800; color:var(--accent); margin-bottom:4px; }
+  .chart-svg-wrap { position:relative; }
+  .chart-svg-wrap svg { display:block; width:100%; height:auto; }
+  .chart-axis path, .chart-axis line { stroke: var(--border); }
+  .chart-axis text { fill: var(--fg-sub); font-size:9px; font-family: var(--sans); }
+  .chart-hover-line { stroke: var(--fg-sub); stroke-width:1; stroke-dasharray:2,2; pointer-events:none; }
+  .chart-hover-dot { pointer-events:none; }
+  .chart-tooltip { position:absolute; pointer-events:none; background:var(--bg-chip); border:1px solid var(--border); border-radius:6px; padding:4px 8px; font-size:10.5px; font-weight:700; color:var(--fg); white-space:nowrap; transform:translate(-50%,-115%); z-index:20; }
+
+  table.sec-table { width:100%; border-collapse: collapse; font-size:12.5px; }
+  table.sec-table th { text-align:left; color:var(--fg-sub); font-size:10.5px; text-transform:uppercase; letter-spacing:.3px; font-weight:800; padding:6px 8px; border-bottom:1px solid var(--border); }
+  table.sec-table td { padding:8px; border-bottom:1px solid var(--border); vertical-align:middle; }
+  table.sec-table tr.sec-row { cursor:pointer; }
+  table.sec-table tr.sec-row:hover { background: var(--bg-card-2); }
+  .sec-name-cell { font-weight:800; display:flex; align-items:center; gap:8px; }
+  .status-pill { font-size:10px; font-weight:800; border-radius:6px; padding:2px 7px; white-space:nowrap; }
+  .status-pill.ok { background: var(--green-dim); color: var(--green); }
+  .status-pill.warn { background: var(--amber-dim); color: var(--amber); }
+  .status-pill.late { background: var(--red-dim); color: var(--red); }
+  .status-pill.wait { background: var(--gray-dim); color: var(--gray); }
+  .num-cell { font-family: var(--mono); font-size:12px; color:var(--fg-muted); white-space:nowrap; }
+  .pie-icon { cursor: pointer; }
+
+  #pieTooltip {
+    position: fixed; display:none; background: var(--bg-card); border:1px solid var(--border); border-radius:12px;
+    padding:14px 18px; box-shadow: 0 12px 32px rgba(0,0,0,.5); z-index:100; width: 460px; max-width: 92vw;
+  }
+  #pieTooltip .pt-title { font-size:13px; font-weight:800; margin-bottom:10px; }
+  #pieTooltip .pt-body { display:flex; gap:18px; align-items:center; }
+  #pieTooltip .pt-legend { flex:1; min-width:0; display:flex; flex-direction:column; gap:7px; }
+  #pieTooltip .pt-row { display:flex; align-items:baseline; gap:8px; font-size:11.5px; }
+  #pieTooltip .pt-dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; position:relative; top:-0.5px; }
+  #pieTooltip .pt-label { color:var(--fg-sub); font-weight:800; width:96px; flex-shrink:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  #pieTooltip .pt-detail { color:var(--fg-muted); flex:1; min-width:0; }
+
+  .legend-row { display:flex; flex-wrap:wrap; gap:12px; font-size:11.5px; color:var(--fg-muted); margin-top:10px; }
+  .legend-row span { display:flex; align-items:center; gap:5px; }
+
+  footer.page-footer { text-align:center; color: var(--fg-sub); font-size:11px; font-weight:600; padding: 16px 6px 4px; }
+  footer.page-footer code { font-family: var(--mono); background: var(--bg-chip); border:1px solid var(--border); border-radius:5px; padding:1px 5px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <nav class="top-nav">
+    <a href="index.html" class="nav-item active">🏠 Visão Geral</a>
+    <a href="secao.html" class="nav-item">🔍 Detalhe por Seção</a>
+    <a href="painel.html" class="nav-item">📊 Painel Gestor</a>
+  </nav>
+
+  <header class="hero">
+    <div>
+      <h1>🛰️ Visão Geral — 150ª ZE</h1>
+      <div class="sub">Mapa do local + indicadores ao vivo · lê a planilha publicada a cada <span id="refreshSecs">30</span>s</div>
+      <div class="last-sync" id="lastSync">Carregando dados pela primeira vez…</div>
+    </div>
+    <div class="clock-box">
+      <div class="clock" id="clockDisplay">--:--</div>
+      <button class="refresh-btn" id="refreshBtn">🔄 Atualizar agora</button>
+    </div>
+  </header>
+
+  <div id="errorBanner"></div>
+
+  <div class="top-grid">
+    <section class="block">
+      <h2>🗺️ Mapa do Local</h2>
+      <div class="map-caption">Toque numa seção para abrir o detalhe · layout genérico para testes — troque por uma imagem real do seu local quando tiver uma</div>
+      <div class="map-grid" id="mapGrid"></div>
+      <div class="map-legend">
+        <span><span class="legend-dot" style="background:var(--green)"></span> Em dia</span>
+        <span><span class="legend-dot" style="background:var(--amber)"></span> Atenção</span>
+        <span><span class="legend-dot" style="background:var(--red)"></span> Crítico</span>
+        <span><span class="legend-dot" style="background:var(--gray)"></span> Sem dados ainda</span>
+      </div>
+    </section>
+
+    <div class="charts-col">
+      <div class="chart-card">
+        <div class="chart-title">📈 Tarefas concluídas (T##/G##) ao longo do dia</div>
+        <div class="chart-value" id="chart1Value">—</div>
+        <div class="chart-svg-wrap" id="chart1"></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">🗳️ Comparecimento estimado ao longo do dia</div>
+        <div class="chart-value" id="chart2Value">—</div>
+        <div class="chart-svg-wrap" id="chart2"></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">📢 Ocorrências reportadas (acumulado)</div>
+        <div class="chart-value" id="chart3Value">—</div>
+        <div class="chart-svg-wrap" id="chart3"></div>
+      </div>
+    </div>
+  </div>
+
+  <section class="block">
+    <h2>📋 Listagem Geral das Seções</h2>
+    <div class="section-sub">Passe o mouse (ou toque) no gráfico de pizza pra ver os 5 principais aspectos de cumprimento de cada seção</div>
+    <div style="overflow-x:auto;">
+      <table class="sec-table">
+        <thead><tr><th>#</th><th>Seção</th><th>Cumprimento</th><th>🚶 Fila</th><th>🗳️ Votantes</th><th>⏱️ Espera (est.)</th><th>⚠️ Atrasadas</th><th>Status</th></tr></thead>
+        <tbody id="secTableBody"></tbody>
+      </table>
+    </div>
+    <div class="legend-row">
+      <span><span class="legend-dot" style="background:var(--green)"></span> Aspecto em dia</span>
+      <span><span class="legend-dot" style="background:var(--amber)"></span> Atenção</span>
+      <span><span class="legend-dot" style="background:var(--red)"></span> Crítico</span>
+      <span><span class="legend-dot" style="background:var(--gray)"></span> Ainda sem dado</span>
+    </div>
+    <div class="section-sub" style="margin-top:10px;">⏱️ Espera (est.) = fila atual ÷ ritmo de votos das últimas duas rondas — uma estimativa, não um valor oficial. ⚠️ Atrasadas = tarefas T## e rondas já vencidas e ainda não confirmadas nessa seção.</div>
+  </section>
+
+  <footer class="page-footer">
+    Visão Geral V1 · Telegram + Google Sheets + CSV publicado · edite <code>CSV_URL_CHECKPOINTS</code>, <code>CSV_URL_OCORRENCIAS</code> e <code>CSV_URL_RONDAS</code> no início do <code>&lt;script&gt;</code> deste arquivo — veja <em>../html-howto/sunday-tracking.html</em>.
+  </footer>
+</div>
+
+<div id="pieTooltip"></div>
+
+<script>
+(function () {
+  // =====================================================================
+  // CONFIGURAÇÃO — edite estas linhas com os seus dados reais
+  // =====================================================================
+  const CSV_URL_CHECKPOINTS = "COLE_AQUI_O_LINK_CSV_DA_ABA_CHECKPOINTS"; // obrigatório
+  const CSV_URL_OCORRENCIAS = "COLE_AQUI_O_LINK_CSV_DA_ABA_OCORRENCIAS"; // opcional
+  const CSV_URL_RONDAS = "COLE_AQUI_O_LINK_CSV_DA_ABA_RONDAS"; // NOVO — publique também a aba "rondas" (fila/votados)
+  const NUM_SECOES = 16;
+  const REFRESH_MS = 30000;
+  // Eleitores esperados por seção — usado só para calcular o % de comparecimento.
+  // Ajuste o padrão e/ou informe seções específicas se souber os números reais do seu local.
+  const ELEITORES_POR_SECAO_PADRAO = 350;
+  const ELEITORES_POR_SECAO_OVERRIDE = {}; // ex.: { "07": 320, "12": 400 }
+  const FILA_LIMITE_ATENCAO = 15;  // acima disso, fila vira "atenção"
+  const FILA_LIMITE_CRITICO = 30;  // acima disso, fila vira "crítico"
+  // =====================================================================
+
+  const SECOES = Array.from({length: NUM_SECOES}, (_, i) => String(i + 1).padStart(2, "0"));
+  document.getElementById("refreshSecs").textContent = Math.round(REFRESH_MS / 1000);
+
+  const TAREFAS_T = [
+  { code: "T01", hora: 405, tol: 20 }, { code: "T02", hora: 420, tol: 20 }, { code: "T03", hora: 420, tol: 20 },
+  { code: "T04", hora: 420, tol: 20 }, { code: "T05", hora: 450, tol: 20 }, { code: "T06", hora: 450, tol: 20 },
+  { code: "T07", hora: 465, tol: 20 }, { code: "T08", hora: 480, tol: 20 }, { code: "T09", hora: 480, tol: 20 },
+  { code: "T10", hora: 480, tol: 20 }, { code: "T11", hora: 510, tol: 20 }, { code: "T12", hora: 510, tol: 20 },
+  { code: "T13", hora: 600, tol: 15 }, { code: "T14", hora: 900, tol: 20 }, { code: "T15", hora: 900, tol: 20 },
+  { code: "T16", hora: 990, tol: 20 }, { code: "T17", hora: 990, tol: 20 }, { code: "T18", hora: 1015, tol: 20 },
+  { code: "T19", hora: 1020, tol: 20 }, { code: "T20", hora: 1035, tol: 30 }, { code: "T21", hora: 1035, tol: 30 },
+  ];
+  const TAREFAS_G = [
+  { code: "G01", hora: 390, tol: 20 }, { code: "G02", hora: 390, tol: 20 }, { code: "G03", hora: 420, tol: 20 },
+  { code: "G04", hora: 480, tol: 20 }, { code: "G05", hora: 510, tol: 20 }, { code: "G06", hora: 900, tol: 20 },
+  { code: "G07", hora: 1020, tol: 20 }, { code: "G08", hora: 1020, tol: 20 }, { code: "G09", hora: 1050, tol: 30 },
+  { code: "G10", hora: 1080, tol: 30 }, { code: "G11", hora: 1080, tol: 30 },
+  ];
+  const RONDA_SLOTS = [
+  { label: "08:30", hora: 510 }, { label: "10:00", hora: 600 }, { label: "11:30", hora: 690 },
+  { label: "13:00", hora: 780 }, { label: "14:30", hora: 870 }, { label: "16:00", hora: 960 },
+  ];
+  const RONDA_TOL = 25;
+
+  // --------------------------------------------------------------- utilidades
+  function fmt(min) {
+    const h = Math.floor(min / 60).toString().padStart(2, "0");
+    const m = Math.floor(min % 60).toString().padStart(2, "0");
+    return h + ":" + m;
+  }
+  function nowMinutes() { const d = new Date(); return d.getHours() * 60 + d.getMinutes(); }
+  function toMinutes(hhmmish) {
+    if (!hhmmish) return null;
+    const m = hhmmish.trim().match(/(\d{1,2}):(\d{2})(?::\d{2})?\s*$/);
+    if (!m) return null;
+    return parseInt(m[1], 10) * 60 + parseInt(m[2], 10);
+  }
+  function esc(s) {
+    return String(s || "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+  function eleitoresDaSecao(sec) { return ELEITORES_POR_SECAO_OVERRIDE[sec] || ELEITORES_POR_SECAO_PADRAO; }
+
+  function parseCSV(text) {
+    const rows = [];
+    let row = [], field = "", inQuotes = false;
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i], next = text[i + 1];
+      if (inQuotes) {
+        if (c === '"' && next === '"') { field += '"'; i++; }
+        else if (c === '"') { inQuotes = false; }
+        else { field += c; }
+      } else {
+        if (c === '"') inQuotes = true;
+        else if (c === ",") { row.push(field); field = ""; }
+        else if (c === "\n" || c === "\r") {
+          if (c === "\r" && next === "\n") i++;
+          row.push(field); field = "";
+          if (row.length > 1 || row[0] !== "") rows.push(row);
+          row = [];
+        } else { field += c; }
+      }
+    }
+    if (field !== "" || row.length) { row.push(field); rows.push(row); }
+    if (!rows.length) return [];
+    const header = rows[0].map(h => h.trim());
+    return rows.slice(1).map(r => Object.fromEntries(header.map((h, i) => [h, (r[i] || "").trim()])));
+  }
+  async function fetchCSV(url) {
+    if (!url || url.startsWith("COLE_AQUI")) return null;
+    const resp = await fetch(url + (url.includes("?") ? "&" : "?") + "_=" + Date.now());
+    if (!resp.ok) throw new Error("HTTP " + resp.status);
+    return parseCSV(await resp.text());
+  }
+
+  // --------------------------------------------------------------- estado
+  let checkpointsPorSecaoECodigo = {};
+  let checkpointsGeral = {};
+  let rondasChecklistPorSecao = {};   // aba checkpoints, linhas RONDA (checklist feito/não feito)
+  let rondasNumericasPorSecao = {};   // aba rondas, linhas com fila/votados por horário
+  let ocorrencias = [];
+  let allCheckpointRows = [];         // guardamos os rows crus pra montar as séries temporais
+  let allRondaRows = [];
+  let allOcorrenciaRows = [];
+
+  function indexarCheckpoints(registros) {
+    checkpointsPorSecaoECodigo = {};
+    checkpointsGeral = {};
+    rondasChecklistPorSecao = {};
+    allCheckpointRows = registros;
+    registros.forEach(r => {
+      const codigo = (r.codigo || "").trim();
+      const secao = (r.secao || "").trim();
+      if (!codigo) return;
+      const info = { status: r.status || "concluido", confirmado_por: r.confirmado_por || "", confirmado_em: r.confirmado_em || "", observacao: r.observacao || "" };
+      if (codigo === "RONDA") {
+        if (!secao) return;
+        (rondasChecklistPorSecao[secao] = rondasChecklistPorSecao[secao] || []).push(info);
+        return;
+      }
+      if (secao) checkpointsPorSecaoECodigo[secao + "|" + codigo] = info;
+      else checkpointsGeral[codigo] = info;
+    });
+    Object.keys(rondasChecklistPorSecao).forEach(sec => {
+      rondasChecklistPorSecao[sec].sort((a, b) => (a.confirmado_em || "").localeCompare(b.confirmado_em || ""));
+    });
+  }
+
+  function indexarRondasNumericas(registros) {
+    rondasNumericasPorSecao = {};
+    allRondaRows = registros;
+    registros.forEach(r => {
+      const secao = (r.secao || "").trim();
+      if (!secao) return;
+      (rondasNumericasPorSecao[secao] = rondasNumericasPorSecao[secao] || []).push({
+        horario: r.horario || "", minuto: toMinutes(r.horario),
+        fila: r.fila !== "" ? parseInt(r.fila, 10) : null,
+        votados: r.votados !== "" ? parseInt(r.votados, 10) : null,
+        observacao: r.observacao || "", confirmado_por: r.confirmado_por || "",
+      });
+    });
+    Object.keys(rondasNumericasPorSecao).forEach(sec => {
+      rondasNumericasPorSecao[sec].sort((a, b) => (a.minuto ?? 0) - (b.minuto ?? 0));
+    });
+  }
+
+  function statusFor(confirmado, hora, tol, now) {
+    if (confirmado) return "ok";
+    if (now > hora + tol) return "late";
+    if (now >= hora - 10) return "warn";
+    return "wait";
+  }
+
+  // 5 principais aspectos de cumprimento de uma seção (mistura tarefas do administrador e dos mesários)
+  function aspectosDaSecao(sec, now) {
+    // 1. Tarefas do Administrador (T##) já vencidas até agora
+    const tVencidas = TAREFAS_T.filter(t => t.hora <= now);
+    const tStatus = tVencidas.map(t => statusFor(!!checkpointsPorSecaoECodigo[sec + "|" + t.code], t.hora, t.tol, now));
+    const tFeitas = tStatus.filter(s => s === "ok").length;
+    const aspTarefas = {
+      label: "Tarefas Admin", key: "tarefas",
+      status: tVencidas.length === 0 ? "wait" : tStatus.includes("late") ? "late" : tStatus.includes("warn") ? "warn" : "ok",
+      detail: `${tFeitas}/${tVencidas.length} tarefas T## em dia (de ${TAREFAS_T.length} no total)`,
+    };
+
+    // 2. Rondas — quantos horários já passados foram cobertos
+    const slotsVencidos = RONDA_SLOTS.filter(s => s.hora <= now);
+    const feitasChecklist = rondasChecklistPorSecao[sec] || [];
+    const rStatus = slotsVencidos.map((slot, i) => statusFor(!!feitasChecklist[i], slot.hora, RONDA_TOL, now));
+    const rFeitas = rStatus.filter(s => s === "ok").length;
+    const aspRondas = {
+      label: "Rondas", key: "rondas",
+      status: slotsVencidos.length === 0 ? "wait" : rStatus.includes("late") ? "late" : rStatus.includes("warn") ? "warn" : "ok",
+      detail: `${rFeitas}/${slotsVencidos.length} rondas feitas no horário (de ${RONDA_SLOTS.length}/dia)`,
+    };
+
+    // 3. Fila — última leitura reportada numa ronda
+    const numericas = rondasNumericasPorSecao[sec] || [];
+    const ultimaComFila = [...numericas].reverse().find(n => n.fila !== null);
+    const aspFila = {
+      label: "Fila", key: "fila",
+      status: !ultimaComFila ? "wait" : ultimaComFila.fila > FILA_LIMITE_CRITICO ? "late" : ultimaComFila.fila > FILA_LIMITE_ATENCAO ? "warn" : "ok",
+      detail: ultimaComFila ? `${ultimaComFila.fila} pessoas na fila (última ronda, ${ultimaComFila.horario})` : "Ainda sem leitura de fila",
+    };
+
+    // 4. Votação — última leitura de votados / eleitores esperados
+    const ultimaComVotados = [...numericas].reverse().find(n => n.votados !== null);
+    const eleitores = eleitoresDaSecao(sec);
+    const pct = ultimaComVotados ? Math.round((ultimaComVotados.votados / eleitores) * 100) : null;
+    const aspVotacao = {
+      label: "Votação", key: "votacao",
+      status: !ultimaComVotados ? "wait" : pct >= 40 ? "ok" : pct >= 20 ? "warn" : "late",
+      detail: ultimaComVotados ? `${ultimaComVotados.votados}/${eleitores} votaram (${pct}%, ${ultimaComVotados.horario})` : "Ainda sem leitura de votação",
+    };
+
+    // 5. Ocorrências — abertas nesta seção agora
+    const abertas = ocorrencias.filter(o => (o.secao || "").trim() === sec && (o.status || "").toLowerCase() === "aberta");
+    const aspOcorrencias = {
+      label: "Ocorrências", key: "ocorrencias",
+      status: abertas.length > 0 ? "late" : "ok",
+      detail: abertas.length > 0 ? `${abertas.length} ocorrência(s) em aberto` : "Nenhuma ocorrência em aberto",
+    };
+
+    return [aspTarefas, aspRondas, aspFila, aspVotacao, aspOcorrencias];
+  }
+
+  function pioraStatus(lista) {
+    if (lista.includes("late")) return "late";
+    if (lista.includes("warn")) return "warn";
+    if (lista.every(s => s === "wait")) return "wait";
+    return "ok";
+  }
+
+  const STATUS_COLOR = { ok: "#3ecf82", warn: "#e3ab3f", late: "#ff6b6b", wait: "#6b7686" };
+  const PIN_EMOJI = { ok: "✅", warn: "⏳", late: "❗", wait: "…" };
+
+  // Quantas tarefas T## e rondas já venceram e ainda não foram confirmadas nesta seção —
+  // é a lista prática de "o que falta resolver agora" para o administrador daquela seção.
+  function tarefasAtrasadasDaSecao(sec, now) {
+    const tAtrasadas = TAREFAS_T.filter(t => t.hora <= now && now > t.hora + t.tol && !checkpointsPorSecaoECodigo[sec + "|" + t.code]).length;
+    const feitasChecklist = rondasChecklistPorSecao[sec] || [];
+    const rAtrasadas = RONDA_SLOTS.filter((slot, i) => slot.hora <= now && now > slot.hora + RONDA_TOL && !feitasChecklist[i]).length;
+    return tAtrasadas + rAtrasadas;
+  }
+
+  // Estimativa (não oficial) de tempo médio de espera na fila, a partir do ritmo de votos
+  // observado entre as duas últimas rondas com leitura — fila atual ÷ votos/minuto.
+  function esperaEstimadaMin(sec) {
+    const numericas = rondasNumericasPorSecao[sec] || [];
+    const comFila = numericas.filter(n => n.fila !== null);
+    const comVotos = numericas.filter(n => n.votados !== null);
+    if (!comFila.length) return null;
+    const filaAtual = comFila[comFila.length - 1].fila;
+    if (filaAtual <= 0) return 0;
+    if (comVotos.length < 2) return null;
+    const a = comVotos[comVotos.length - 2], b = comVotos[comVotos.length - 1];
+    const deltaMin = (b.minuto ?? 0) - (a.minuto ?? 0);
+    const deltaVotos = b.votados - a.votados;
+    if (deltaMin <= 0 || deltaVotos <= 0) return null; // sem ritmo detectável (parado ou dado insuficiente)
+    const taxaPorMin = deltaVotos / deltaMin;
+    return Math.round(filaAtual / taxaPorMin);
+  }
+
+  // --------------------------------------------------------------- mapa
+  function renderMapa(now) {
+    const grid = document.getElementById("mapGrid");
+    grid.innerHTML = "";
+    SECOES.forEach(sec => {
+      const asp = aspectosDaSecao(sec, now);
+      const overall = pioraStatus(asp.map(a => a.status));
+      const a = document.createElement("a");
+      a.href = "secao.html?secao=" + sec;
+      a.className = "room";
+      a.innerHTML = `<span class="pin ${overall}">${PIN_EMOJI[overall]}</span><div class="rnum">${sec}</div><div class="rlabel">Seção</div>`;
+      grid.appendChild(a);
+    });
+  }
+
+  // --------------------------------------------------------------- listagem + pizza
+  function buildDonutSVG(asp, size, holeRatio) {
+    const radius = size / 2;
+    const arc = d3.arc().innerRadius(radius * holeRatio).outerRadius(radius - 1);
+    const pie = d3.pie().value(1).sort(null);
+    const arcs = pie(asp);
+    let paths = "";
+    arcs.forEach(a => {
+      paths += `<path d="${arc(a)}" fill="${STATUS_COLOR[asp[a.index].status]}" stroke="var(--bg-card)" stroke-width="1.5"></path>`;
+    });
+    return `<svg width="${size}" height="${size}" viewBox="${-radius} ${-radius} ${size} ${size}">${paths}</svg>`;
+  }
+
+  function showPieTooltip(ev, sec, asp) {
+    const tip = document.getElementById("pieTooltip");
+    const donut = buildDonutSVG(asp, 120, 0.5);
+    tip.innerHTML = `
+      <div class="pt-title">Seção ${esc(sec)} — 5 principais aspectos</div>
+      <div class="pt-body">
+        ${donut}
+        <div class="pt-legend">
+          ${asp.map(a => `<div class="pt-row"><span class="pt-dot" style="background:${STATUS_COLOR[a.status]}"></span><span class="pt-label">${esc(a.label)}</span><span class="pt-detail">${esc(a.detail)}</span></div>`).join("")}
+        </div>
+      </div>`;
+    tip.style.display = "block";
+    const x = Math.min(ev.clientX + 14, window.innerWidth - 476);
+    const y = Math.min(ev.clientY + 14, window.innerHeight - 250);
+    tip.style.left = Math.max(8, x) + "px";
+    tip.style.top = Math.max(8, y) + "px";
+  }
+  function hidePieTooltip() { document.getElementById("pieTooltip").style.display = "none"; }
+
+  function renderListagem(now) {
+    const tbody = document.getElementById("secTableBody");
+    tbody.innerHTML = "";
+    SECOES.forEach((sec, i) => {
+      const asp = aspectosDaSecao(sec, now);
+      const overall = pioraStatus(asp.map(a => a.status));
+      const fila = asp[2].detail.match(/^(\d+)/);
+      const votacaoMatch = asp[3].detail.match(/^(\d+)\/(\d+) votaram \((\d+)%/);
+      const votacao = votacaoMatch ? `${votacaoMatch[1]}/${votacaoMatch[2]} (${votacaoMatch[3]}%)` : null;
+      const espera = esperaEstimadaMin(sec);
+      const atrasadas = tarefasAtrasadasDaSecao(sec, now);
+      const tr = document.createElement("tr");
+      tr.className = "sec-row";
+      tr.innerHTML = `
+        <td class="num-cell">${i + 1}</td>
+        <td class="sec-name-cell">📍 Seção ${esc(sec)}</td>
+        <td>${buildDonutSVG(asp, 30, 0.45)}</td>
+        <td class="num-cell">${fila ? fila[1] : "—"}</td>
+        <td class="num-cell">${votacao ? votacao : "—"}</td>
+        <td class="num-cell">${espera === null ? "—" : espera === 0 ? "sem fila" : "~" + espera + " min"}</td>
+        <td class="num-cell">${atrasadas > 0 ? `<span class="status-pill late">${atrasadas}</span>` : `<span class="status-pill ok">0</span>`}</td>
+        <td><span class="status-pill ${overall}">${overall === "ok" ? "Em dia" : overall === "warn" ? "Atenção" : overall === "late" ? "Crítico" : "Sem dados"}</span></td>
+      `;
+      tr.addEventListener("click", (ev) => {
+        if (ev.target.closest("svg")) return; // clique na pizza não navega, só mostra tooltip
+        window.location.href = "secao.html?secao=" + sec;
+      });
+      const svgHost = tr.querySelector("td:nth-child(3)");
+      svgHost.classList.add("pie-icon");
+      svgHost.addEventListener("mouseenter", (ev) => showPieTooltip(ev, sec, asp));
+      svgHost.addEventListener("mousemove", (ev) => showPieTooltip(ev, sec, asp));
+      svgHost.addEventListener("mouseleave", hidePieTooltip);
+      svgHost.addEventListener("click", (ev) => { ev.stopPropagation(); showPieTooltip(ev, sec, asp); });
+      tbody.appendChild(tr);
+    });
+  }
+
+  // --------------------------------------------------------------- gráficos D3 (linha com hover)
+  function drawLineChart(containerId, points, opts) {
+    const host = document.getElementById(containerId);
+    host.innerHTML = "";
+    const width = host.clientWidth || 320, height = 110;
+    const margin = { top: 6, right: 8, bottom: 18, left: 30 };
+    const svg = d3.select(host).append("svg").attr("viewBox", `0 0 ${width} ${height}`);
+    if (!points.length) {
+      svg.append("text").attr("x", width / 2).attr("y", height / 2).attr("text-anchor", "middle")
+        .attr("fill", "var(--fg-sub)").attr("font-size", 11).text("Ainda sem dados");
+      return;
+    }
+    const x = d3.scaleLinear().domain(d3.extent(points, d => d.x)).range([margin.left, width - margin.right]);
+    const y = d3.scaleLinear().domain([0, Math.max(opts.yMax || 0, d3.max(points, d => d.y)) * 1.15 || 1]).range([height - margin.bottom, margin.top]);
+    const line = d3.line().x(d => x(d.x)).y(d => y(d.y)).curve(d3.curveStepAfter);
+    const area = d3.area().x(d => x(d.x)).y0(y(0)).y1(d => y(d.y)).curve(d3.curveStepAfter);
+
+    svg.append("g").attr("class", "chart-axis").attr("transform", `translate(0,${height - margin.bottom})`)
+      .call(d3.axisBottom(x).ticks(4).tickFormat(m => fmt(m)).tickSizeOuter(0));
+    svg.append("g").attr("class", "chart-axis").attr("transform", `translate(${margin.left},0)`)
+      .call(d3.axisLeft(y).ticks(3).tickFormat(v => opts.suffix ? v + opts.suffix : v).tickSizeOuter(0));
+
+    svg.append("path").datum(points).attr("d", area).attr("fill", opts.color).attr("fill-opacity", 0.12).attr("stroke", "none");
+    svg.append("path").datum(points).attr("d", line).attr("fill", "none").attr("stroke", opts.color).attr("stroke-width", 2);
+
+    const hoverLine = svg.append("line").attr("class", "chart-hover-line").attr("y1", margin.top).attr("y2", height - margin.bottom).style("display", "none");
+    const hoverDot = svg.append("circle").attr("class", "chart-hover-dot").attr("r", 3.5).attr("fill", opts.color).style("display", "none");
+    const tooltip = d3.select(host).append("div").attr("class", "chart-tooltip").style("display", "none");
+
+    svg.append("rect").attr("x", margin.left).attr("y", margin.top).attr("width", width - margin.left - margin.right)
+      .attr("height", height - margin.top - margin.bottom).attr("fill", "transparent")
+      .on("mousemove", function (ev) {
+        const [mx] = d3.pointer(ev);
+        const x0 = x.invert(mx);
+        const bisect = d3.bisector(d => d.x).left;
+        let idx = bisect(points, x0);
+        idx = Math.max(0, Math.min(points.length - 1, idx));
+        const p = points[idx];
+        hoverLine.attr("x1", x(p.x)).attr("x2", x(p.x)).style("display", null);
+        hoverDot.attr("cx", x(p.x)).attr("cy", y(p.y)).style("display", null);
+        tooltip.style("display", null).style("left", x(p.x) + "px").style("top", y(p.y) + "px")
+          .text(fmt(p.x) + " · " + p.y + (opts.suffix || ""));
+      })
+      .on("mouseleave", function () {
+        hoverLine.style("display", "none"); hoverDot.style("display", "none"); tooltip.style("display", "none");
+      });
+  }
+
+  function buildChart1(now) {
+    // progresso cumulativo de T##/G## confirmados, em % do total esperado
+    const totalEsperado = TAREFAS_T.length * SECOES.length + TAREFAS_G.length;
+    const eventos = allCheckpointRows
+      .filter(r => (r.codigo || "").trim() !== "RONDA" && r.confirmado_em)
+      .map(r => toMinutes(r.confirmado_em))
+      .filter(m => m !== null)
+      .sort((a, b) => a - b);
+    const pontos = [{ x: eventos.length ? eventos[0] : now, y: 0 }];
+    eventos.forEach((m, i) => pontos.push({ x: m, y: Math.round(((i + 1) / totalEsperado) * 100) }));
+    if (!pontos.length || pontos[pontos.length - 1].x < now) pontos.push({ x: now, y: pontos[pontos.length - 1].y });
+    document.getElementById("chart1Value").textContent = (pontos[pontos.length - 1].y || 0) + "% concluído";
+    drawLineChart("chart1", pontos, { color: "var(--accent)".replace("var(--accent)", "#5eaaff"), suffix: "%", yMax: 100 });
+  }
+
+  function buildChart2(now) {
+    // comparecimento estimado: soma do último "votados" conhecido por seção, ao longo do tempo
+    const eleitoresTotal = SECOES.reduce((s, sec) => s + eleitoresDaSecao(sec), 0);
+    const eventos = [];
+    allRondaRows.forEach(r => {
+      const m = toMinutes(r.horario);
+      if (m === null || r.votados === "") return;
+      eventos.push({ minuto: m, secao: (r.secao || "").trim(), votados: parseInt(r.votados, 10) });
+    });
+    eventos.sort((a, b) => a.minuto - b.minuto);
+    const ultimoPorSecao = {};
+    const pontos = [];
+    eventos.forEach(ev => {
+      ultimoPorSecao[ev.secao] = ev.votados;
+      const total = Object.values(ultimoPorSecao).reduce((s, v) => s + v, 0);
+      pontos.push({ x: ev.minuto, y: Math.round((total / eleitoresTotal) * 100) });
+    });
+    if (pontos.length && pontos[pontos.length - 1].x < now) pontos.push({ x: now, y: pontos[pontos.length - 1].y });
+    document.getElementById("chart2Value").textContent = pontos.length ? (pontos[pontos.length - 1].y + "% (estimado)") : "sem dados ainda";
+    drawLineChart("chart2", pontos, { color: "#3ecf82", suffix: "%", yMax: 100 });
+  }
+
+  function buildChart3(now) {
+    const eventos = allOcorrenciaRows.map(r => toMinutes(r.horario)).filter(m => m !== null).sort((a, b) => a - b);
+    const pontos = [{ x: eventos.length ? eventos[0] : now, y: 0 }];
+    eventos.forEach((m, i) => pontos.push({ x: m, y: i + 1 }));
+    if (pontos.length && pontos[pontos.length - 1].x < now) pontos.push({ x: now, y: pontos[pontos.length - 1].y });
+    document.getElementById("chart3Value").textContent = (pontos[pontos.length - 1].y || 0) + " reportadas";
+    drawLineChart("chart3", pontos, { color: "#c792ea" });
+  }
+
+  // --------------------------------------------------------------- render geral
+  function render() {
+    const now = nowMinutes();
+    document.getElementById("clockDisplay").textContent = "🕐 " + fmt(now);
+    renderMapa(now);
+    renderListagem(now);
+    buildChart1(now);
+    buildChart2(now);
+    buildChart3(now);
+  }
+
+  // --------------------------------------------------------------- carregamento
+  async function atualizar(manual) {
+    const errorBanner = document.getElementById("errorBanner");
+    try {
+      const checkpoints = await fetchCSV(CSV_URL_CHECKPOINTS);
+      if (checkpoints === null) {
+        errorBanner.style.display = "block";
+        errorBanner.textContent = "⚠️ CSV_URL_CHECKPOINTS ainda não foi configurado — edite o início do <script> deste arquivo (veja ../html-howto/sunday-tracking.html).";
+        render();
+        return;
+      }
+      indexarCheckpoints(checkpoints);
+
+      const occRows = await fetchCSV(CSV_URL_OCORRENCIAS);
+      ocorrencias = occRows || [];
+      allOcorrenciaRows = ocorrencias;
+
+      const rondaRows = await fetchCSV(CSV_URL_RONDAS);
+      indexarRondasNumericas(rondaRows || []);
+
+      errorBanner.style.display = "none";
+      document.getElementById("lastSync").textContent =
+        "Última atualização: " + new Date().toLocaleTimeString("pt-BR") + (manual ? " (manual)" : " (automática)");
+      render();
+    } catch (err) {
+      errorBanner.style.display = "block";
+      errorBanner.textContent = "⚠️ Não foi possível carregar a planilha agora (" + err.message + "). Vou tentar de novo em " + Math.round(REFRESH_MS / 1000) + "s.";
+      render();
+    }
+  }
+
+  document.getElementById("refreshBtn").addEventListener("click", () => atualizar(true));
+  document.addEventListener("click", (ev) => { if (!ev.target.closest(".pie-icon")) hidePieTooltip(); });
+
+  atualizar(false);
+  setInterval(() => atualizar(false), REFRESH_MS);
+  setInterval(() => { document.getElementById("clockDisplay").textContent = "🕐 " + fmt(nowMinutes()); }, 15000);
+})();
+</script>
+</body>
+</html>

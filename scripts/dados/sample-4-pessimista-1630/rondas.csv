@@ -1,0 +1,91 @@
+secao,horario,fila,votados,bateria_ok,observacao,confirmado_por
+01,08:34,13,18,sim,,Diego Ferreira e Rodrigo Nunes
+01,09:59,20,35,sim,,Debora Farias e Andre Vieira
+01,11:28,27,54,sim,"Fila grande, atendimento lento.",Patricia Gomes e Andre Vieira
+01,13:05,32,61,sim,"Fila grande, atendimento lento.",Paulo Henrique e Camila Rocha
+01,14:28,36,77,sim,"Fila grande, atendimento lento.",Joao Pedro Alves e Camila Rocha
+01,16:02,38,97,sim,"Fila grande, atendimento lento.",Lucas Martins e Thiago Barros
+02,08:27,6,23,sim,,Thiago Barros e Juliana Ramos
+02,10:05,14,59,sim,,Lucas Martins e Tatiane Melo
+02,11:29,11,84,sim,,Marcelo Dias e Andre Vieira
+02,13:05,17,112,sim,,Marcelo Dias e Juliana Ramos
+02,14:33,15,144,sim,"Urna não liga mais, mesa parada há um bom tempo.",Andre Vieira e Joao Pedro Alves
+02,16:01,18,168,sim,"Urna não liga mais, mesa parada há um bom tempo.",Tatiane Melo e Renata Duarte
+03,08:32,9,30,nao,"Sem energia há mais de 20 minutos, urna rodando no limite da bateria.",Camila Rocha e Vanessa Teixeira
+03,09:58,9,55,nao,"Gerador não pegou, situação crítica de energia.",Paulo Henrique e Larissa Pinto
+03,11:28,16,90,nao,"Sem energia há mais de 20 minutos, urna rodando no limite da bateria.",Patricia Gomes e Camila Rocha
+03,12:58,17,108,nao,"Gerador não pegou, situação crítica de energia.",Andre Vieira e Rafael Souza
+03,14:35,16,140,nao,"Sem energia há mais de 20 minutos, urna rodando no limite da bateria.",Rodrigo Nunes e Carlos Eduardo
+03,16:02,19,172,nao,"Sem energia há mais de 20 minutos, urna rodando no limite da bateria.",Debora Farias e Andre Vieira
+04,08:34,12,28,sim,,Simone Cavalcanti e Thiago Barros
+04,09:59,14,51,sim,,Gustavo Moreira e Bruno Costa
+04,11:28,13,90,sim,,Vanessa Teixeira e Simone Cavalcanti
+04,13:04,15,109,sim,,Eduardo Castro e Joao Pedro Alves
+04,14:33,16,145,sim,,Camila Rocha e Rafael Souza
+04,15:58,21,167,sim,"Confusão generalizada na entrada, PM já está no local.",Marcelo Dias e Paulo Henrique
+05,08:34,9,33,sim,,Felipe Araujo e Simone Cavalcanti
+05,10:00,13,54,sim,,Joao Pedro Alves e Renata Duarte
+05,11:35,16,90,sim,,Joao Pedro Alves e Rodrigo Nunes
+05,13:00,15,116,sim,,Gustavo Moreira e Larissa Pinto
+05,14:35,19,140,sim,,Bruno Costa e Lucas Martins
+05,16:01,18,173,sim,,Leandro Batista e Diego Ferreira
+06,08:33,7,31,sim,,Andre Vieira e Rafael Souza
+06,09:58,10,61,sim,,Tatiane Melo e Andre Vieira
+06,11:27,16,87,sim,,Patricia Gomes e Bruno Costa
+07,08:27,5,9,sim,"Votação praticamente parada, eleitores desistindo da fila.",Debora Farias e Leandro Batista
+07,09:59,8,12,sim,"Votação praticamente parada, eleitores desistindo da fila.",Carlos Eduardo e Marcelo Dias
+07,11:27,14,22,sim,"Votação praticamente parada, eleitores desistindo da fila.",Beatriz Cardoso e Aline Correia
+07,13:01,16,32,sim,"Votação praticamente parada, eleitores desistindo da fila.",Simone Cavalcanti e Bruno Costa
+07,14:27,13,42,sim,"Votação praticamente parada, eleitores desistindo da fila.",Juliana Ramos e Gustavo Moreira
+07,16:05,16,46,sim,"Votação praticamente parada, eleitores desistindo da fila.",Marcelo Dias e Eduardo Castro
+08,08:31,14,13,sim,,Mariana Lima e Marcelo Dias
+08,09:58,18,36,sim,,Aline Correia e Beatriz Cardoso
+08,11:32,28,47,sim,"Fila grande, atendimento lento.",Leandro Batista e Andre Vieira
+08,13:04,27,64,sim,"Fila grande, atendimento lento.",Lucas Martins e Joao Pedro Alves
+08,14:29,31,82,sim,"Fila grande, atendimento lento.",Andre Vieira e Aline Correia
+08,16:02,34,96,sim,"Fila grande, atendimento lento.",Gustavo Moreira e Eduardo Castro
+09,08:31,16,12,sim,,Renata Duarte e Ana Beatriz
+09,10:04,24,34,sim,"Fila grande, atendimento lento.",Juliana Ramos e Priscila Nascimento
+09,11:30,28,46,sim,"Fila grande, atendimento lento.",Fernanda Alves e Marcelo Dias
+09,13:01,31,69,sim,"Fila grande, atendimento lento.",Gustavo Moreira e Paulo Henrique
+09,14:27,37,84,sim,"Fila grande, atendimento lento.",Priscila Nascimento e Fernanda Alves
+09,15:59,39,100,sim,"Fila grande, atendimento lento.",Renata Duarte e Priscila Nascimento
+10,08:35,5,27,sim,,Beatriz Cardoso e Larissa Pinto
+10,09:57,14,60,sim,,Andre Vieira e Ana Beatriz
+10,11:32,14,84,sim,,Rodrigo Nunes e Patricia Gomes
+10,12:57,17,109,sim,,Camila Rocha e Gustavo Moreira
+10,14:33,14,146,sim,"Urna não liga mais, mesa parada há um bom tempo.",Juliana Ramos e Andre Vieira
+10,16:01,21,175,sim,"Urna parada, votação suspensa nesta seção aguardando substituição.",Lucas Martins e Simone Cavalcanti
+11,08:27,9,25,nao,"Gerador não pegou, situação crítica de energia.",Debora Farias e Vanessa Teixeira
+11,10:05,9,52,nao,"Gerador não pegou, situação crítica de energia.",Debora Farias e Vanessa Teixeira
+11,11:28,11,81,nao,"Gerador não pegou, situação crítica de energia.",Larissa Pinto e Rafael Souza
+11,12:58,15,115,nao,"Gerador não pegou, situação crítica de energia.",Patricia Gomes e Leandro Batista
+11,14:33,16,144,nao,"Sem energia há mais de 20 minutos, urna rodando no limite da bateria.",Priscila Nascimento e Leandro Batista
+11,16:05,22,165,nao,"Sem energia há mais de 20 minutos, urna rodando no limite da bateria.",Camila Rocha e Fernanda Alves
+12,08:27,9,27,sim,,Marcelo Dias e Leandro Batista
+12,09:57,7,54,sim,,Joao Pedro Alves e Larissa Pinto
+12,11:32,12,84,sim,,Renata Duarte e Tatiane Melo
+12,12:59,13,111,sim,,Joao Pedro Alves e Marcelo Dias
+12,14:35,16,140,sim,,Joao Pedro Alves e Gustavo Moreira
+12,16:01,18,170,sim,"Situação de tensão na fila, apoio urgente necessário.",Priscila Nascimento e Bruno Costa
+13,08:30,10,32,sim,,Debora Farias e Marcelo Dias
+13,10:01,8,57,sim,,Camila Rocha e Gustavo Moreira
+13,11:29,9,88,sim,,Larissa Pinto e Rodrigo Nunes
+13,13:02,17,114,sim,,Vanessa Teixeira e Patricia Gomes
+13,14:29,16,137,sim,,Simone Cavalcanti e Ana Beatriz
+13,16:02,21,168,sim,,Joao Pedro Alves e Patricia Gomes
+14,08:28,6,23,sim,,Rafael Souza e Camila Rocha
+14,10:04,10,57,sim,,Felipe Araujo e Thiago Barros
+14,11:29,13,90,sim,,Leandro Batista e Bruno Costa
+15,08:31,12,10,sim,"Votação praticamente parada, eleitores desistindo da fila.",Larissa Pinto e Thiago Barros
+15,10:04,14,17,sim,"Votação praticamente parada, eleitores desistindo da fila.",Debora Farias e Fernanda Alves
+15,11:32,10,24,sim,"Votação praticamente parada, eleitores desistindo da fila.",Diego Ferreira e Camila Rocha
+15,13:04,15,31,sim,"Votação praticamente parada, eleitores desistindo da fila.",Debora Farias e Thiago Barros
+15,14:33,20,41,sim,"Votação praticamente parada, eleitores desistindo da fila.",Fernanda Alves e Simone Cavalcanti
+15,16:01,20,49,sim,"Votação praticamente parada, eleitores desistindo da fila.",Vanessa Teixeira e Camila Rocha
+16,08:29,19,9,sim,"Votação praticamente parada, eleitores desistindo da fila.",Tatiane Melo e Gustavo Moreira
+16,09:57,17,21,sim,"Votação praticamente parada, eleitores desistindo da fila.",Lucas Martins e Bruno Costa
+16,11:35,25,23,sim,"Votação praticamente parada, eleitores desistindo da fila.",Priscila Nascimento e Felipe Araujo
+16,13:02,28,34,sim,"Votação praticamente parada, eleitores desistindo da fila.",Renata Duarte e Simone Cavalcanti
+16,14:31,35,38,sim,"Votação praticamente parada, eleitores desistindo da fila.",Carlos Eduardo e Aline Correia
+16,16:04,35,46,sim,"Votação praticamente parada, eleitores desistindo da fila.",Vanessa Teixeira e Renata Duarte

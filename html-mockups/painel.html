@@ -21,6 +21,10 @@
   body { background: var(--bg); color: var(--fg); font-family: var(--sans); font-size: 15px; line-height: 1.55; font-weight: 500; padding: 16px 14px 60px; }
   .wrap { max-width: 900px; margin: 0 auto; }
 
+  .top-nav { display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
+  .nav-item { flex:1; min-width:140px; text-align:center; background:var(--bg-card); border:1px solid var(--border); border-radius:10px; padding:9px 10px; font-size:12.5px; font-weight:800; color:var(--fg-muted); text-decoration:none; }
+  .nav-item.active { background:var(--accent-dim); color:var(--accent); border-color:var(--accent); }
+
   header.hero { background: linear-gradient(160deg, var(--bg-card) 0%, var(--bg-card-2) 100%); border:1px solid var(--border); border-radius:16px; padding:16px 18px; margin-bottom:16px; display:flex; flex-wrap:wrap; gap:14px; align-items:center; justify-content:space-between; }
   header.hero h1 { font-size:19px; font-weight:800; letter-spacing:-0.2px; }
   header.hero .sub { color:var(--fg-muted); font-size:12.5px; font-weight:600; margin-top:2px; }
@@ -100,6 +104,12 @@
 <body>
 <div class="wrap">
 
+  <nav class="top-nav">
+    <a href="index.html" class="nav-item">🏠 Visão Geral</a>
+    <a href="secao.html" class="nav-item">🔍 Detalhe por Seção</a>
+    <a href="painel.html" class="nav-item active">📊 Painel Gestor</a>
+  </nav>
+
   <header class="hero">
     <div>
       <h1>🛰️ Mapa de Atividades — 150ª ZE</h1>
@@ -149,7 +159,7 @@
   </section>
 
   <footer class="page-footer">
-    Painel V1 · Telegram + Google Sheets + CSV publicado · edite <code>CSV_URL_CHECKPOINTS</code> no início do <code>&lt;script&gt;</code> deste arquivo para ligar aos seus dados reais — veja <em>sunday-tracking.html</em>, passo 14.
+    Painel V1 · Telegram + Google Sheets + CSV publicado · edite <code>CSV_URL_CHECKPOINTS</code> no início do <code>&lt;script&gt;</code> deste arquivo para ligar aos seus dados reais — veja <em>../html-howto/sunday-tracking.html</em>, passo 14.
   </footer>
 </div>
 
@@ -273,6 +283,7 @@
   let checkpointsGeral = {};           // "codigo" -> {status, confirmado_por, confirmado_em}  (secao vazia = G##)
   let rondasPorSecao = {};             // "secao" -> [ {status, confirmado_por, confirmado_em}, ... ] (pode haver até 6/dia)
   let ocorrencias = [];
+  let ocorrenciasHabilitadas = !!(CSV_URL_OCORRENCIAS && !CSV_URL_OCORRENCIAS.startsWith("COLE_AQUI"));
 
   function indexarCheckpoints(registros) {
     checkpointsPorSecaoECodigo = {};
@@ -406,7 +417,7 @@
 
     // ---- ocorrências
     const feed = document.getElementById("occFeed");
-    if (!CSV_URL_OCORRENCIAS || CSV_URL_OCORRENCIAS.startsWith("COLE_AQUI")) {
+    if (!ocorrenciasHabilitadas) {
       feed.innerHTML = `<div class="occ-empty">Feed de ocorrências não configurado — preencha CSV_URL_OCORRENCIAS no início do &lt;script&gt; para ativar.</div>`;
     } else if (!ocorrencias.length) {
       feed.innerHTML = `<div class="occ-empty">Nenhuma ocorrência registrada até agora.</div>`;
@@ -429,7 +440,7 @@
       const checkpoints = await fetchCSV(CSV_URL_CHECKPOINTS);
       if (checkpoints === null) {
         errorBanner.style.display = "block";
-        errorBanner.textContent = "⚠️ CSV_URL_CHECKPOINTS ainda não foi configurado — edite o início do <script> deste arquivo (veja sunday-tracking.html, passo 14).";
+        errorBanner.textContent = "⚠️ CSV_URL_CHECKPOINTS ainda não foi configurado — edite o início do <script> deste arquivo (veja ../html-howto/sunday-tracking.html, passo 14).";
         render();
         return;
       }

@@ -1,0 +1,15 @@
+codigo,secao,descricao,reportado_por,horario,status
+FILA,01,"Fila muito grande, eleitores reclamando da demora.",Patricia Gomes e Larissa Pinto,12:21,aberta
+URNA,02,"Urna reiniciou 3 vezes, suporte técnico ainda não resolveu.",Tatiane Melo e Simone Cavalcanti,12:33,aberta
+ENERGIA,03,"Bateria da urna fraca, sem previsão de troca.",Simone Cavalcanti e Fernanda Alves,12:17,aberta
+SEGURANCA,04,"Discussão mais séria entre fiscal e eleitor, PM acionada preventivamente.",Paulo Henrique e Fernanda Alves,12:53,aberta
+OUTRO,06,"Sem contato com a seção há mais de uma ronda, tentando localizar.",Tatiane Melo e Paulo Henrique,13:00,aberta
+FILA,08,Fila grande e mesa sem administrador para organizar.,Rodrigo Nunes e Fernanda Alves,12:37,aberta
+OUTRO,08,Administrador da seção não localizado desde o início da tarde.,Paulo Henrique e Vanessa Teixeira,12:37,aberta
+FILA,09,"Fila muito grande, eleitores reclamando da demora.",Larissa Pinto e Fernanda Alves,12:07,aberta
+URNA,10,"Urna reiniciou 3 vezes, suporte técnico ainda não resolveu.",Bruno Costa e Felipe Araujo,12:25,aberta
+ENERGIA,11,"Bateria da urna fraca, sem previsão de troca.",Simone Cavalcanti e Tatiane Melo,12:15,aberta
+SEGURANCA,12,"Discussão mais séria entre fiscal e eleitor, PM acionada preventivamente.",Aline Correia e Ana Beatriz,12:16,aberta
+OUTRO,14,"Sem contato com a seção há mais de uma ronda, tentando localizar.",Beatriz Cardoso e Juliana Ramos,12:45,aberta
+URNA,16,"Urna reiniciou 3 vezes, suporte técnico ainda não resolveu.",Eduardo Castro e Paulo Henrique,12:19,aberta
+OUTRO,16,"Votação parada por tempo prolongado, fila parada esperando.",Larissa Pinto e Thiago Barros,12:19,aberta

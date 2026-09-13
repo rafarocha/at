@@ -1,0 +1,444 @@
+codigo,secao,titulo,horario_previsto,status,confirmado_por,confirmado_em,observacao
+G01,,,,concluido,Marcelo Dias e Mariana Lima,2026-10-04 06:36,
+G02,,,,concluido,Felipe Araujo e Rafael Souza,2026-10-04 06:36,
+G03,,,,concluido,Priscila Nascimento e Rafael Souza,2026-10-04 07:02,
+G04,,,,concluido,Ana Beatriz e Eduardo Castro,2026-10-04 08:01,
+G05,,,,concluido,Thiago Barros e Rafael Souza,2026-10-04 08:30,
+G06,,,,concluido,Marcelo Dias e Rafael Souza,2026-10-04 15:01,
+G07,,,,concluido,Vanessa Teixeira e Diego Ferreira,2026-10-04 16:59,
+G08,,,,concluido,Bruno Costa e Andre Vieira,2026-10-04 17:07,
+G09,,,,concluido,Leandro Batista e Carlos Eduardo,2026-10-04 17:32,
+G10,,,,concluido,Lucas Martins e Gustavo Moreira,2026-10-04 17:56,
+G11,,,,concluido,Carlos Eduardo e Leandro Batista,2026-10-04 18:04,
+T01,01,,,concluido,Gustavo Moreira e Carlos Eduardo,2026-10-04 06:53,"Realizado, presidente ciente."
+T02,01,,,concluido,Aline Correia e Debora Farias,2026-10-04 06:59,"Tudo certo, sem intercorrências."
+T03,01,,,concluido,Vanessa Teixeira e Aline Correia,2026-10-04 07:06,Conferido com o presidente da mesa.
+T04,01,,,concluido,Mariana Lima e Juliana Ramos,2026-10-04 06:58,Confirmado com o mesário responsável.
+T05,01,,,concluido,João Pedro e Juliana Ramos,2026-10-04 07:29,"Tudo certo, sem intercorrências."
+T06,01,,,concluido,Renata Duarte e Leandro Batista,2026-10-04 07:31,"Realizado, presidente ciente."
+T07,01,,,concluido,Ana Beatriz e Diego Ferreira,2026-10-04 07:53,Confirmado com o mesário responsável.
+T08,01,,,concluido,Carlos Eduardo e Tatiane Melo,2026-10-04 07:56,
+T09,01,,,concluido,Ana Beatriz e Priscila Nascimento,2026-10-04 07:55,Rotina normal.
+T10,01,,,concluido,Marcelo Dias e Priscila Nascimento,2026-10-04 07:58,"Realizado, presidente ciente."
+T11,01,,,concluido,Debora Farias e Larissa Pinto,2026-10-04 08:33,"Realizado, presidente ciente."
+T12,01,,,concluido,Bruno Costa e Priscila Nascimento,2026-10-04 08:39,
+T13,01,,,concluido,Eduardo Castro e Fernanda Alves,2026-10-04 10:02,"Realizado, presidente ciente."
+T14,01,,,concluido,Vanessa Teixeira e Tatiane Melo,2026-10-04 14:59,Confirmado com o mesário responsável.
+T15,01,,,concluido,Paulo Henrique e Lucas Martins,2026-10-04 15:02,
+T16,01,,,concluido,Diego Ferreira e Rodrigo Nunes,2026-10-04 16:34,"Kit conferido, tudo dentro do previsto."
+T17,01,,,concluido,Eduardo Castro e Renata Duarte,2026-10-04 16:29,Rotina normal.
+T18,01,,,concluido,Beatriz Cardoso e Eduardo Castro,2026-10-04 16:53,Conferido com o presidente da mesa.
+T19,01,,,concluido,Felipe Araujo e Vanessa Teixeira,2026-10-04 17:00,"Kit conferido, tudo dentro do previsto."
+T20,01,,,concluido,Andre Vieira e Debora Farias,2026-10-04 17:17,Confirmado com o mesário responsável.
+T21,01,,,concluido,Beatriz Cardoso e Rodrigo Nunes,2026-10-04 17:13,Conferido com o presidente da mesa.
+T01,02,,,concluido,Eduardo Castro e Gustavo Moreira,2026-10-04 06:43,Rotina normal.
+T02,02,,,concluido,Paulo Henrique e Beatriz Cardoso,2026-10-04 07:09,"Realizado, presidente ciente."
+T03,02,,,concluido,Eduardo Castro e Marcelo Dias,2026-10-04 06:55,"Tudo certo, sem intercorrências."
+T04,02,,,concluido,Ana Beatriz e Larissa Pinto,2026-10-04 07:04,"Feito no horário, sem problemas."
+T05,02,,,concluido,Rodrigo Nunes e Gustavo Moreira,2026-10-04 07:26,"Kit conferido, tudo dentro do previsto."
+T06,02,,,concluido,Bruno Costa e Rafael Souza,2026-10-04 07:25,Rotina normal.
+T07,02,,,concluido,Simone Cavalcanti e Mariana Lima,2026-10-04 07:47,"Feito no horário, sem problemas."
+T08,02,,,concluido,Paulo Henrique e Fernanda Alves,2026-10-04 08:07,Confirmado com o mesário responsável.
+T09,02,,,concluido,Renata Duarte e Lucas Martins,2026-10-04 07:56,Confirmado com o mesário responsável.
+T10,02,,,concluido,Patricia Gomes e Leandro Batista,2026-10-04 08:03,Rotina normal.
+T11,02,,,concluido,Priscila Nascimento e Rodrigo Nunes,2026-10-04 08:31,
+T12,02,,,concluido,Marcelo Dias e Tatiane Melo,2026-10-04 08:38,
+T13,02,,,concluido,Leandro Batista e Tatiane Melo,2026-10-04 10:03,"Kit conferido, tudo dentro do previsto."
+T14,02,,,concluido,Diego Ferreira e Tatiane Melo,2026-10-04 14:56,Confirmado com o mesário responsável.
+T15,02,,,concluido,Gustavo Moreira e Paulo Henrique,2026-10-04 15:01,
+T16,02,,,concluido,Paulo Henrique e Eduardo Castro,2026-10-04 16:37,
+T17,02,,,concluido,Thiago Barros e Carlos Eduardo,2026-10-04 16:27,"Realizado, presidente ciente."
+T18,02,,,concluido,Rodrigo Nunes e Aline Correia,2026-10-04 17:01,"Realizado, presidente ciente."
+T19,02,,,concluido,Debora Farias e Gustavo Moreira,2026-10-04 17:08,Conferido com o presidente da mesa.
+T20,02,,,concluido,Gustavo Moreira e Paulo Henrique,2026-10-04 17:16,
+T21,02,,,concluido,Felipe Araujo e Larissa Pinto,2026-10-04 17:12,"Realizado, presidente ciente."
+T01,03,,,concluido,Ana Beatriz e Eduardo Castro,2026-10-04 06:53,"Realizado, presidente ciente."
+T02,03,,,concluido,Gustavo Moreira e Bruno Costa,2026-10-04 07:03,"Tudo certo, sem intercorrências."
+T03,03,,,concluido,Bruno Costa e Patricia Gomes,2026-10-04 07:06,Conferido com o presidente da mesa.
+T04,03,,,concluido,Tatiane Melo e Mariana Lima,2026-10-04 07:05,"Sem pendências, seguindo cronograma."
+T05,03,,,concluido,Simone Cavalcanti e Renata Duarte,2026-10-04 07:39,"Sem pendências, seguindo cronograma."
+T06,03,,,concluido,Felipe Araujo e Larissa Pinto,2026-10-04 07:25,"Tudo certo, sem intercorrências."
+T07,03,,,concluido,Diego Ferreira e Thiago Barros,2026-10-04 07:47,Rotina normal.
+T08,03,,,concluido,Tatiane Melo e Thiago Barros,2026-10-04 08:04,
+T09,03,,,concluido,Larissa Pinto e Beatriz Cardoso,2026-10-04 07:58,"Sem pendências, seguindo cronograma."
+T10,03,,,concluido,Juliana Ramos e Ana Beatriz,2026-10-04 08:08,Rotina normal.
+T11,03,,,concluido,Eduardo Castro e Gustavo Moreira,2026-10-04 08:34,Conferido com o presidente da mesa.
+T12,03,,,concluido,Fernanda Alves e Renata Duarte,2026-10-04 08:28,
+T13,03,,,concluido,Marcelo Dias e Simone Cavalcanti,2026-10-04 10:09,"Realizado, presidente ciente."
+T14,03,,,concluido,Andre Vieira e Mariana Lima,2026-10-04 15:07,
+T15,03,,,concluido,Gustavo Moreira e Andre Vieira,2026-10-04 15:05,"Tudo certo, sem intercorrências."
+T16,03,,,concluido,Aline Correia e Leandro Batista,2026-10-04 16:35,
+T17,03,,,concluido,Andre Vieira e Camila Rocha,2026-10-04 16:38,Confirmado com o mesário responsável.
+T18,03,,,concluido,Rodrigo Nunes e Tatiane Melo,2026-10-04 17:02,Conferido com o presidente da mesa.
+T19,03,,,concluido,Lucas Martins e Patricia Gomes,2026-10-04 16:59,Confirmado com o mesário responsável.
+T20,03,,,concluido,Marcelo Dias e Larissa Pinto,2026-10-04 17:12,"Kit conferido, tudo dentro do previsto."
+T21,03,,,concluido,Felipe Araujo e João Pedro,2026-10-04 17:14,Conferido com o presidente da mesa.
+T01,04,,,concluido,Paulo Henrique e Rafael Souza,2026-10-04 06:50,"Feito no horário, sem problemas."
+T02,04,,,concluido,Ana Beatriz e Vanessa Teixeira,2026-10-04 06:57,"Realizado, presidente ciente."
+T03,04,,,concluido,Aline Correia e Tatiane Melo,2026-10-04 07:02,Conferido com o presidente da mesa.
+T04,04,,,concluido,Mariana Lima e Ana Beatriz,2026-10-04 07:09,Rotina normal.
+T05,04,,,concluido,Ana Beatriz e Aline Correia,2026-10-04 07:28,
+T06,04,,,concluido,Renata Duarte e Marcelo Dias,2026-10-04 07:35,"Feito no horário, sem problemas."
+T07,04,,,concluido,Priscila Nascimento e Gustavo Moreira,2026-10-04 07:52,"Sem pendências, seguindo cronograma."
+T08,04,,,concluido,Vanessa Teixeira e Larissa Pinto,2026-10-04 07:55,"Tudo certo, sem intercorrências."
+T09,04,,,concluido,Bruno Costa e Priscila Nascimento,2026-10-04 08:00,"Tudo certo, sem intercorrências."
+T10,04,,,concluido,Debora Farias e Bruno Costa,2026-10-04 08:07,"Tudo certo, sem intercorrências."
+T11,04,,,concluido,Marcelo Dias e Paulo Henrique,2026-10-04 08:35,"Kit conferido, tudo dentro do previsto."
+T12,04,,,concluido,Lucas Martins e Renata Duarte,2026-10-04 08:30,"Realizado, presidente ciente."
+T13,04,,,concluido,Felipe Araujo e João Pedro,2026-10-04 10:01,"Feito no horário, sem problemas."
+T14,04,,,concluido,Rafael Souza e Priscila Nascimento,2026-10-04 14:59,"Sem pendências, seguindo cronograma."
+T15,04,,,concluido,Debora Farias e Renata Duarte,2026-10-04 15:00,Conferido com o presidente da mesa.
+T16,04,,,concluido,Bruno Costa e Renata Duarte,2026-10-04 16:27,Rotina normal.
+T17,04,,,concluido,João Pedro e Marcelo Dias,2026-10-04 16:26,Rotina normal.
+T18,04,,,concluido,Larissa Pinto e Thiago Barros,2026-10-04 16:50,"Kit conferido, tudo dentro do previsto."
+T19,04,,,concluido,Leandro Batista e Tatiane Melo,2026-10-04 17:08,"Feito no horário, sem problemas."
+T20,04,,,concluido,Aline Correia e Andre Vieira,2026-10-04 17:14,Rotina normal.
+T21,04,,,concluido,Simone Cavalcanti e Paulo Henrique,2026-10-04 17:18,"Tudo certo, sem intercorrências."
+T01,05,,,concluido,Bruno Costa e Aline Correia,2026-10-04 06:52,Rotina normal.
+T02,05,,,concluido,Leandro Batista e Diego Ferreira,2026-10-04 07:02,"Sem pendências, seguindo cronograma."
+T03,05,,,concluido,Beatriz Cardoso e Mariana Lima,2026-10-04 07:01,"Tudo certo, sem intercorrências."
+T04,05,,,concluido,Patricia Gomes e Beatriz Cardoso,2026-10-04 06:57,Conferido com o presidente da mesa.
+T05,05,,,concluido,Andre Vieira e Tatiane Melo,2026-10-04 07:26,"Kit conferido, tudo dentro do previsto."
+T06,05,,,concluido,Bruno Costa e Aline Correia,2026-10-04 07:28,"Tudo certo, sem intercorrências."
+T07,05,,,concluido,Diego Ferreira e Lucas Martins,2026-10-04 07:54,"Tudo certo, sem intercorrências."
+T08,05,,,concluido,Juliana Ramos e Thiago Barros,2026-10-04 08:09,"Realizado, presidente ciente."
+T09,05,,,concluido,Andre Vieira e Bruno Costa,2026-10-04 08:07,"Feito no horário, sem problemas."
+T10,05,,,concluido,Felipe Araujo e Larissa Pinto,2026-10-04 07:57,"Realizado, presidente ciente."
+T11,05,,,concluido,Ana Beatriz e Simone Cavalcanti,2026-10-04 08:38,"Sem pendências, seguindo cronograma."
+T12,05,,,concluido,Mariana Lima e Simone Cavalcanti,2026-10-04 08:39,
+T13,05,,,concluido,Aline Correia e Beatriz Cardoso,2026-10-04 10:05,"Feito no horário, sem problemas."
+T14,05,,,concluido,Tatiane Melo e Juliana Ramos,2026-10-04 14:55,
+T15,05,,,concluido,Rafael Souza e Rodrigo Nunes,2026-10-04 14:56,"Kit conferido, tudo dentro do previsto."
+T16,05,,,concluido,Rodrigo Nunes e Renata Duarte,2026-10-04 16:33,"Feito no horário, sem problemas."
+T17,05,,,concluido,Larissa Pinto e Renata Duarte,2026-10-04 16:31,"Sem pendências, seguindo cronograma."
+T18,05,,,concluido,Debora Farias e Rafael Souza,2026-10-04 17:00,"Sem pendências, seguindo cronograma."
+T19,05,,,concluido,Tatiane Melo e Juliana Ramos,2026-10-04 16:59,"Realizado, presidente ciente."
+T20,05,,,concluido,Camila Rocha e Carlos Eduardo,2026-10-04 17:15,
+T21,05,,,concluido,Camila Rocha e Debora Farias,2026-10-04 17:20,"Realizado, presidente ciente."
+T01,06,,,concluido,Rafael Souza e Ana Beatriz,2026-10-04 06:42,"Kit conferido, tudo dentro do previsto."
+T02,06,,,concluido,Leandro Batista e Marcelo Dias,2026-10-04 07:02,Conferido com o presidente da mesa.
+T03,06,,,concluido,Rafael Souza e Leandro Batista,2026-10-04 06:56,"Kit conferido, tudo dentro do previsto."
+T04,06,,,concluido,Gustavo Moreira e Aline Correia,2026-10-04 06:58,"Tudo certo, sem intercorrências."
+T05,06,,,concluido,Aline Correia e Felipe Araujo,2026-10-04 07:36,Rotina normal.
+T06,06,,,concluido,Gustavo Moreira e Camila Rocha,2026-10-04 07:38,"Kit conferido, tudo dentro do previsto."
+T07,06,,,concluido,Marcelo Dias e Beatriz Cardoso,2026-10-04 07:48,"Feito no horário, sem problemas."
+T08,06,,,concluido,Mariana Lima e Debora Farias,2026-10-04 08:07,"Kit conferido, tudo dentro do previsto."
+T09,06,,,concluido,Camila Rocha e Leandro Batista,2026-10-04 07:56,"Kit conferido, tudo dentro do previsto."
+T10,06,,,concluido,Bruno Costa e Marcelo Dias,2026-10-04 08:01,"Kit conferido, tudo dentro do previsto."
+T11,06,,,concluido,Fernanda Alves e Tatiane Melo,2026-10-04 08:28,Confirmado com o mesário responsável.
+T12,06,,,concluido,Eduardo Castro e Simone Cavalcanti,2026-10-04 08:39,Rotina normal.
+T13,06,,,concluido,Priscila Nascimento e Felipe Araujo,2026-10-04 10:01,"Sem pendências, seguindo cronograma."
+T14,06,,,concluido,Gustavo Moreira e Aline Correia,2026-10-04 15:05,
+T15,06,,,concluido,Simone Cavalcanti e Bruno Costa,2026-10-04 14:56,"Feito no horário, sem problemas."
+T16,06,,,concluido,Juliana Ramos e Paulo Henrique,2026-10-04 16:34,"Sem pendências, seguindo cronograma."
+T17,06,,,concluido,Eduardo Castro e Simone Cavalcanti,2026-10-04 16:32,Confirmado com o mesário responsável.
+T18,06,,,concluido,Marcelo Dias e Simone Cavalcanti,2026-10-04 16:59,"Kit conferido, tudo dentro do previsto."
+T19,06,,,concluido,Rafael Souza e Priscila Nascimento,2026-10-04 16:59,
+T20,06,,,concluido,Eduardo Castro e Rafael Souza,2026-10-04 17:20,
+T21,06,,,concluido,Bruno Costa e Lucas Martins,2026-10-04 17:13,
+T01,07,,,concluido,Paulo Henrique e Rafael Souza,2026-10-04 06:43,"Feito no horário, sem problemas."
+T02,07,,,concluido,Camila Rocha e Tatiane Melo,2026-10-04 07:09,"Feito no horário, sem problemas."
+T03,07,,,concluido,Diego Ferreira e Fernanda Alves,2026-10-04 06:57,"Feito no horário, sem problemas."
+T04,07,,,concluido,Camila Rocha e Debora Farias,2026-10-04 07:00,
+T05,07,,,concluido,Lucas Martins e Thiago Barros,2026-10-04 07:27,"Tudo certo, sem intercorrências."
+T06,07,,,concluido,Marcelo Dias e Priscila Nascimento,2026-10-04 07:39,Conferido com o presidente da mesa.
+T07,07,,,concluido,Paulo Henrique e Felipe Araujo,2026-10-04 07:40,"Realizado, presidente ciente."
+T08,07,,,concluido,Camila Rocha e Bruno Costa,2026-10-04 08:03,"Sem pendências, seguindo cronograma."
+T09,07,,,concluido,Diego Ferreira e Felipe Araujo,2026-10-04 08:09,Confirmado com o mesário responsável.
+T10,07,,,concluido,Rafael Souza e Tatiane Melo,2026-10-04 08:00,Rotina normal.
+T11,07,,,concluido,Leandro Batista e Beatriz Cardoso,2026-10-04 08:29,Confirmado com o mesário responsável.
+T12,07,,,concluido,Mariana Lima e João Pedro,2026-10-04 08:26,"Sem pendências, seguindo cronograma."
+T13,07,,,concluido,Patricia Gomes e Beatriz Cardoso,2026-10-04 10:08,"Tudo certo, sem intercorrências."
+T14,07,,,concluido,Debora Farias e Simone Cavalcanti,2026-10-04 15:07,
+T15,07,,,concluido,Lucas Martins e Ana Beatriz,2026-10-04 15:09,Rotina normal.
+T16,07,,,concluido,Bruno Costa e Eduardo Castro,2026-10-04 16:28,"Feito no horário, sem problemas."
+T17,07,,,concluido,Ana Beatriz e Larissa Pinto,2026-10-04 16:35,"Kit conferido, tudo dentro do previsto."
+T18,07,,,concluido,Aline Correia e Beatriz Cardoso,2026-10-04 16:51,"Kit conferido, tudo dentro do previsto."
+T19,07,,,concluido,Juliana Ramos e Eduardo Castro,2026-10-04 16:57,"Feito no horário, sem problemas."
+T20,07,,,concluido,Tatiane Melo e Aline Correia,2026-10-04 17:13,"Sem pendências, seguindo cronograma."
+T21,07,,,concluido,Fernanda Alves e Carlos Eduardo,2026-10-04 17:24,Rotina normal.
+T01,08,,,concluido,Lucas Martins e Thiago Barros,2026-10-04 06:54,
+T02,08,,,concluido,Tatiane Melo e Felipe Araujo,2026-10-04 07:08,Confirmado com o mesário responsável.
+T03,08,,,concluido,Ana Beatriz e Simone Cavalcanti,2026-10-04 07:07,"Sem pendências, seguindo cronograma."
+T04,08,,,concluido,Ana Beatriz e Thiago Barros,2026-10-04 06:59,
+T05,08,,,concluido,Felipe Araujo e Rodrigo Nunes,2026-10-04 07:36,"Sem pendências, seguindo cronograma."
+T06,08,,,concluido,Patricia Gomes e Bruno Costa,2026-10-04 07:29,Confirmado com o mesário responsável.
+T07,08,,,concluido,Leandro Batista e Diego Ferreira,2026-10-04 07:46,
+T08,08,,,concluido,Bruno Costa e Patricia Gomes,2026-10-04 08:01,
+T09,08,,,concluido,Thiago Barros e Juliana Ramos,2026-10-04 08:03,"Kit conferido, tudo dentro do previsto."
+T10,08,,,concluido,Lucas Martins e Beatriz Cardoso,2026-10-04 08:03,"Realizado, presidente ciente."
+T11,08,,,concluido,Mariana Lima e Priscila Nascimento,2026-10-04 08:25,"Realizado, presidente ciente."
+T12,08,,,concluido,Ana Beatriz e Carlos Eduardo,2026-10-04 08:39,"Sem pendências, seguindo cronograma."
+T13,08,,,concluido,Eduardo Castro e Thiago Barros,2026-10-04 10:04,
+T14,08,,,concluido,Fernanda Alves e Ana Beatriz,2026-10-04 15:08,"Sem pendências, seguindo cronograma."
+T15,08,,,concluido,Fernanda Alves e Bruno Costa,2026-10-04 15:08,Rotina normal.
+T16,08,,,concluido,Larissa Pinto e Eduardo Castro,2026-10-04 16:33,"Tudo certo, sem intercorrências."
+T17,08,,,concluido,Lucas Martins e Simone Cavalcanti,2026-10-04 16:32,Rotina normal.
+T18,08,,,concluido,João Pedro e Lucas Martins,2026-10-04 17:04,Conferido com o presidente da mesa.
+T19,08,,,concluido,Lucas Martins e Ana Beatriz,2026-10-04 16:56,"Realizado, presidente ciente."
+T20,08,,,concluido,Rodrigo Nunes e Fernanda Alves,2026-10-04 17:20,Rotina normal.
+T21,08,,,concluido,Rodrigo Nunes e Larissa Pinto,2026-10-04 17:24,
+T01,09,,,concluido,Felipe Araujo e Larissa Pinto,2026-10-04 06:47,"Feito no horário, sem problemas."
+T02,09,,,concluido,Debora Farias e Thiago Barros,2026-10-04 07:02,
+T03,09,,,concluido,Renata Duarte e Felipe Araujo,2026-10-04 07:03,"Realizado, presidente ciente."
+T04,09,,,concluido,Simone Cavalcanti e Ana Beatriz,2026-10-04 07:09,"Sem pendências, seguindo cronograma."
+T05,09,,,concluido,Simone Cavalcanti e Fernanda Alves,2026-10-04 07:28,Conferido com o presidente da mesa.
+T06,09,,,concluido,Andre Vieira e Simone Cavalcanti,2026-10-04 07:34,"Realizado, presidente ciente."
+T07,09,,,concluido,Fernanda Alves e Larissa Pinto,2026-10-04 07:54,
+T08,09,,,concluido,Larissa Pinto e Thiago Barros,2026-10-04 08:08,"Sem pendências, seguindo cronograma."
+T09,09,,,concluido,Carlos Eduardo e Tatiane Melo,2026-10-04 07:56,
+T10,09,,,concluido,Carlos Eduardo e Vanessa Teixeira,2026-10-04 08:03,"Sem pendências, seguindo cronograma."
+T11,09,,,concluido,Marcelo Dias e João Pedro,2026-10-04 08:25,Conferido com o presidente da mesa.
+T12,09,,,concluido,Thiago Barros e Paulo Henrique,2026-10-04 08:35,
+T13,09,,,concluido,Juliana Ramos e Rodrigo Nunes,2026-10-04 10:03,"Realizado, presidente ciente."
+T14,09,,,concluido,Eduardo Castro e Gustavo Moreira,2026-10-04 15:01,"Feito no horário, sem problemas."
+T15,09,,,concluido,Vanessa Teixeira e Carlos Eduardo,2026-10-04 15:00,Conferido com o presidente da mesa.
+T16,09,,,concluido,Rodrigo Nunes e Simone Cavalcanti,2026-10-04 16:29,Conferido com o presidente da mesa.
+T17,09,,,concluido,Fernanda Alves e Ana Beatriz,2026-10-04 16:37,Conferido com o presidente da mesa.
+T18,09,,,concluido,Aline Correia e Simone Cavalcanti,2026-10-04 16:57,Rotina normal.
+T19,09,,,concluido,Priscila Nascimento e Carlos Eduardo,2026-10-04 17:05,"Sem pendências, seguindo cronograma."
+T20,09,,,concluido,Marcelo Dias e Tatiane Melo,2026-10-04 17:17,Conferido com o presidente da mesa.
+T21,09,,,concluido,Mariana Lima e Eduardo Castro,2026-10-04 17:16,Rotina normal.
+T01,10,,,concluido,Larissa Pinto e Tatiane Melo,2026-10-04 06:42,"Tudo certo, sem intercorrências."
+T02,10,,,concluido,Lucas Martins e Tatiane Melo,2026-10-04 06:58,
+T03,10,,,concluido,Aline Correia e Thiago Barros,2026-10-04 07:07,
+T04,10,,,concluido,Marcelo Dias e Larissa Pinto,2026-10-04 07:03,"Realizado, presidente ciente."
+T05,10,,,concluido,Marcelo Dias e Gustavo Moreira,2026-10-04 07:39,"Kit conferido, tudo dentro do previsto."
+T06,10,,,concluido,Thiago Barros e Gustavo Moreira,2026-10-04 07:32,"Realizado, presidente ciente."
+T07,10,,,concluido,Priscila Nascimento e Vanessa Teixeira,2026-10-04 07:52,"Kit conferido, tudo dentro do previsto."
+T08,10,,,concluido,Simone Cavalcanti e Aline Correia,2026-10-04 08:08,"Kit conferido, tudo dentro do previsto."
+T09,10,,,concluido,Juliana Ramos e Diego Ferreira,2026-10-04 08:05,"Realizado, presidente ciente."
+T10,10,,,concluido,Fernanda Alves e Rodrigo Nunes,2026-10-04 08:08,
+T11,10,,,concluido,Aline Correia e Juliana Ramos,2026-10-04 08:32,"Realizado, presidente ciente."
+T12,10,,,concluido,Juliana Ramos e Rodrigo Nunes,2026-10-04 08:30,"Feito no horário, sem problemas."
+T13,10,,,concluido,Paulo Henrique e Larissa Pinto,2026-10-04 10:04,"Kit conferido, tudo dentro do previsto."
+T14,10,,,concluido,Felipe Araujo e Mariana Lima,2026-10-04 14:58,"Kit conferido, tudo dentro do previsto."
+T15,10,,,concluido,Simone Cavalcanti e Rafael Souza,2026-10-04 14:56,"Kit conferido, tudo dentro do previsto."
+T16,10,,,concluido,Bruno Costa e Beatriz Cardoso,2026-10-04 16:31,"Realizado, presidente ciente."
+T17,10,,,concluido,Patricia Gomes e Debora Farias,2026-10-04 16:32,"Kit conferido, tudo dentro do previsto."
+T18,10,,,concluido,Patricia Gomes e Larissa Pinto,2026-10-04 16:58,
+T19,10,,,concluido,Camila Rocha e Aline Correia,2026-10-04 17:05,Rotina normal.
+T20,10,,,concluido,Carlos Eduardo e Patricia Gomes,2026-10-04 17:19,Rotina normal.
+T21,10,,,concluido,Lucas Martins e Eduardo Castro,2026-10-04 17:16,
+T01,11,,,concluido,Ana Beatriz e Tatiane Melo,2026-10-04 06:53,"Sem pendências, seguindo cronograma."
+T02,11,,,concluido,Tatiane Melo e Fernanda Alves,2026-10-04 07:05,
+T03,11,,,concluido,Marcelo Dias e Juliana Ramos,2026-10-04 07:09,Rotina normal.
+T04,11,,,concluido,Marcelo Dias e Rafael Souza,2026-10-04 06:57,Confirmado com o mesário responsável.
+T05,11,,,concluido,Camila Rocha e Ana Beatriz,2026-10-04 07:27,
+T06,11,,,concluido,Patricia Gomes e Andre Vieira,2026-10-04 07:37,Confirmado com o mesário responsável.
+T07,11,,,concluido,Felipe Araujo e Beatriz Cardoso,2026-10-04 07:44,Conferido com o presidente da mesa.
+T08,11,,,concluido,Paulo Henrique e Carlos Eduardo,2026-10-04 08:03,"Feito no horário, sem problemas."
+T09,11,,,concluido,João Pedro e Larissa Pinto,2026-10-04 08:07,"Realizado, presidente ciente."
+T10,11,,,concluido,Lucas Martins e Rafael Souza,2026-10-04 07:58,Rotina normal.
+T11,11,,,concluido,Renata Duarte e Debora Farias,2026-10-04 08:25,"Tudo certo, sem intercorrências."
+T12,11,,,concluido,Mariana Lima e Felipe Araujo,2026-10-04 08:25,"Kit conferido, tudo dentro do previsto."
+T13,11,,,concluido,Eduardo Castro e Diego Ferreira,2026-10-04 09:59,"Kit conferido, tudo dentro do previsto."
+T14,11,,,concluido,Mariana Lima e Debora Farias,2026-10-04 15:09,Rotina normal.
+T15,11,,,concluido,Tatiane Melo e Thiago Barros,2026-10-04 15:04,"Kit conferido, tudo dentro do previsto."
+T16,11,,,concluido,Leandro Batista e Felipe Araujo,2026-10-04 16:38,
+T17,11,,,concluido,Mariana Lima e Aline Correia,2026-10-04 16:34,Confirmado com o mesário responsável.
+T18,11,,,concluido,Rafael Souza e Ana Beatriz,2026-10-04 16:56,Confirmado com o mesário responsável.
+T19,11,,,concluido,Felipe Araujo e Paulo Henrique,2026-10-04 17:01,
+T20,11,,,concluido,Rodrigo Nunes e Bruno Costa,2026-10-04 17:24,Conferido com o presidente da mesa.
+T21,11,,,concluido,Beatriz Cardoso e Eduardo Castro,2026-10-04 17:18,"Feito no horário, sem problemas."
+T01,12,,,concluido,Debora Farias e Ana Beatriz,2026-10-04 06:40,
+T02,12,,,concluido,Debora Farias e Beatriz Cardoso,2026-10-04 07:07,Conferido com o presidente da mesa.
+T03,12,,,concluido,Eduardo Castro e Diego Ferreira,2026-10-04 07:00,"Sem pendências, seguindo cronograma."
+T04,12,,,concluido,Camila Rocha e Debora Farias,2026-10-04 07:02,
+T05,12,,,concluido,Ana Beatriz e Rodrigo Nunes,2026-10-04 07:25,"Tudo certo, sem intercorrências."
+T06,12,,,concluido,Patricia Gomes e Thiago Barros,2026-10-04 07:33,"Feito no horário, sem problemas."
+T07,12,,,concluido,Paulo Henrique e Mariana Lima,2026-10-04 07:43,Confirmado com o mesário responsável.
+T08,12,,,concluido,Ana Beatriz e Paulo Henrique,2026-10-04 08:07,"Realizado, presidente ciente."
+T09,12,,,concluido,Paulo Henrique e Carlos Eduardo,2026-10-04 08:06,Confirmado com o mesário responsável.
+T10,12,,,concluido,Gustavo Moreira e Priscila Nascimento,2026-10-04 08:03,"Realizado, presidente ciente."
+T11,12,,,concluido,Patricia Gomes e Eduardo Castro,2026-10-04 08:39,"Kit conferido, tudo dentro do previsto."
+T12,12,,,concluido,Fernanda Alves e Andre Vieira,2026-10-04 08:26,"Sem pendências, seguindo cronograma."
+T13,12,,,concluido,Felipe Araujo e Eduardo Castro,2026-10-04 10:06,Confirmado com o mesário responsável.
+T14,12,,,concluido,Gustavo Moreira e Marcelo Dias,2026-10-04 15:03,"Tudo certo, sem intercorrências."
+T15,12,,,concluido,Fernanda Alves e Tatiane Melo,2026-10-04 15:03,"Feito no horário, sem problemas."
+T16,12,,,concluido,João Pedro e Tatiane Melo,2026-10-04 16:28,Confirmado com o mesário responsável.
+T17,12,,,concluido,Bruno Costa e Paulo Henrique,2026-10-04 16:35,"Sem pendências, seguindo cronograma."
+T18,12,,,concluido,Fernanda Alves e Felipe Araujo,2026-10-04 17:03,"Feito no horário, sem problemas."
+T19,12,,,concluido,Aline Correia e Rodrigo Nunes,2026-10-04 17:08,Rotina normal.
+T20,12,,,concluido,João Pedro e Debora Farias,2026-10-04 17:16,"Feito no horário, sem problemas."
+T21,12,,,concluido,Rafael Souza e Thiago Barros,2026-10-04 17:13,Confirmado com o mesário responsável.
+T01,13,,,concluido,Marcelo Dias e Debora Farias,2026-10-04 06:42,"Sem pendências, seguindo cronograma."
+T02,13,,,concluido,Camila Rocha e Eduardo Castro,2026-10-04 07:01,
+T03,13,,,concluido,Andre Vieira e Thiago Barros,2026-10-04 07:02,Rotina normal.
+T04,13,,,concluido,Debora Farias e Beatriz Cardoso,2026-10-04 07:08,
+T05,13,,,concluido,Vanessa Teixeira e Simone Cavalcanti,2026-10-04 07:33,"Tudo certo, sem intercorrências."
+T06,13,,,concluido,Priscila Nascimento e Mariana Lima,2026-10-04 07:27,"Tudo certo, sem intercorrências."
+T07,13,,,concluido,Debora Farias e Larissa Pinto,2026-10-04 07:41,"Tudo certo, sem intercorrências."
+T08,13,,,concluido,Juliana Ramos e Felipe Araujo,2026-10-04 08:01,"Kit conferido, tudo dentro do previsto."
+T09,13,,,concluido,Gustavo Moreira e Vanessa Teixeira,2026-10-04 07:56,Rotina normal.
+T10,13,,,concluido,Eduardo Castro e Mariana Lima,2026-10-04 07:58,Rotina normal.
+T11,13,,,concluido,Rafael Souza e João Pedro,2026-10-04 08:39,"Kit conferido, tudo dentro do previsto."
+T12,13,,,concluido,Aline Correia e Beatriz Cardoso,2026-10-04 08:34,
+T13,13,,,concluido,Felipe Araujo e Eduardo Castro,2026-10-04 09:57,Conferido com o presidente da mesa.
+T14,13,,,concluido,Debora Farias e Gustavo Moreira,2026-10-04 15:02,
+T15,13,,,concluido,Tatiane Melo e Mariana Lima,2026-10-04 14:59,"Realizado, presidente ciente."
+T16,13,,,concluido,Diego Ferreira e Renata Duarte,2026-10-04 16:32,"Kit conferido, tudo dentro do previsto."
+T17,13,,,concluido,Marcelo Dias e João Pedro,2026-10-04 16:36,Confirmado com o mesário responsável.
+T18,13,,,concluido,Tatiane Melo e Renata Duarte,2026-10-04 16:52,"Sem pendências, seguindo cronograma."
+T19,13,,,concluido,Aline Correia e Diego Ferreira,2026-10-04 17:00,Confirmado com o mesário responsável.
+T20,13,,,concluido,Carlos Eduardo e Vanessa Teixeira,2026-10-04 17:22,"Kit conferido, tudo dentro do previsto."
+T21,13,,,concluido,Fernanda Alves e João Pedro,2026-10-04 17:10,Confirmado com o mesário responsável.
+T01,14,,,concluido,Priscila Nascimento e Juliana Ramos,2026-10-04 06:41,Rotina normal.
+T02,14,,,concluido,Fernanda Alves e Rodrigo Nunes,2026-10-04 06:56,"Kit conferido, tudo dentro do previsto."
+T03,14,,,concluido,Marcelo Dias e Vanessa Teixeira,2026-10-04 07:02,Conferido com o presidente da mesa.
+T04,14,,,concluido,Thiago Barros e Beatriz Cardoso,2026-10-04 07:00,"Kit conferido, tudo dentro do previsto."
+T05,14,,,concluido,Juliana Ramos e Renata Duarte,2026-10-04 07:39,"Realizado, presidente ciente."
+T06,14,,,concluido,Rafael Souza e Felipe Araujo,2026-10-04 07:32,Conferido com o presidente da mesa.
+T07,14,,,concluido,Diego Ferreira e Vanessa Teixeira,2026-10-04 07:50,"Tudo certo, sem intercorrências."
+T08,14,,,concluido,Priscila Nascimento e Felipe Araujo,2026-10-04 07:59,Rotina normal.
+T09,14,,,concluido,Lucas Martins e Ana Beatriz,2026-10-04 08:02,Conferido com o presidente da mesa.
+T10,14,,,concluido,Lucas Martins e Felipe Araujo,2026-10-04 07:55,
+T11,14,,,concluido,Paulo Henrique e Leandro Batista,2026-10-04 08:27,"Tudo certo, sem intercorrências."
+T12,14,,,concluido,Beatriz Cardoso e Simone Cavalcanti,2026-10-04 08:37,"Realizado, presidente ciente."
+T13,14,,,concluido,Fernanda Alves e Eduardo Castro,2026-10-04 10:00,"Feito no horário, sem problemas."
+T14,14,,,concluido,Fernanda Alves e Marcelo Dias,2026-10-04 15:08,"Feito no horário, sem problemas."
+T15,14,,,concluido,Mariana Lima e Camila Rocha,2026-10-04 14:58,"Tudo certo, sem intercorrências."
+T16,14,,,concluido,Vanessa Teixeira e Rodrigo Nunes,2026-10-04 16:32,"Kit conferido, tudo dentro do previsto."
+T17,14,,,concluido,Aline Correia e Beatriz Cardoso,2026-10-04 16:25,"Sem pendências, seguindo cronograma."
+T18,14,,,concluido,Rodrigo Nunes e Fernanda Alves,2026-10-04 16:51,Rotina normal.
+T19,14,,,concluido,Priscila Nascimento e Carlos Eduardo,2026-10-04 17:01,"Realizado, presidente ciente."
+T20,14,,,concluido,Patricia Gomes e Lucas Martins,2026-10-04 17:14,Conferido com o presidente da mesa.
+T21,14,,,concluido,Camila Rocha e Renata Duarte,2026-10-04 17:10,"Sem pendências, seguindo cronograma."
+T01,15,,,concluido,Simone Cavalcanti e Lucas Martins,2026-10-04 06:40,
+T02,15,,,concluido,Eduardo Castro e Diego Ferreira,2026-10-04 07:05,"Realizado, presidente ciente."
+T03,15,,,concluido,Ana Beatriz e Andre Vieira,2026-10-04 07:08,Rotina normal.
+T04,15,,,concluido,Vanessa Teixeira e Rafael Souza,2026-10-04 06:56,"Realizado, presidente ciente."
+T05,15,,,concluido,Fernanda Alves e Gustavo Moreira,2026-10-04 07:29,"Tudo certo, sem intercorrências."
+T06,15,,,concluido,João Pedro e Andre Vieira,2026-10-04 07:38,"Realizado, presidente ciente."
+T07,15,,,concluido,Debora Farias e Camila Rocha,2026-10-04 07:52,"Kit conferido, tudo dentro do previsto."
+T08,15,,,concluido,Felipe Araujo e Fernanda Alves,2026-10-04 07:56,
+T09,15,,,concluido,Bruno Costa e Eduardo Castro,2026-10-04 07:59,Conferido com o presidente da mesa.
+T10,15,,,concluido,Lucas Martins e Mariana Lima,2026-10-04 07:56,Conferido com o presidente da mesa.
+T11,15,,,concluido,Bruno Costa e Paulo Henrique,2026-10-04 08:29,
+T12,15,,,concluido,Paulo Henrique e Gustavo Moreira,2026-10-04 08:35,
+T13,15,,,concluido,Thiago Barros e Juliana Ramos,2026-10-04 09:55,"Kit conferido, tudo dentro do previsto."
+T14,15,,,concluido,Patricia Gomes e Bruno Costa,2026-10-04 15:04,Rotina normal.
+T15,15,,,concluido,Lucas Martins e Ana Beatriz,2026-10-04 14:55,"Sem pendências, seguindo cronograma."
+T16,15,,,concluido,Carlos Eduardo e Mariana Lima,2026-10-04 16:34,Confirmado com o mesário responsável.
+T17,15,,,concluido,Diego Ferreira e Marcelo Dias,2026-10-04 16:26,Rotina normal.
+T18,15,,,concluido,Lucas Martins e João Pedro,2026-10-04 16:51,"Realizado, presidente ciente."
+T19,15,,,concluido,Beatriz Cardoso e Rodrigo Nunes,2026-10-04 17:00,"Sem pendências, seguindo cronograma."
+T20,15,,,concluido,Vanessa Teixeira e Bruno Costa,2026-10-04 17:12,Conferido com o presidente da mesa.
+T21,15,,,concluido,João Pedro e Andre Vieira,2026-10-04 17:21,"Sem pendências, seguindo cronograma."
+T01,16,,,concluido,Carlos Eduardo e Simone Cavalcanti,2026-10-04 06:48,Conferido com o presidente da mesa.
+T02,16,,,concluido,João Pedro e Aline Correia,2026-10-04 07:08,Conferido com o presidente da mesa.
+T03,16,,,concluido,Debora Farias e Paulo Henrique,2026-10-04 06:55,Conferido com o presidente da mesa.
+T04,16,,,concluido,Thiago Barros e Camila Rocha,2026-10-04 06:57,"Realizado, presidente ciente."
+T05,16,,,concluido,Felipe Araujo e João Pedro,2026-10-04 07:25,"Feito no horário, sem problemas."
+T06,16,,,concluido,Mariana Lima e Eduardo Castro,2026-10-04 07:31,
+T07,16,,,concluido,Gustavo Moreira e Andre Vieira,2026-10-04 07:53,"Sem pendências, seguindo cronograma."
+T08,16,,,concluido,Debora Farias e Aline Correia,2026-10-04 07:57,
+T09,16,,,concluido,Rodrigo Nunes e Lucas Martins,2026-10-04 08:07,"Sem pendências, seguindo cronograma."
+T10,16,,,concluido,Felipe Araujo e Debora Farias,2026-10-04 08:05,"Kit conferido, tudo dentro do previsto."
+T11,16,,,concluido,Andre Vieira e Vanessa Teixeira,2026-10-04 08:34,Rotina normal.
+T12,16,,,concluido,Priscila Nascimento e Leandro Batista,2026-10-04 08:32,"Feito no horário, sem problemas."
+T13,16,,,concluido,Juliana Ramos e Ana Beatriz,2026-10-04 09:59,"Kit conferido, tudo dentro do previsto."
+T14,16,,,concluido,Aline Correia e Juliana Ramos,2026-10-04 14:58,"Tudo certo, sem intercorrências."
+T15,16,,,concluido,Simone Cavalcanti e Larissa Pinto,2026-10-04 15:09,
+T16,16,,,concluido,Camila Rocha e Patricia Gomes,2026-10-04 16:32,"Sem pendências, seguindo cronograma."
+T17,16,,,concluido,Bruno Costa e Lucas Martins,2026-10-04 16:35,
+T18,16,,,concluido,Andre Vieira e Diego Ferreira,2026-10-04 16:50,Conferido com o presidente da mesa.
+T19,16,,,concluido,Patricia Gomes e Gustavo Moreira,2026-10-04 17:04,Rotina normal.
+T20,16,,,concluido,Larissa Pinto e João Pedro,2026-10-04 17:16,"Tudo certo, sem intercorrências."
+T21,16,,,concluido,Ana Beatriz e Debora Farias,2026-10-04 17:18,"Feito no horário, sem problemas."
+RONDA,01,,,concluido,Camila Rocha e Rodrigo Nunes,2026-10-04 08:31,Fila tranquila.
+RONDA,01,,,concluido,Felipe Araujo e Gustavo Moreira,2026-10-04 10:05,Sem novidades.
+RONDA,01,,,concluido,João Pedro e Diego Ferreira,2026-10-04 11:27,
+RONDA,01,,,concluido,Patricia Gomes e Paulo Henrique,2026-10-04 13:00,Tudo calmo por aqui.
+RONDA,01,,,concluido,Camila Rocha e Leandro Batista,2026-10-04 14:31,
+RONDA,01,,,concluido,Gustavo Moreira e Simone Cavalcanti,2026-10-04 16:06,
+RONDA,02,,,concluido,Camila Rocha e Larissa Pinto,2026-10-04 08:31,
+RONDA,02,,,concluido,Juliana Ramos e Ana Beatriz,2026-10-04 09:59,Tudo calmo por aqui.
+RONDA,02,,,concluido,Gustavo Moreira e Bruno Costa,2026-10-04 11:36,Tudo calmo por aqui.
+RONDA,02,,,concluido,Renata Duarte e Aline Correia,2026-10-04 13:05,Sem novidades.
+RONDA,02,,,concluido,Felipe Araujo e Leandro Batista,2026-10-04 14:35,
+RONDA,02,,,concluido,Mariana Lima e Leandro Batista,2026-10-04 15:56,Fila tranquila.
+RONDA,03,,,concluido,Renata Duarte e Paulo Henrique,2026-10-04 08:35,Tudo calmo por aqui.
+RONDA,03,,,concluido,Juliana Ramos e Camila Rocha,2026-10-04 09:59,Tudo calmo por aqui.
+RONDA,03,,,concluido,Carlos Eduardo e Larissa Pinto,2026-10-04 11:28,
+RONDA,03,,,concluido,Ana Beatriz e Juliana Ramos,2026-10-04 12:57,
+RONDA,03,,,concluido,Beatriz Cardoso e Eduardo Castro,2026-10-04 14:33,
+RONDA,03,,,concluido,Mariana Lima e Carlos Eduardo,2026-10-04 15:56,
+RONDA,04,,,concluido,João Pedro e Gustavo Moreira,2026-10-04 08:27,
+RONDA,04,,,concluido,Ana Beatriz e Mariana Lima,2026-10-04 09:57,Fila tranquila.
+RONDA,04,,,concluido,Lucas Martins e Leandro Batista,2026-10-04 11:30,
+RONDA,04,,,concluido,Tatiane Melo e Fernanda Alves,2026-10-04 12:58,Sem novidades.
+RONDA,04,,,concluido,Gustavo Moreira e Leandro Batista,2026-10-04 14:36,
+RONDA,04,,,concluido,Thiago Barros e Debora Farias,2026-10-04 16:04,
+RONDA,05,,,concluido,Eduardo Castro e Tatiane Melo,2026-10-04 08:30,
+RONDA,05,,,concluido,Vanessa Teixeira e Tatiane Melo,2026-10-04 10:04,
+RONDA,05,,,concluido,Eduardo Castro e Juliana Ramos,2026-10-04 11:29,
+RONDA,05,,,concluido,Diego Ferreira e Simone Cavalcanti,2026-10-04 13:02,
+RONDA,05,,,concluido,Simone Cavalcanti e Eduardo Castro,2026-10-04 14:29,Sem novidades.
+RONDA,05,,,concluido,Larissa Pinto e Fernanda Alves,2026-10-04 16:02,
+RONDA,06,,,concluido,Fernanda Alves e Priscila Nascimento,2026-10-04 08:28,
+RONDA,06,,,concluido,Vanessa Teixeira e Andre Vieira,2026-10-04 10:04,Sem novidades.
+RONDA,06,,,concluido,Ana Beatriz e Priscila Nascimento,2026-10-04 11:27,
+RONDA,06,,,concluido,Aline Correia e Ana Beatriz,2026-10-04 13:06,
+RONDA,06,,,concluido,Rafael Souza e Mariana Lima,2026-10-04 14:26,
+RONDA,06,,,concluido,Paulo Henrique e Fernanda Alves,2026-10-04 15:58,
+RONDA,07,,,concluido,Andre Vieira e Felipe Araujo,2026-10-04 08:35,
+RONDA,07,,,concluido,Gustavo Moreira e Andre Vieira,2026-10-04 10:06,
+RONDA,07,,,concluido,João Pedro e Marcelo Dias,2026-10-04 11:27,
+RONDA,07,,,concluido,Rafael Souza e Tatiane Melo,2026-10-04 12:56,
+RONDA,07,,,concluido,Ana Beatriz e Marcelo Dias,2026-10-04 14:27,Sem novidades.
+RONDA,07,,,concluido,Priscila Nascimento e Renata Duarte,2026-10-04 16:05,
+RONDA,08,,,concluido,Tatiane Melo e Diego Ferreira,2026-10-04 08:32,
+RONDA,08,,,concluido,Rodrigo Nunes e Renata Duarte,2026-10-04 10:01,Sem novidades.
+RONDA,08,,,concluido,Renata Duarte e Patricia Gomes,2026-10-04 11:35,
+RONDA,08,,,concluido,Eduardo Castro e Larissa Pinto,2026-10-04 13:02,Tudo calmo por aqui.
+RONDA,08,,,concluido,Lucas Martins e Priscila Nascimento,2026-10-04 14:30,Sem novidades.
+RONDA,08,,,concluido,Priscila Nascimento e Mariana Lima,2026-10-04 15:56,
+RONDA,09,,,concluido,Rodrigo Nunes e Eduardo Castro,2026-10-04 08:31,"Leitor biométrico um pouco lento, mesários resolvendo."
+RONDA,09,,,concluido,Eduardo Castro e Simone Cavalcanti,2026-10-04 10:01,"Biometria travou 2x, reiniciada pelo presidente."
+RONDA,09,,,concluido,Renata Duarte e Thiago Barros,2026-10-04 11:35,"Leitor ainda lento, fila começando a aumentar."
+RONDA,09,,,concluido,Simone Cavalcanti e Leandro Batista,2026-10-04 13:02,"Fila aumentando, leitor biométrico continua lento. Pedimos apoio informalmente."
+RONDA,09,,,concluido,Ana Beatriz e Leandro Batista,2026-10-04 14:27,"Fila grande se formando, leitor trocado de mesa mas segue lento. Precisa de reforço."
+RONDA,09,,,concluido,Diego Ferreira e Ana Beatriz,2026-10-04 16:02,Fila crítica — leitor biométrico muito lento desde a manhã. Risco real de não atender todos até o fechamento.
+RONDA,10,,,concluido,João Pedro e Mariana Lima,2026-10-04 08:27,
+RONDA,10,,,concluido,Lucas Martins e Ana Beatriz,2026-10-04 10:00,Fila tranquila.
+RONDA,10,,,concluido,Simone Cavalcanti e Renata Duarte,2026-10-04 11:35,
+RONDA,10,,,concluido,Fernanda Alves e Juliana Ramos,2026-10-04 12:58,
+RONDA,10,,,concluido,Rafael Souza e Andre Vieira,2026-10-04 14:26,
+RONDA,10,,,concluido,João Pedro e Eduardo Castro,2026-10-04 15:57,
+RONDA,11,,,concluido,Felipe Araujo e Mariana Lima,2026-10-04 08:35,
+RONDA,11,,,concluido,Patricia Gomes e Priscila Nascimento,2026-10-04 10:00,
+RONDA,11,,,concluido,Gustavo Moreira e Eduardo Castro,2026-10-04 11:36,
+RONDA,11,,,concluido,Renata Duarte e Patricia Gomes,2026-10-04 13:05,
+RONDA,11,,,concluido,João Pedro e Priscila Nascimento,2026-10-04 14:27,
+RONDA,11,,,concluido,Ana Beatriz e Simone Cavalcanti,2026-10-04 15:57,
+RONDA,12,,,concluido,Bruno Costa e Rafael Souza,2026-10-04 08:29,
+RONDA,12,,,concluido,Priscila Nascimento e Vanessa Teixeira,2026-10-04 10:04,Tudo calmo por aqui.
+RONDA,12,,,concluido,Carlos Eduardo e Rodrigo Nunes,2026-10-04 11:28,
+RONDA,12,,,concluido,Juliana Ramos e Vanessa Teixeira,2026-10-04 12:59,
+RONDA,12,,,concluido,Aline Correia e Mariana Lima,2026-10-04 14:36,
+RONDA,12,,,concluido,Bruno Costa e Juliana Ramos,2026-10-04 15:59,
+RONDA,13,,,concluido,Gustavo Moreira e Simone Cavalcanti,2026-10-04 08:36,Sem novidades.
+RONDA,13,,,concluido,Rodrigo Nunes e Rafael Souza,2026-10-04 10:01,Fila tranquila.
+RONDA,13,,,concluido,Paulo Henrique e Juliana Ramos,2026-10-04 11:29,
+RONDA,13,,,concluido,Tatiane Melo e Juliana Ramos,2026-10-04 12:59,Sem novidades.
+RONDA,13,,,concluido,Carlos Eduardo e Rafael Souza,2026-10-04 14:28,
+RONDA,13,,,concluido,Renata Duarte e Rodrigo Nunes,2026-10-04 16:05,Sem novidades.
+RONDA,14,,,concluido,Bruno Costa e Mariana Lima,2026-10-04 08:29,Fila tranquila.
+RONDA,14,,,concluido,Marcelo Dias e Juliana Ramos,2026-10-04 10:03,
+RONDA,14,,,concluido,João Pedro e Fernanda Alves,2026-10-04 11:27,
+RONDA,14,,,concluido,Eduardo Castro e Felipe Araujo,2026-10-04 13:05,Fila tranquila.
+RONDA,14,,,concluido,Patricia Gomes e Eduardo Castro,2026-10-04 14:30,
+RONDA,14,,,concluido,Aline Correia e Beatriz Cardoso,2026-10-04 16:06,
+RONDA,15,,,concluido,Rodrigo Nunes e Camila Rocha,2026-10-04 08:31,
+RONDA,15,,,concluido,Paulo Henrique e Renata Duarte,2026-10-04 10:05,
+RONDA,15,,,concluido,Beatriz Cardoso e Carlos Eduardo,2026-10-04 11:33,
+RONDA,15,,,concluido,Tatiane Melo e Eduardo Castro,2026-10-04 13:05,
+RONDA,15,,,concluido,Juliana Ramos e Tatiane Melo,2026-10-04 14:29,
+RONDA,15,,,concluido,Mariana Lima e Marcelo Dias,2026-10-04 15:56,
+RONDA,16,,,concluido,Carlos Eduardo e Patricia Gomes,2026-10-04 08:28,
+RONDA,16,,,concluido,Camila Rocha e Rodrigo Nunes,2026-10-04 10:01,
+RONDA,16,,,concluido,Mariana Lima e Rafael Souza,2026-10-04 11:26,Tudo calmo por aqui.
+RONDA,16,,,concluido,Felipe Araujo e Larissa Pinto,2026-10-04 13:05,
+RONDA,16,,,concluido,Mariana Lima e Aline Correia,2026-10-04 14:26,Fila tranquila.
+RONDA,16,,,concluido,Thiago Barros e Fernanda Alves,2026-10-04 16:04,

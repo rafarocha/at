@@ -6,6 +6,7 @@ import gspread, datetime
 PLANILHA = gspread.service_account(filename="creds.json").open("checkpoints-150ze")
 SHEET_CHECKPOINTS = PLANILHA.worksheet("checkpoints")
 SHEET_OCORRENCIAS = PLANILHA.worksheet("ocorrencias")
+SHEET_RONDAS = PLANILHA.worksheet("rondas")
 
 # Tipos de ocorrência disponíveis no fluxo rápido de reporte (1 toque + nome + texto curto).
 TIPOS_OCORRENCIA = [
@@ -74,6 +75,23 @@ async def ocorrencia_tipo_escolhido(update: Update, ctx):
     await query.answer()
     await query.edit_message_text("Quem está reportando? (seu nome)")
 
+async def gravar_checkpoint_e_responder(update: Update, ctx):
+    codigo = ctx.user_data.get("codigo")
+    agora = datetime.datetime.now()
+    SHEET_CHECKPOINTS.append_row([
+        codigo, ctx.user_data.get("secao", ""), "", "", "concluido",
+        ctx.user_data.get("nomes", ""), agora.strftime("%Y-%m-%d %H:%M"), ctx.user_data.get("observacao", ""),
+    ])
+    # RONDA também alimenta a aba "rondas" com os números (fila/votados) usados no mapa e nos gráficos
+    if codigo == "RONDA":
+        SHEET_RONDAS.append_row([
+            ctx.user_data.get("secao", ""), agora.strftime("%H:%M"),
+            ctx.user_data.get("fila", ""), ctx.user_data.get("votados", ""), "",
+            ctx.user_data.get("observacao", ""), ctx.user_data.get("nomes", ""),
+        ])
+    await update.message.reply_text(f"✅ {codigo} confirmado às {agora:%H:%M}. Obrigado!")
+    ctx.user_data.clear()
+
 async def texto_recebido(update: Update, ctx):
     etapa = ctx.user_data.get("etapa")
     if not etapa:
@@ -92,13 +110,30 @@ async def texto_recebido(update: Update, ctx):
         if contar_palavras(observacao) > 20:
             await update.message.reply_text("Observação muito longa — resuma em até 20 palavras, por favor:")
             return
-        codigo = ctx.user_data.get("codigo")
-        SHEET_CHECKPOINTS.append_row([
-            codigo, ctx.user_data.get("secao", ""), "", "", "concluido",
-            ctx.user_data.get("nomes", ""), datetime.datetime.now().strftime("%Y-%m-%d %H:%M"), observacao,
-        ])
-        await update.message.reply_text(f"✅ {codigo} confirmado às {datetime.datetime.now():%H:%M}. Obrigado!")
-        ctx.user_data.clear()
+        ctx.user_data["observacao"] = observacao
+        if ctx.user_data.get("codigo") == "RONDA":
+            # Ronda também pede os dois números usados no mapa/gráficos da home
+            ctx.user_data["etapa"] = "fila"
+            await update.message.reply_text("Quantas pessoas estão na fila da seção agora? (só o número, ex.: 8)")
+            return
+        await gravar_checkpoint_e_responder(update, ctx)
+        return
+
+    if etapa == "fila":
+        if not texto.isdigit():
+            await update.message.reply_text("Envie só o número de pessoas na fila agora (ex.: 8):")
+            return
+        ctx.user_data["fila"] = texto
+        ctx.user_data["etapa"] = "votados"
+        await update.message.reply_text("Quantos eleitores já votaram nesta seção até agora (segundo o terminal)?")
+        return
+
+    if etapa == "votados":
+        if not texto.isdigit():
+            await update.message.reply_text("Envie só o número de eleitores que já votaram (ex.: 180):")
+            return
+        ctx.user_data["votados"] = texto
+        await gravar_checkpoint_e_responder(update, ctx)
         return
 
     if etapa == "nome_ocorrencia":

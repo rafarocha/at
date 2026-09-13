@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔐 Ações de Segurança — Git &amp; Credenciais</title>
+<style>
+  :root {
+    --bg: #0a0e14; --bg-card: #141a24; --bg-card-2: #1a2230; --bg-chip: #19212c;
+    --border: #2a3342; --fg: #eef2f7; --fg-muted: #a8b3c2; --fg-sub: #7c8798;
+    --accent: #5eaaff; --accent-dim: rgba(94,170,255,0.14);
+    --green: #3ecf82; --green-dim: rgba(62,207,130,0.14);
+    --amber: #e3ab3f; --amber-dim: rgba(227,171,63,0.14);
+    --red: #ff6b6b; --red-dim: rgba(255,107,107,0.14);
+    --purple: #c792ea; --purple-dim: rgba(199,146,234,0.14);
+    --mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; margin:0; padding:0; }
+  body { background: var(--bg); color: var(--fg); font-family: var(--sans); font-size: 15px; line-height: 1.6; font-weight: 500; padding: 20px 16px 60px; }
+  .wrap { max-width: 780px; margin: 0 auto; }
+
+  header { background: linear-gradient(160deg, var(--bg-card) 0%, var(--bg-card-2) 100%); border:1px solid var(--border); border-radius:16px; padding:20px 22px; margin-bottom:18px; }
+  header h1 { font-size: 21px; font-weight: 800; margin-bottom: 6px; }
+  header .sub { color: var(--fg-muted); font-size: 13px; font-weight: 600; }
+
+  .callout { border-radius: 10px; padding: 12px 15px; font-size: 13px; margin: 14px 0; border: 1px solid var(--border); background: var(--bg-chip); color: var(--fg-muted); }
+  .callout.green { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+  .callout.red { background: var(--red-dim); border-color: var(--red); color: var(--red); }
+  .callout.blue { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+  .callout b { color: inherit; }
+  .callout code { background: rgba(0,0,0,0.25); }
+
+  section.block { background: var(--bg-card); border:1px solid var(--border); border-radius:14px; padding:18px 20px; margin-bottom: 18px; }
+  section.block h2 { font-size: 16px; font-weight: 800; margin-bottom: 4px; display:flex; align-items:center; gap:8px; }
+  section.block .section-sub { color: var(--fg-sub); font-size: 12px; font-weight: 700; margin-bottom: 14px; }
+
+  .action { display: flex; gap: 12px; background: var(--bg-card-2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; }
+  .action input[type="checkbox"] { width: 18px; height: 18px; margin-top: 2px; flex-shrink: 0; accent-color: var(--green); cursor: pointer; }
+  .action .body { flex: 1; }
+  .action .title { font-weight: 800; font-size: 13.5px; margin-bottom: 4px; }
+  .action .desc { color: var(--fg-muted); font-size: 12.5px; }
+  .action .desc code { background: var(--bg-chip); border: 1px solid var(--border); border-radius: 5px; padding: 1px 5px; font-family: var(--mono); font-size: 11.5px; }
+  .action.urgent { border-left: 3px solid var(--red); }
+  .action.done-ok { border-left: 3px solid var(--green); }
+
+  .tag { display: inline-block; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .4px; border-radius: 6px; padding: 2px 7px; margin-left: 6px; vertical-align: middle; }
+  .tag.you { background: var(--red-dim); color: var(--red); }
+  .tag.done { background: var(--green-dim); color: var(--green); }
+
+  pre { background: var(--bg-chip); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; font-family: var(--mono); font-size: 12px; overflow-x: auto; margin: 8px 0; color: var(--fg); }
+  code { font-family: var(--mono); font-size: 12.5px; background: var(--bg-chip); padding: 1px 5px; border-radius: 4px; }
+
+  ol, ul { padding-left: 20px; margin: 8px 0; }
+  li { margin-bottom: 5px; font-size: 13px; color: var(--fg-muted); }
+
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 12.5px; }
+  th, td { text-align: left; padding: 7px 9px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { color: var(--fg-sub); font-size: 11px; text-transform: uppercase; letter-spacing: .3px; }
+  td { color: var(--fg-muted); }
+  td code { color: var(--fg); }
+
+  footer { text-align: center; color: var(--fg-sub); font-size: 11px; font-weight: 600; padding: 20px 6px 4px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>🔐 Ações de Segurança — Git &amp; Credenciais</h1>
+    <div class="sub">Gerado após o push bloqueado pelo GitHub (GH013 · Push Protection) em <code>eleicoes-bot/creds.json</code>, commit <code>103ac0d</code></div>
+  </header>
+
+  <div class="callout blue">
+    <b>O que de fato aconteceu:</b> o GitHub bloqueou o <code>push</code> antes de aceitá-lo — conferi e o <code>origin/main</code> continua só com o "Initial commit", ou seja, a chave da conta de serviço do Google <strong>nunca chegou a ficar acessível no GitHub</strong>. Mesmo assim, ela ficou gravada no seu histórico local do git (e o token do Telegram, hardcoded no <code>bot.py</code>, também — esse o GitHub não tinha nem sinalizado ainda). Tratar os dois como "quase vazados" e trocar por precaução é a prática correta, mesmo sem confirmação de exposição pública.
+  </div>
+
+  <div class="callout green">
+    <b>✅ Já corrigi no repositório local (arquivos no disco continuam intactos):</b> adicionei <code>eleicoes-bot/creds.json</code> e <code>eleicoes-bot/token.txt</code> ao <code>.gitignore</code>; tirei o token que estava escrito direto no <code>bot.py</code> e troquei para ler de <code>token.txt</code> (arquivo local, ignorado pelo git); descartei os 2 commits locais que continham os segredos (nunca tinham chegado ao GitHub) e recriei um único commit limpo (<code>fb0d989 — "Add project files (bot, painel, docs) without secrets"</code>) em cima do Initial commit. Rodei <code>git log --all -- eleicoes-bot/creds.json</code> e <code>... token.txt</code> depois disso — vazio nos dois, confirmando que não sobrou rastro em nenhum commit.
+  </div>
+
+  <section class="block">
+    <h2>🚨 Ações que só você pode fazer</h2>
+    <div class="section-sub">Precisam do seu login/2FA em cada serviço — não consigo executar por aqui</div>
+
+    <div class="action urgent">
+      <input type="checkbox">
+      <div class="body">
+        <div class="title">1. Terminar o push (rodar no seu Terminal, não aqui)<span class="tag you">Você</span></div>
+        <div class="desc">O commit limpo já está pronto localmente, mas empurrar pro GitHub precisa das suas credenciais, que esta sandbox não tem acesso. No seu Terminal, dentro da pasta do projeto:
+          <pre>cd ~/git/experiments/at
+git push -u origin main</pre>
+          Deve dar <em>fast-forward</em> sem conflito nenhum (o remoto só tinha o Initial commit).
+        </div>
+      </div>
+    </div>
+
+    <div class="action urgent">
+      <input type="checkbox">
+      <div class="body">
+        <div class="title">2. Trocar a chave da conta de serviço do Google (creds.json)<span class="tag you">Você</span></div>
+        <div class="desc">
+          <ol>
+            <li>Abra <code>console.cloud.google.com</code> → <strong>IAM e administrador → Contas de serviço</strong>.</li>
+            <li>Ache a conta de serviço usada pelo bot (o e-mail que você compartilhou com a planilha <code>checkpoints-150ze</code>).</li>
+            <li>Aba <strong>Chaves</strong> → localize a chave atual → <strong>Excluir</strong> (isso invalida o <code>creds.json</code> antigo na hora).</li>
+            <li><strong>Adicionar chave → Criar nova chave → JSON</strong> → baixa um novo arquivo.</li>
+            <li>Substitua <code>eleicoes-bot/creds.json</code> pelo novo arquivo (mesmo nome, mesmo lugar — não precisa mudar nada no <code>bot.py</code>).</li>
+            <li>Atualize a cópia salva no seu cofre de senhas com o conteúdo novo.</li>
+          </ol>
+          Não precisa compartilhar a planilha de novo com a conta de serviço — o e-mail da conta continua o mesmo, só a chave (o "segredo") muda.
+        </div>
+      </div>
+    </div>
+
+    <div class="action urgent">
+      <input type="checkbox">
+      <div class="body">
+        <div class="title">3. Trocar o token do bot no Telegram<span class="tag you">Você</span></div>
+        <div class="desc">
+          <ol>
+            <li>No Telegram, abra a conversa com <strong>@BotFather</strong>.</li>
+            <li>Envie <code>/mybots</code> → escolha o bot (<code>@ze150_admin_bot</code>) → <strong>API Token → Revoke current token</strong>.</li>
+            <li>O BotFather te dá um token novo na hora. Copie-o.</li>
+            <li>No Mac, substitua todo o conteúdo de <code>eleicoes-bot/token.txt</code> pelo token novo (sem espaços/linhas extras) — não precisa tocar no <code>bot.py</code>.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <div class="action urgent">
+      <input type="checkbox">
+      <div class="body">
+        <div class="title">4. Reiniciar o bot.py depois de trocar os dois segredos<span class="tag you">Você</span></div>
+        <div class="desc">Se o bot já estiver rodando, ele ainda está com o token/chave antigos em memória. Pare com <code>Ctrl+C</code> no terminal onde ele roda e suba de novo:
+          <pre>cd ~/git/experiments/at/eleicoes-bot
+source venv/bin/activate
+python3 bot.py</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="action">
+      <input type="checkbox">
+      <div class="body">
+        <div class="title">5. Confirmar que o GitHub Advanced Security continua ativo<span class="tag you">Você</span></div>
+        <div class="desc">Foi o <strong>Push Protection</strong> que evitou o vazamento — vale conferir 1x que ele e o <strong>Secret Scanning</strong> continuam ligados em <code>github.com/rafarocha/at</code> → <strong>Settings → Code security</strong>. Em repositório público isso já vem ativado por padrão; em privado, pode exigir habilitar manualmente dependendo do plano.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>🧭 Boas práticas pra não repetir</h2>
+    <div class="section-sub">Nada urgente aqui — só reduz a chance do próximo susto</div>
+    <table>
+      <tr><th>Prática</th><th>Por quê</th></tr>
+      <tr><td>Nunca escrever token/chave/senha direto no código-fonte</td><td>Qualquer commit acidental já expõe. Prefira arquivo local ignorado (como <code>token.txt</code> agora) ou variável de ambiente.</td></tr>
+      <tr><td>Criar o <code>.gitignore</code> <em>antes</em> do primeiro <code>git add</code></td><td>É bem mais fácil evitar um segredo entrar no histórico do que tirá-lo depois.</td></tr>
+      <tr><td>Dar uma olhada em <code>git status</code> / <code>git diff --cached</code> antes de todo <code>git commit</code></td><td>Pega arquivo indevido (como um <code>creds.json</code> "esquecido") antes de virar commit.</td></tr>
+      <tr><td>Se o repositório do GitHub Pages for <strong>público</strong> (necessário no plano Free — veja <code>sunday-tracking.html</code>), mantenha o <code>eleicoes-bot/</code> (bot + credenciais) fora dele</td><td>Tudo num repo público fica visível a qualquer pessoa, inclusive código-fonte de arquivos não sensíveis à primeira vista. Considere um repositório separado (ou privado, com GitHub Pro) só para o bot.</td></tr>
+      <tr><td>O link do CSV publicado ("Publicar na Web") não é uma senha, mas quem tiver o link lê os dados ao vivo</td><td>Isso é esperado — é assim que o <code>painel.html</code> funciona. Só vale lembrar que não é uma barreira de acesso real: qualquer um com o link vê os dados.</td></tr>
+    </table>
+  </section>
+
+  <footer>
+    150ª ZE · TRE-PE — checklist gerado em resposta ao push bloqueado do dia 13/09/2026
+  </footer>
+</div>
+</body>
+</html>

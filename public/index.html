@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🗳️ Acompanhamento — 150ª Zona Eleitoral</title>
+<style>
+  :root {
+    --bg: #0a0e14; --bg-card: #141a24; --bg-card-2: #1a2230; --bg-chip: #19212c;
+    --border: #2a3342; --fg: #eef2f7; --fg-muted: #a8b3c2; --fg-sub: #7c8798;
+    --accent: #5eaaff; --accent-dim: rgba(94,170,255,0.14);
+    --green: #3ecf82; --green-dim: rgba(62,207,130,0.14);
+    --amber: #e3ab3f; --amber-dim: rgba(227,171,63,0.14);
+    --red: #ff6b6b; --red-dim: rgba(255,107,107,0.14);
+    --gray: #6b7686; --gray-dim: rgba(107,118,134,0.18);
+    --mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--fg); font-family: var(--sans); font-size: 15px;
+    line-height: 1.6; font-weight: 500; margin:0; padding: 20px 16px 60px;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; }
+
+  header.hero {
+    background: linear-gradient(160deg, var(--bg-card) 0%, var(--bg-card-2) 100%);
+    border:1px solid var(--border); border-radius:16px; padding:24px 22px; margin-bottom:18px;
+  }
+  header.hero h1 { margin:0 0 8px; font-size: 24px; }
+  header.hero .sub { color:var(--fg-muted); font-size:14px; font-weight:600; max-width:620px; }
+
+  .badge-aviso {
+    display:inline-flex; align-items:center; gap:7px; background: var(--amber-dim); color: var(--amber);
+    border:1px solid rgba(227,171,63,0.35); border-radius:9px; padding:8px 12px; font-size:12.5px;
+    font-weight:800; margin-top:14px;
+  }
+
+  section.block {
+    background: var(--bg-card); border:1px solid var(--border); border-radius:14px;
+    padding:18px 20px; margin-bottom:16px;
+  }
+  section.block h2 { font-size:16px; margin:0 0 6px; display:flex; align-items:center; gap:8px; }
+  section.block .section-sub { color: var(--fg-sub); font-size: 12.5px; font-weight:700; margin-bottom: 14px; }
+  section.block p { color: var(--fg-muted); font-size:13.5px; margin: 0 0 10px; }
+  section.block p:last-child { margin-bottom:0; }
+
+  .roles-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap:12px; }
+  .role-card { background: var(--bg-card-2); border:1px solid var(--border); border-radius:12px; padding:14px 14px; }
+  .role-card .r-title { font-weight:800; font-size:13.5px; margin-bottom:5px; display:flex; align-items:center; gap:7px; }
+  .role-card .r-detail { color: var(--fg-muted); font-size:12.5px; }
+
+  .step { display:flex; gap:14px; margin-bottom:18px; }
+  .step:last-child { margin-bottom:0; }
+  .step-num {
+    flex-shrink:0; width:30px; height:30px; border-radius:50%; background: var(--accent-dim); color: var(--accent);
+    display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13.5px;
+  }
+  .step-body { flex:1; min-width:0; }
+  .step-body .s-title { font-weight:800; font-size:14px; margin-bottom:4px; }
+  .step-body .s-detail { color: var(--fg-muted); font-size:12.5px; margin-bottom:10px; }
+
+  .link-row { display:flex; flex-wrap:wrap; gap:8px; }
+  .link-btn {
+    display:inline-flex; align-items:center; gap:6px; background: var(--bg-chip); border:1px solid var(--border);
+    border-radius:9px; padding:9px 13px; font-size:12.5px; font-weight:800; color:var(--fg); text-decoration:none;
+    transition: border-color .15s, color .15s;
+  }
+  .link-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .link-btn.primary { background: var(--accent-dim); color: var(--accent); border-color: var(--accent); }
+
+  .scenario-row { display:flex; flex-wrap:wrap; gap:8px; margin-top:4px; }
+  .scenario-chip {
+    background: var(--bg-chip); border:1px solid var(--border); border-radius:9px; padding:8px 12px;
+    font-size:12px; color: var(--fg-muted); flex:1; min-width:190px;
+  }
+  .scenario-chip b { color: var(--fg); display:block; font-size:12.5px; margin-bottom:2px; }
+  .scenario-chip .links { margin-top:7px; display:flex; gap:6px; flex-wrap:wrap; }
+  .scenario-chip a { color: var(--accent); text-decoration:none; font-weight:800; font-size:11.5px; }
+  .scenario-chip a:hover { text-decoration:underline; }
+
+  footer.page-footer {
+    text-align:center; color: var(--fg-sub); font-size:11.5px; font-weight:600; padding: 20px 6px 4px;
+  }
+  footer.page-footer a { color: var(--fg-sub); }
+  footer.page-footer code {
+    font-family: var(--mono); background: var(--bg-chip); border:1px solid var(--border);
+    border-radius:5px; padding:1px 5px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <h1>🗳️ Acompanhamento em Tempo Real — 150ª Zona Eleitoral</h1>
+    <div class="sub">
+      Um sistema simples para administradores de prédio e mesários confirmarem tarefas, rondas e
+      ocorrências pelo Telegram — e para gestores, administradores e a Justiça Eleitoral acompanharem
+      tudo isso ao vivo, em um mapa e em painéis, sem precisar ligar seção por seção.
+    </div>
+    <div class="badge-aviso">⚠️ Esta é a página pública de demonstração — todos os dados mostrados abaixo são fictícios.</div>
+  </header>
+
+  <section class="block">
+    <h2>💡 A ideia em poucas palavras</h2>
+    <p>
+      No dia da eleição, cada seção tem uma lista de tarefas do administrador (T##), rondas periódicas dos
+      mesários e possíveis ocorrências (fila grande, problema na urna, energia, segurança). Hoje isso é
+      acompanhado por telefone e planilha manual — lento e fácil de perder o controle quando várias seções
+      têm problema ao mesmo tempo.
+    </p>
+    <p>
+      Aqui, cada confirmação é feita em segundos pelo Telegram (um botão, escolher a seção, dizer quem
+      confirmou e uma observação opcional). Isso alimenta automaticamente uma planilha, que por sua vez
+      alimenta três páginas — sem trabalho manual de digitação para quem está acompanhando.
+    </p>
+  </section>
+
+  <section class="block">
+    <h2>🧑‍🤝‍🧑 Quem usa o quê</h2>
+    <div class="section-sub">Cada papel usa uma parte diferente do sistema</div>
+    <div class="roles-grid">
+      <div class="role-card">
+        <div class="r-title">📲 Mesário / Administrador da seção</div>
+        <div class="r-detail">Confirma tarefas (T##), rondas e reporta ocorrências pelo bot do Telegram — sem precisar acessar nenhuma página, só o celular.</div>
+      </div>
+      <div class="role-card">
+        <div class="r-title">📊 Gestor de administradores</div>
+        <div class="r-detail">Acompanha o <b>Painel Gestor</b> — uma grade com todas as seções lado a lado, pra ver rápido quem está atrasado ou precisa de ajuda.</div>
+      </div>
+      <div class="role-card">
+        <div class="r-title">🛰️ Juiz eleitoral / autoridades</div>
+        <div class="r-detail">Acompanha a <b>Visão Geral</b> (mapa do prédio + indicadores) e o <b>Detalhe por Seção</b> quando precisa entender uma seção específica.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>🚀 Explore agora</h2>
+    <div class="section-sub">Nenhum passo aqui mexe em dados reais — é tudo demonstração</div>
+
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <div class="s-title">Veja o sistema "ao vivo" (dados fictícios)</div>
+        <div class="s-detail">
+          As três páginas como ficam no dia da eleição, já com dados de exemplo carregados — dá pra clicar
+          em qualquer seção e ver o detalhe.
+        </div>
+        <div class="link-row">
+          <a class="link-btn primary" href="demo/index.html">🛰️ Visão Geral</a>
+          <a class="link-btn primary" href="demo/secao.html">🔍 Detalhe por Seção</a>
+          <a class="link-btn primary" href="demo/painel.html">📊 Painel Gestor</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <div class="s-title">Treine decisões com os cenários de simulação</div>
+        <div class="s-detail">
+          Quatro fotografias fictícias do dia — uma tranquila e três de um mesmo dia difícil em horários
+          diferentes (10:30, 13:30 e 16:30). Bom para treinar equipe: "o que você faria agora, com o que
+          você sabe nesse momento?"
+        </div>
+        <div class="scenario-row">
+          <div class="scenario-chip">
+            <b>✅ Otimista</b>
+            Dia tranquilo, quase tudo em dia.
+            <div class="links">
+              <a href="samples/sample-1-otimista/index.html">Visão Geral</a>
+              <a href="samples/sample-1-otimista/secao.html">Detalhe</a>
+              <a href="samples/sample-1-otimista/painel.html">Painel</a>
+            </div>
+          </div>
+          <div class="scenario-chip">
+            <b>🌅 Pessimista — 10:30</b>
+            Manhã já em crise, oito ocorrências abertas.
+            <div class="links">
+              <a href="samples/sample-2-pessimista-1030/index.html">Visão Geral</a>
+              <a href="samples/sample-2-pessimista-1030/secao.html">Detalhe</a>
+              <a href="samples/sample-2-pessimista-1030/painel.html">Painel</a>
+            </div>
+          </div>
+          <div class="scenario-chip">
+            <b>🌤️ Pessimista — 13:30</b>
+            Mesmos problemas, agora piores.
+            <div class="links">
+              <a href="samples/sample-3-pessimista-1330/index.html">Visão Geral</a>
+              <a href="samples/sample-3-pessimista-1330/secao.html">Detalhe</a>
+              <a href="samples/sample-3-pessimista-1330/painel.html">Painel</a>
+            </div>
+          </div>
+          <div class="scenario-chip">
+            <b>🌆 Pessimista — 16:30</b>
+            Faltando meia hora pro fechamento, crítico em todas as seções.
+            <div class="links">
+              <a href="samples/sample-4-pessimista-1630/index.html">Visão Geral</a>
+              <a href="samples/sample-4-pessimista-1630/secao.html">Detalhe</a>
+              <a href="samples/sample-4-pessimista-1630/painel.html">Painel</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="page-footer">
+    Projeto independente de apoio operacional para o dia da eleição · código aberto em
+    <a href="https://github.com/rafarocha/at">github.com/rafarocha/at</a><br>
+    Todas as páginas acima são <code>100% estáticas</code> e não enviam nem recebem dados reais — servem só para
+    conhecer a interface.
+  </footer>
+
+</div>
+</body>
+</html>

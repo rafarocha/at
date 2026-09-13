@@ -1,0 +1,9 @@
+codigo,secao,descricao,reportado_por,horario,status
+URNA,02,"Urna reiniciou sozinha, verificando com o suporte.",Tatiane Melo e Simone Cavalcanti,09:33,aberta
+ENERGIA,03,"Oscilação de energia, no-break ativado.",Simone Cavalcanti e Fernanda Alves,09:17,aberta
+SEGURANCA,04,"Discussão entre eleitores na fila, mesário intervindo.",Paulo Henrique e Fernanda Alves,09:53,aberta
+FILA,08,Fila grande e mesa sem administrador para organizar.,Rodrigo Nunes e Fernanda Alves,09:37,aberta
+URNA,10,"Urna reiniciou sozinha, verificando com o suporte.",Bruno Costa e Felipe Araujo,09:25,aberta
+ENERGIA,11,"Oscilação de energia, no-break ativado.",Simone Cavalcanti e Tatiane Melo,09:15,aberta
+SEGURANCA,12,"Discussão entre eleitores na fila, mesário intervindo.",Aline Correia e Ana Beatriz,09:16,aberta
+URNA,16,"Urna reiniciou sozinha, verificando com o suporte.",Eduardo Castro e Paulo Henrique,09:19,aberta
