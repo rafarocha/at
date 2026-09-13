@@ -4,8 +4,7 @@ Continuação do cenário pessimista (veja também 10:30 e 16:30): agora no **me
 mesmos tipos de problema de cada seção pioraram — filas maiores, mais ocorrências abertas, e o
 comparecimento continua muito abaixo do esperado para o horário.
 
-Abra `index.html` primeiro (duplo clique — só os 3 gráficos da home precisam de internet; o resto
-funciona offline). Depois `secao.html` e `painel.html`.
+Abra `index.html` primeiro, de preferência pelo link publicado no GitHub Pages (dados fixos deste cenário, não mudam com o horário real). Testando localmente antes de publicar? Estas páginas leem um CSV pela mesma pasta — dar duplo clique não funciona, sirva a pasta com `python3 -m http.server` (veja o `README.md` na raiz do repositório). Depois explore `secao.html` (qualquer seção) e `painel.html`.
 
 ## O que foi semeado
 

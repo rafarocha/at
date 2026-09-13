@@ -294,8 +294,8 @@ cd ~/eleicoes-bot</pre>
         <p>Ainda dentro de <code>~/eleicoes-bot</code>, rode:</p>
         <pre>python3 -m venv venv
 source venv/bin/activate        # Windows: venv\Scripts\activate
-pip install python-telegram-bot gspread google-auth</pre>
-        <div class="step-result"><b>✅ Resultado esperado:</b> os três pacotes instalam sem erro (a última linha do terminal costuma dizer <code>Successfully installed ...</code>), e o prompt do terminal passa a começar com <code>(venv)</code> — sinal de que o ambiente virtual está ativo.</div>
+pip install python-telegram-bot gspread google-auth faster-whisper</pre>
+        <div class="step-result"><b>✅ Resultado esperado:</b> os quatro pacotes instalam sem erro (a última linha do terminal costuma dizer <code>Successfully installed ...</code>), e o prompt do terminal passa a começar com <code>(venv)</code> — sinal de que o ambiente virtual está ativo. O <code>faster-whisper</code> é só a biblioteca — o modelo de voz em si (uns 150MB) é baixado sozinho, uma única vez, na primeira vez que o <code>bot.py</code> rodar (por isso essa primeira execução do passo 11 precisa de internet).</div>
       </div>
     </div>
 
@@ -317,10 +317,11 @@ pip install python-telegram-bot gspread google-auth</pre>
       <div class="phase-head"><span class="phase-n">FASE 5</span><h3>📝 Escrever e testar o bot.py</h3></div>
       <div class="tstep" data-n="10">
         <div class="tstep-title">Criar o arquivo bot.py</div>
-        <p>Dentro de <code>~/eleicoes-bot</code>, crie um arquivo chamado <code>bot.py</code> (pode usar o Bloco de Notas, VS Code, ou <code>nano bot.py</code> no terminal) e cole o código abaixo. Troque <code>SEU_TOKEN_AQUI</code> pelo token do passo 8, e confira que o nome <code>"checkpoints-150ze"</code> é exatamente igual ao nome da sua planilha. Esta versão já faz <strong>quatro coisas</strong>: (1) confirma T##/G##/RONDA como antes, mas agora pergunta também uma <strong>observação opcional</strong> (até 20 palavras) depois do nome; (2) atende ao botão "📢 Reportar Ocorrência", com um fluxo separado (seção → tipo → nome → texto de até 20 palavras) que grava na aba <code>ocorrencias</code>; (3) valida o limite de 20 palavras, pedindo pra resumir se passar disso; (4) quando o código é <code>RONDA</code>, pergunta também <strong>quantas pessoas estão na fila</strong> e <strong>quantos eleitores já votaram</strong>, gravando essa leitura numérica na aba <code>rondas</code> — é esse número que alimenta os gráficos de fila/votação do <code>index.html</code> e do <code>secao.html</code>.</p>
+        <p>Dentro de <code>~/eleicoes-bot</code>, crie um arquivo chamado <code>bot.py</code> (pode usar o Bloco de Notas, VS Code, ou <code>nano bot.py</code> no terminal) e cole o código abaixo. Troque <code>SEU_TOKEN_AQUI</code> pelo token do passo 8, e confira que o nome <code>"checkpoints-150ze"</code> é exatamente igual ao nome da sua planilha. Esta versão já faz <strong>cinco coisas</strong>: (1) confirma T##/G##/RONDA como antes, mas agora pergunta também uma <strong>observação opcional</strong> (até 20 palavras) depois do nome; (2) atende ao botão "📢 Reportar Ocorrência", com um fluxo separado (seção → tipo → nome → texto de até 20 palavras) que grava na aba <code>ocorrencias</code>; (3) valida o limite de 20 palavras, pedindo pra resumir se passar disso; (4) quando o código é <code>RONDA</code>, pergunta também <strong>quantas pessoas estão na fila</strong> e <strong>quantos eleitores já votaram</strong>, gravando essa leitura numérica na aba <code>rondas</code> — é esse número que alimenta os gráficos de fila/votação do <code>index.html</code> e do <code>secao.html</code>; (5) tanto a observação quanto a descrição da ocorrência aceitam um <strong>áudio curto</strong> no lugar do texto — o bot transcreve sozinho (rodando local, sem depender de outra API) e segue o fluxo normal com o texto obtido.</p>
         <pre>from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters
-import gspread, datetime
+import gspread, datetime, asyncio, os, tempfile
+from faster_whisper import WhisperModel
 
 # --- conecta nas abas da planilha, usando a chave do passo 4 ---
 PLANILHA = gspread.service_account(filename="creds.json").open("checkpoints-150ze")
@@ -338,6 +339,12 @@ TIPOS_OCORRENCIA = [
     ("OUTRO", "⚠️ Outro"),
 ]
 
+# Transcrição de observações por áudio — roda local (sem custo, sem depender de outra API além
+# do Telegram/Sheets). O modelo (~150MB) é baixado sozinho na 1ª vez que o bot roda (precisa de
+# internet só nesse instante); depois disso funciona offline. Num computador mais fraco, troque
+# "small" por "base" (mais rápido, um pouco menos preciso).
+MODELO_VOZ = WhisperModel("small", device="cpu", compute_type="int8")
+
 def teclado_secoes(prefixo):
     botoes = [InlineKeyboardButton(f"Seção {i:02d}", callback_data=f"{prefixo}:{i:02d}") for i in range(1, 21)]
     return InlineKeyboardMarkup([botoes[i:i + 4] for i in range(0, len(botoes), 4)])
@@ -348,9 +355,16 @@ def teclado_tipos():
 def contar_palavras(texto):
     return len([p for p in texto.strip().split() if p])
 
+def transcrever(caminho):
+    # roda em thread separada (veja audio_recebido) porque é uma chamada bloqueante/pesada de CPU
+    segmentos, _info = MODELO_VOZ.transcribe(caminho, language="pt", beam_size=1)
+    return " ".join(seg.text.strip() for seg in segmentos).strip()
+
 async def start(update: Update, ctx):
     # chamado ao tocar em "📲 Confirmar T##", "📲 Registrar Ronda" ou "📢 Reportar Ocorrência" do guia de bolso
-    # (o Telegram abre com /start T07, /start RONDA, /start OCORRENCIA, /start G01, etc.)
+    # (o Telegram abre com /start T07, /start RONDA, /start OCORRENCIA, /start G01, etc. — o app do
+    # Telegram às vezes só MOSTRA "/start" na tela, sem o código, mas o código chega certinho aqui
+    # em ctx.args; se a próxima pergunta for "Qual seção?"/"Quem confirmou?", está tudo certo)
     code = ctx.args[0] if ctx.args else None
     if not code:
         await update.message.reply_text("Use o botão do guia de bolso para abrir com o código certo.")
@@ -414,6 +428,32 @@ async def gravar_checkpoint_e_responder(update: Update, ctx):
     await update.message.reply_text(f"✅ {codigo} confirmado às {agora:%H:%M}. Obrigado!")
     ctx.user_data.clear()
 
+async def processar_observacao(update: Update, ctx, texto):
+    # chamado tanto por texto (texto_recebido) quanto por áudio já transcrito (audio_recebido)
+    observacao = "" if texto.lower() in ("não", "nao", "n", "-") else texto
+    if contar_palavras(observacao) > 20:
+        await update.message.reply_text("Observação muito longa — resuma em até 20 palavras, por favor (pode ser um novo áudio curto):")
+        return
+    ctx.user_data["observacao"] = observacao
+    # RONDA tem 2 perguntas numéricas a mais (fila e votados) antes de gravar
+    if ctx.user_data.get("codigo") == "RONDA":
+        ctx.user_data["etapa"] = "fila"
+        await update.message.reply_text("Quantas pessoas estão na fila da seção agora? (só o número, ex.: 8)")
+        return
+    await gravar_checkpoint_e_responder(update, ctx)
+
+async def processar_descricao_ocorrencia(update: Update, ctx, texto):
+    # chamado tanto por texto (texto_recebido) quanto por áudio já transcrito (audio_recebido)
+    if contar_palavras(texto) > 20:
+        await update.message.reply_text("Muito longo — resuma em até 20 palavras, por favor (pode ser um novo áudio curto):")
+        return
+    SHEET_OCORRENCIAS.append_row([
+        ctx.user_data.get("tipo", "OUTRO"), ctx.user_data.get("secao", ""), texto,
+        ctx.user_data.get("nome", ""), datetime.datetime.now().strftime("%Y-%m-%d %H:%M"), "aberta",
+    ])
+    await update.message.reply_text("📢 Ocorrência registrada — os administradores vão ver no painel. Obrigado!")
+    ctx.user_data.clear()
+
 async def texto_recebido(update: Update, ctx):
     etapa = ctx.user_data.get("etapa")
     if not etapa:
@@ -424,21 +464,11 @@ async def texto_recebido(update: Update, ctx):
         nomes = texto.replace(",", " e ")  # rede de segurança contra vírgula (quebraria o CSV)
         ctx.user_data["nomes"] = nomes
         ctx.user_data["etapa"] = "observacao"
-        await update.message.reply_text('Alguma observação sobre este item? (até 20 palavras — ou envie "não" para pular)')
+        await update.message.reply_text('Alguma observação sobre este item? Pode digitar (até 20 palavras) ou mandar um áudio curto — ou envie "não" para pular.')
         return
 
     if etapa == "observacao":
-        observacao = "" if texto.lower() in ("não", "nao", "n", "-") else texto
-        if contar_palavras(observacao) > 20:
-            await update.message.reply_text("Observação muito longa — resuma em até 20 palavras, por favor:")
-            return
-        ctx.user_data["observacao"] = observacao
-        # RONDA tem 2 perguntas numéricas a mais (fila e votados) antes de gravar
-        if ctx.user_data.get("codigo") == "RONDA":
-            ctx.user_data["etapa"] = "fila"
-            await update.message.reply_text("Quantas pessoas estão na fila da seção agora? (só o número, ex.: 8)")
-            return
-        await gravar_checkpoint_e_responder(update, ctx)
+        await processar_observacao(update, ctx, texto)
         return
 
     if etapa == "fila":
@@ -461,26 +491,46 @@ async def texto_recebido(update: Update, ctx):
     if etapa == "nome_ocorrencia":
         ctx.user_data["nome"] = texto
         ctx.user_data["etapa"] = "descricao_ocorrencia"
-        await update.message.reply_text("Descreva em até 20 palavras o que aconteceu:")
+        await update.message.reply_text("Descreva em até 20 palavras o que aconteceu (pode digitar ou mandar um áudio curto):")
         return
 
     if etapa == "descricao_ocorrencia":
-        if contar_palavras(texto) > 20:
-            await update.message.reply_text("Muito longo — resuma em até 20 palavras, por favor:")
-            return
-        SHEET_OCORRENCIAS.append_row([
-            ctx.user_data.get("tipo", "OUTRO"), ctx.user_data.get("secao", ""), texto,
-            ctx.user_data.get("nome", ""), datetime.datetime.now().strftime("%Y-%m-%d %H:%M"), "aberta",
-        ])
-        await update.message.reply_text("📢 Ocorrência registrada — os administradores vão ver no painel. Obrigado!")
-        ctx.user_data.clear()
+        await processar_descricao_ocorrencia(update, ctx, texto)
         return
+
+async def audio_recebido(update: Update, ctx):
+    # observação (do checkpoint/ronda) e descrição de ocorrência aceitam um áudio curto no lugar
+    # do texto — transcrevemos localmente (Whisper) e seguimos o fluxo normal com o texto obtido
+    etapa = ctx.user_data.get("etapa")
+    if etapa not in ("observacao", "descricao_ocorrencia"):
+        await update.message.reply_text("Não esperava um áudio agora — responda por texto, por favor.")
+        return
+
+    aviso = await update.message.reply_text("🎤 Ouvindo o áudio…")
+    arquivo = await update.message.voice.get_file()
+    caminho = tempfile.NamedTemporaryFile(suffix=".ogg", delete=False).name
+    await arquivo.download_to_drive(caminho)
+    try:
+        texto = await asyncio.to_thread(transcrever, caminho)
+    finally:
+        os.remove(caminho)
+
+    if not texto:
+        await aviso.edit_text("Não consegui entender o áudio — pode digitar a observação por texto?")
+        return
+
+    await aviso.edit_text(f'🎤 Entendi: "{texto}"')
+    if etapa == "observacao":
+        await processar_observacao(update, ctx, texto)
+    else:
+        await processar_descricao_ocorrencia(update, ctx, texto)
 
 app = Application.builder().token("SEU_TOKEN_AQUI").build()
 app.add_handler(CommandHandler("start", start))
 app.add_handler(CallbackQueryHandler(secao_escolhida, pattern="^sec:"))
 app.add_handler(CallbackQueryHandler(ocorrencia_secao_escolhida, pattern="^osec:"))
 app.add_handler(CallbackQueryHandler(ocorrencia_tipo_escolhido, pattern="^tipo:"))
+app.add_handler(MessageHandler(filters.VOICE, audio_recebido))
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, texto_recebido))
 
 print("Bot rodando... deixe este terminal aberto (Ctrl+C para parar).")
@@ -491,8 +541,8 @@ app.run_polling()</pre>
         <div class="tstep-title">Rodar e testar de ponta a ponta</div>
         <p>Com o ambiente virtual ativo (prompt começando com <code>(venv)</code> — se não estiver, repita <code>source venv/bin/activate</code>), rode:</p>
         <pre>python3 bot.py</pre>
-        <p>O terminal deve imprimir <code>Bot rodando...</code> e ficar "parado" — isso é normal, é o <code>run_polling()</code> escutando mensagens. Agora, no celular, abra o Telegram, procure seu bot pelo username e envie <code>/start T07</code>. Toque numa seção de teste (ex.: Seção 01), digite um nome de teste (ex.: <code>Teste</code>) e, quando ele perguntar a observação, digite algo curto (ex.: <code>tudo certo</code>) ou <code>não</code> para pular. Depois teste também <code>/start RONDA</code> — desta vez, depois da observação, o bot pergunta a fila (responda só o número, ex.: <code>8</code>) e depois os votados (ex.: <code>180</code>). Por fim teste <code>/start OCORRENCIA</code> — escolha uma seção, um tipo, um nome e um texto de teste.</p>
-        <div class="step-result"><b>✅ Resultado esperado:</b> o bot responde "✅ T07 confirmado às HH:MM. Obrigado!" no Telegram, e ao abrir a planilha (aba <code>checkpoints</code>) aparece uma <strong>nova linha</strong> com <code>T07</code>, a seção, o nome digitado, o horário e a observação (ou vazio, se você pulou). O teste de <code>/start RONDA</code> deve gerar uma linha em <code>checkpoints</code> (igual às demais) <strong>e</strong> uma segunda linha nova na aba <code>rondas</code>, com a seção, o horário, a fila e os votados que você digitou. O teste de <code>/start OCORRENCIA</code> deve gerar uma nova linha na aba <code>ocorrencias</code>, com o tipo escolhido, a seção, o texto e o nome. Se <code>python3 bot.py</code> já der erro antes mesmo de mandar mensagem no Telegram, confira: (a) as duas APIs (Sheets <strong>e</strong> Drive) estão ativadas no passo 2 — erro <code>Google Drive API has not been used...</code> significa que só a Sheets foi ativada, (b) o nome da planilha no código bate exatamente com o real, (c) o e-mail da conta de serviço foi mesmo compartilhado como Editor (passo 5), (d) a aba <code>rondas</code> existe na planilha com esse nome exato — ela já vem pronta no <code>checkpoints-150ze.xlsx</code> do passo 1.</div>
+        <p>O terminal deve imprimir <code>Bot rodando...</code> e ficar "parado" — isso é normal, é o <code>run_polling()</code> escutando mensagens. Agora, no celular, abra o Telegram, procure seu bot pelo username e envie <code>/start T07</code>. Toque numa seção de teste (ex.: Seção 01), digite um nome de teste (ex.: <code>Teste</code>) e, quando ele perguntar a observação, teste das duas formas: uma vez digitando algo curto (ex.: <code>tudo certo</code>) e, num segundo teste, gravando e enviando um áudio curto no lugar do texto (o bot deve responder com "🎤 Ouvindo o áudio…" e depois mostrar o texto que entendeu antes de seguir) — ou envie <code>não</code> para pular. Depois teste também <code>/start RONDA</code> — desta vez, depois da observação, o bot pergunta a fila (responda só o número, ex.: <code>8</code>) e depois os votados (ex.: <code>180</code>). Por fim teste <code>/start OCORRENCIA</code> — escolha uma seção, um tipo, um nome e um texto de teste.</p>
+        <div class="step-result"><b>✅ Resultado esperado:</b> o bot responde "✅ T07 confirmado às HH:MM. Obrigado!" no Telegram, e ao abrir a planilha (aba <code>checkpoints</code>) aparece uma <strong>nova linha</strong> com <code>T07</code>, a seção, o nome digitado, o horário e a observação (ou vazio, se você pulou). O teste de <code>/start RONDA</code> deve gerar uma linha em <code>checkpoints</code> (igual às demais) <strong>e</strong> uma segunda linha nova na aba <code>rondas</code>, com a seção, o horário, a fila e os votados que você digitou. O teste de <code>/start OCORRENCIA</code> deve gerar uma nova linha na aba <code>ocorrencias</code>, com o tipo escolhido, a seção, o texto (ou a transcrição do áudio, se foi esse o teste) e o nome. Na primeira vez que <code>python3 bot.py</code> rodar, o próprio Whisper baixa um arquivo de modelo (≈150MB) antes de começar a escutar mensagens — isso pode levar um minuto e precisa de internet só nessa hora. Se <code>python3 bot.py</code> já der erro antes mesmo de mandar mensagem no Telegram, confira: (a) as duas APIs (Sheets <strong>e</strong> Drive) estão ativadas no passo 2 — erro <code>Google Drive API has not been used...</code> significa que só a Sheets foi ativada, (b) o nome da planilha no código bate exatamente com o real, (c) o e-mail da conta de serviço foi mesmo compartilhado como Editor (passo 5), (d) a aba <code>rondas</code> existe na planilha com esse nome exato — ela já vem pronta no <code>checkpoints-150ze.xlsx</code> do passo 1.</div>
         <div class="step-warn"><b>⚠️ Pitfall comum:</b> nunca deixe o mesário/administrador digitar nomes separados por <strong>vírgula</strong> (ex.: "Rafael, João") — o código de exemplo já troca vírgula por " e " automaticamente, mas se for adaptar o bot, lembre-se que o CSV do passo 14 usa vírgula como separador de colunas, e um nome com vírgula "quebra" a linha ao ser lida pelo painel.</div>
       </div>
     </div>
@@ -548,7 +598,7 @@ const REFRESH_MS = 30000;       // 30s, conforme o roadmap V1 — pode ajustar d
     </div>
 
     <div class="callout green">
-      <strong>✅ Já incluído no <code>bot.py</code> do passo 10:</strong> a pergunta de observação (até 20 palavras) depois de qualquer confirmação, o fluxo completo de "📢 Reportar Ocorrência" (seção → tipo → nome → texto), e — na RONDA — as duas perguntas numéricas de fila e votados, já gravando na aba <code>rondas</code> e alimentando os gráficos e o ícone de 5 aspectos do <code>index.html</code>/<code>secao.html</code>. Fica pra V2/V3 deixar isso mais robusto (fila de mensagens, validação mais esperta, um mapa desenhado conforme a planta real do local) — o importante para este ano é o fluxo de <code>checkpoints</code>, <code>rondas</code> e <code>ocorrencias</code> rodando de ponta a ponta, e é o que este guia já entrega.
+      <strong>✅ Já incluído no <code>bot.py</code> do passo 10:</strong> a pergunta de observação (até 20 palavras, por texto ou áudio transcrito localmente) depois de qualquer confirmação, o fluxo completo de "📢 Reportar Ocorrência" (seção → tipo → nome → texto), e — na RONDA — as duas perguntas numéricas de fila e votados, já gravando na aba <code>rondas</code> e alimentando os gráficos e o ícone de 5 aspectos do <code>index.html</code>/<code>secao.html</code>. Fica pra V2/V3 deixar isso mais robusto (fila de mensagens, validação mais esperta, um mapa desenhado conforme a planta real do local) — o importante para este ano é o fluxo de <code>checkpoints</code>, <code>rondas</code> e <code>ocorrencias</code> rodando de ponta a ponta, e é o que este guia já entrega.
     </div>
   </section>
 

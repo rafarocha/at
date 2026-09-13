@@ -1,0 +1,32 @@
+secao,horario,fila,votados,bateria_ok,observacao,confirmado_por
+01,08:36,9,35,sim,,Henrique Borges e Igor Cavalcanti
+01,10:01,8,150,sim,,Amanda Rezende e Carolina Vasconcelos
+02,08:31,8,36,sim,,Pedro Augusto e Amanda Rezende
+02,10:03,7,156,sim,,Vitor Hugo Lopes e Igor Cavalcanti
+03,08:34,5,45,sim,,Daniel Prado e Bruno Tavares
+03,10:01,11,151,sim,,Otavio Ramos e Helena Duarte
+04,08:35,10,29,sim,,Pedro Augusto e Helena Duarte
+04,10:06,21,107,sim,"Fila aumentou um pouco, acompanhando.",Yasmin Cordeiro e Pedro Augusto
+05,08:31,8,28,sim,,Amanda Rezende e Livia Santana
+05,10:04,19,115,sim,"Fila aumentou um pouco, acompanhando.",Henrique Borges e Bruno Tavares
+06,08:32,10,34,sim,,Yasmin Cordeiro e Nicole Almeida
+06,10:04,23,125,sim,"Fila aumentou um pouco, acompanhando.",Daniel Prado e Amanda Rezende
+07,08:36,14,30,sim,,Pedro Augusto e Amanda Rezende
+07,10:03,32,95,sim,Situação sendo monitorada.,Igor Cavalcanti e Sofia Barreto
+08,08:36,14,32,sim,,Igor Cavalcanti e Nicole Almeida
+08,10:03,22,88,sim,,Igor Cavalcanti e Nicole Almeida
+09,08:36,9,25,sim,,Marcos Vinicius e Bianca Ferreira
+09,10:02,20,70,sim,Situação sendo monitorada.,Helena Duarte e Nicole Almeida
+10,08:36,14,26,sim,,Daniel Prado e Bianca Ferreira
+10,10:04,38,60,sim,,Rodrigo Peixoto e Otavio Ramos
+11,08:33,13,36,sim,,Bruno Tavares e Henrique Borges
+12,08:35,9,34,sim,,Bruno Tavares e Igor Cavalcanti
+12,10:04,19,90,sim,,Vitor Hugo Lopes e Yasmin Cordeiro
+13,08:36,8,32,sim,,Nicole Almeida e Yasmin Cordeiro
+13,10:05,45,30,sim,Situação sendo monitorada.,Isadora Campos e Nicole Almeida
+14,08:34,9,34,sim,,Bianca Ferreira e Igor Cavalcanti
+14,10:06,24,78,sim,,Livia Santana e Rodrigo Peixoto
+15,08:32,14,31,sim,,Bruno Tavares e Helena Duarte
+15,10:04,16,65,sim,Situação sendo monitorada.,Carolina Vasconcelos e Livia Santana
+16,08:35,11,29,sim,,Caio Mendes e Pedro Augusto
+16,10:04,33,55,sim,,Pedro Augusto e Igor Cavalcanti

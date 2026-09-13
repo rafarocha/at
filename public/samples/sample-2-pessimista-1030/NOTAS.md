@@ -3,9 +3,7 @@
 Dados de demonstração, totalmente fictícios e aleatórios, retratando uma **manhã já em crise** —
 "início pessimista": o dia começa mal e, sem ação, só piora (veja também os samples 13:30 e 16:30).
 
-Abra `index.html` primeiro (funciona com duplo clique — os 3 gráficos da home só carregam com
-internet, pois usam uma biblioteca externa; o resto funciona 100% offline). Depois explore
-`secao.html` (qualquer seção) e `painel.html`.
+Abra `index.html` primeiro, de preferência pelo link publicado no GitHub Pages (dados fixos deste cenário, não mudam com o horário real). Testando localmente antes de publicar? Estas páginas leem um CSV pela mesma pasta — dar duplo clique não funciona, sirva a pasta com `python3 -m http.server` (veja o `README.md` na raiz do repositório). Depois explore `secao.html` (qualquer seção) e `painel.html`.
 
 ## O que foi semeado
 

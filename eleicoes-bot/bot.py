@@ -1,6 +1,7 @@
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters
-import gspread, datetime
+import gspread, datetime, asyncio, os, tempfile
+from faster_whisper import WhisperModel
 
 # --- conecta nas abas da planilha, usando a chave do passo 4 ---
 PLANILHA = gspread.service_account(filename="creds.json").open("checkpoints-150ze")
@@ -17,6 +18,12 @@ TIPOS_OCORRENCIA = [
     ("OUTRO", "⚠️ Outro"),
 ]
 
+# Transcrição de observações por áudio — roda local (sem custo, sem depender de outra API além
+# do Telegram/Sheets). O modelo (~150MB) é baixado sozinho na 1ª vez que o bot roda (precisa de
+# internet só nesse instante); depois disso funciona offline. Num computador mais fraco, troque
+# "small" por "base" (mais rápido, um pouco menos preciso).
+MODELO_VOZ = WhisperModel("small", device="cpu", compute_type="int8")
+
 def teclado_secoes(prefixo):
     botoes = [InlineKeyboardButton(f"Seção {i:02d}", callback_data=f"{prefixo}:{i:02d}") for i in range(1, 21)]
     return InlineKeyboardMarkup([botoes[i:i + 4] for i in range(0, len(botoes), 4)])
@@ -27,9 +34,16 @@ def teclado_tipos():
 def contar_palavras(texto):
     return len([p for p in texto.strip().split() if p])
 
+def transcrever(caminho):
+    # roda em thread separada (veja audio_recebido) porque é uma chamada bloqueante/pesada de CPU
+    segmentos, _info = MODELO_VOZ.transcribe(caminho, language="pt", beam_size=1)
+    return " ".join(seg.text.strip() for seg in segmentos).strip()
+
 async def start(update: Update, ctx):
     # chamado ao tocar em "📲 Confirmar T##", "📲 Registrar Ronda" ou "📢 Reportar Ocorrência" do guia de bolso
-    # (o Telegram abre com /start T07, /start RONDA, /start OCORRENCIA, /start G01, etc.)
+    # (o Telegram abre com /start T07, /start RONDA, /start OCORRENCIA, /start G01, etc. — o app do
+    # Telegram às vezes só MOSTRA "/start" na tela, sem o código, mas o código chega certinho aqui
+    # em ctx.args; se a próxima pergunta for "Qual seção?"/"Quem confirmou?", está tudo certo)
     code = ctx.args[0] if ctx.args else None
     if not code:
         await update.message.reply_text("Use o botão do guia de bolso para abrir com o código certo.")
@@ -92,6 +106,32 @@ async def gravar_checkpoint_e_responder(update: Update, ctx):
     await update.message.reply_text(f"✅ {codigo} confirmado às {agora:%H:%M}. Obrigado!")
     ctx.user_data.clear()
 
+async def processar_observacao(update: Update, ctx, texto):
+    # chamado tanto por texto (texto_recebido) quanto por áudio já transcrito (audio_recebido)
+    observacao = "" if texto.lower() in ("não", "nao", "n", "-") else texto
+    if contar_palavras(observacao) > 20:
+        await update.message.reply_text("Observação muito longa — resuma em até 20 palavras, por favor (pode ser um novo áudio curto):")
+        return
+    ctx.user_data["observacao"] = observacao
+    if ctx.user_data.get("codigo") == "RONDA":
+        # Ronda também pede os dois números usados no mapa/gráficos da home
+        ctx.user_data["etapa"] = "fila"
+        await update.message.reply_text("Quantas pessoas estão na fila da seção agora? (só o número, ex.: 8)")
+        return
+    await gravar_checkpoint_e_responder(update, ctx)
+
+async def processar_descricao_ocorrencia(update: Update, ctx, texto):
+    # chamado tanto por texto (texto_recebido) quanto por áudio já transcrito (audio_recebido)
+    if contar_palavras(texto) > 20:
+        await update.message.reply_text("Muito longo — resuma em até 20 palavras, por favor (pode ser um novo áudio curto):")
+        return
+    SHEET_OCORRENCIAS.append_row([
+        ctx.user_data.get("tipo", "OUTRO"), ctx.user_data.get("secao", ""), texto,
+        ctx.user_data.get("nome", ""), datetime.datetime.now().strftime("%Y-%m-%d %H:%M"), "aberta",
+    ])
+    await update.message.reply_text("📢 Ocorrência registrada — os administradores vão ver no painel. Obrigado!")
+    ctx.user_data.clear()
+
 async def texto_recebido(update: Update, ctx):
     etapa = ctx.user_data.get("etapa")
     if not etapa:
@@ -102,21 +142,11 @@ async def texto_recebido(update: Update, ctx):
         nomes = texto.replace(",", " e ")  # rede de segurança contra vírgula (quebraria o CSV)
         ctx.user_data["nomes"] = nomes
         ctx.user_data["etapa"] = "observacao"
-        await update.message.reply_text('Alguma observação sobre este item? (até 20 palavras — ou envie "não" para pular)')
+        await update.message.reply_text('Alguma observação sobre este item? Pode digitar (até 20 palavras) ou mandar um áudio curto — ou envie "não" para pular.')
         return
 
     if etapa == "observacao":
-        observacao = "" if texto.lower() in ("não", "nao", "n", "-") else texto
-        if contar_palavras(observacao) > 20:
-            await update.message.reply_text("Observação muito longa — resuma em até 20 palavras, por favor:")
-            return
-        ctx.user_data["observacao"] = observacao
-        if ctx.user_data.get("codigo") == "RONDA":
-            # Ronda também pede os dois números usados no mapa/gráficos da home
-            ctx.user_data["etapa"] = "fila"
-            await update.message.reply_text("Quantas pessoas estão na fila da seção agora? (só o número, ex.: 8)")
-            return
-        await gravar_checkpoint_e_responder(update, ctx)
+        await processar_observacao(update, ctx, texto)
         return
 
     if etapa == "fila":
@@ -139,20 +169,39 @@ async def texto_recebido(update: Update, ctx):
     if etapa == "nome_ocorrencia":
         ctx.user_data["nome"] = texto
         ctx.user_data["etapa"] = "descricao_ocorrencia"
-        await update.message.reply_text("Descreva em até 20 palavras o que aconteceu:")
+        await update.message.reply_text("Descreva em até 20 palavras o que aconteceu (pode digitar ou mandar um áudio curto):")
         return
 
     if etapa == "descricao_ocorrencia":
-        if contar_palavras(texto) > 20:
-            await update.message.reply_text("Muito longo — resuma em até 20 palavras, por favor:")
-            return
-        SHEET_OCORRENCIAS.append_row([
-            ctx.user_data.get("tipo", "OUTRO"), ctx.user_data.get("secao", ""), texto,
-            ctx.user_data.get("nome", ""), datetime.datetime.now().strftime("%Y-%m-%d %H:%M"), "aberta",
-        ])
-        await update.message.reply_text("📢 Ocorrência registrada — os administradores vão ver no painel. Obrigado!")
-        ctx.user_data.clear()
+        await processar_descricao_ocorrencia(update, ctx, texto)
         return
+
+async def audio_recebido(update: Update, ctx):
+    # observação (do checkpoint/ronda) e descrição de ocorrência aceitam um áudio curto no lugar
+    # do texto — transcrevemos localmente (Whisper) e seguimos o fluxo normal com o texto obtido
+    etapa = ctx.user_data.get("etapa")
+    if etapa not in ("observacao", "descricao_ocorrencia"):
+        await update.message.reply_text("Não esperava um áudio agora — responda por texto, por favor.")
+        return
+
+    aviso = await update.message.reply_text("🎤 Ouvindo o áudio…")
+    arquivo = await update.message.voice.get_file()
+    caminho = tempfile.NamedTemporaryFile(suffix=".ogg", delete=False).name
+    await arquivo.download_to_drive(caminho)
+    try:
+        texto = await asyncio.to_thread(transcrever, caminho)
+    finally:
+        os.remove(caminho)
+
+    if not texto:
+        await aviso.edit_text("Não consegui entender o áudio — pode digitar a observação por texto?")
+        return
+
+    await aviso.edit_text(f'🎤 Entendi: "{texto}"')
+    if etapa == "observacao":
+        await processar_observacao(update, ctx, texto)
+    else:
+        await processar_descricao_ocorrencia(update, ctx, texto)
 
 with open("token.txt") as _f:
     BOT_TOKEN = _f.read().strip()  # nunca commitar este arquivo — veja .gitignore
@@ -162,6 +211,7 @@ app.add_handler(CommandHandler("start", start))
 app.add_handler(CallbackQueryHandler(secao_escolhida, pattern="^sec:"))
 app.add_handler(CallbackQueryHandler(ocorrencia_secao_escolhida, pattern="^osec:"))
 app.add_handler(CallbackQueryHandler(ocorrencia_tipo_escolhido, pattern="^tipo:"))
+app.add_handler(MessageHandler(filters.VOICE, audio_recebido))
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, texto_recebido))
 
 print("Bot rodando... deixe este terminal aberto (Ctrl+C para parar).")

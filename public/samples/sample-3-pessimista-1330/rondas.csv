@@ -1,0 +1,61 @@
+secao,horario,fila,votados,bateria_ok,observacao,confirmado_por
+01,08:34,7,27,sim,,Diego Ferreira e Rodrigo Nunes
+01,09:59,13,53,sim,,Debora Farias e Andre Vieira
+01,11:28,18,82,sim,,Patricia Gomes e Andre Vieira
+01,13:05,22,98,sim,"Fila grande, atendimento lento.",Paulo Henrique e Camila Rocha
+02,08:27,3,29,sim,,Thiago Barros e Juliana Ramos
+02,10:05,11,71,sim,,Lucas Martins e Tatiane Melo
+02,11:29,7,101,sim,Urna trocada mas segue instável.,Marcelo Dias e Andre Vieira
+02,13:05,13,140,sim,"Urna reiniciou 3 vezes, suporte técnico ainda não resolveu.",Marcelo Dias e Juliana Ramos
+03,08:32,6,36,nao,"Bateria da urna fraca, sem previsão de troca.",Camila Rocha e Vanessa Teixeira
+03,09:58,6,67,nao,Já é a segunda queda de energia da manhã.,Paulo Henrique e Larissa Pinto
+03,11:28,12,107,nao,"Bateria da urna fraca, sem previsão de troca.",Patricia Gomes e Camila Rocha
+03,12:58,13,131,nao,Já é a segunda queda de energia da manhã.,Andre Vieira e Rafael Souza
+04,08:34,9,34,sim,,Simone Cavalcanti e Thiago Barros
+04,09:59,11,63,sim,,Gustavo Moreira e Bruno Costa
+04,11:28,9,107,sim,,Vanessa Teixeira e Simone Cavalcanti
+04,13:04,11,132,sim,"Discussão mais séria entre fiscal e eleitor, PM acionada preventivamente.",Eduardo Castro e Joao Pedro Alves
+05,08:34,6,39,sim,,Felipe Araujo e Simone Cavalcanti
+05,10:00,10,66,sim,,Joao Pedro Alves e Renata Duarte
+05,11:35,12,107,sim,,Joao Pedro Alves e Rodrigo Nunes
+05,13:00,11,139,sim,,Gustavo Moreira e Larissa Pinto
+06,08:33,4,37,sim,,Andre Vieira e Rafael Souza
+06,09:58,7,73,sim,,Tatiane Melo e Andre Vieira
+07,08:27,2,17,sim,"Ritmo de votação muito abaixo do esperado, motivo não claro.",Debora Farias e Leandro Batista
+07,09:59,5,28,sim,"Ritmo de votação muito abaixo do esperado, motivo não claro.",Carlos Eduardo e Marcelo Dias
+07,11:27,10,46,sim,"Ritmo de votação muito abaixo do esperado, motivo não claro.",Beatriz Cardoso e Aline Correia
+07,13:01,12,64,sim,"Ritmo de votação muito abaixo do esperado, motivo não claro.",Simone Cavalcanti e Bruno Costa
+08,08:31,8,22,sim,,Mariana Lima e Marcelo Dias
+08,09:58,11,54,sim,,Aline Correia e Beatriz Cardoso
+08,11:32,19,75,sim,,Leandro Batista e Andre Vieira
+08,13:04,17,101,sim,,Lucas Martins e Joao Pedro Alves
+09,08:31,10,21,sim,,Renata Duarte e Ana Beatriz
+09,10:04,17,52,sim,,Juliana Ramos e Priscila Nascimento
+09,11:30,19,74,sim,,Fernanda Alves e Marcelo Dias
+09,13:01,21,106,sim,"Fila grande, atendimento lento.",Gustavo Moreira e Paulo Henrique
+10,08:35,2,33,sim,,Beatriz Cardoso e Larissa Pinto
+10,09:57,11,72,sim,,Andre Vieira e Ana Beatriz
+10,11:32,10,101,sim,"Urna reiniciou 3 vezes, suporte técnico ainda não resolveu.",Rodrigo Nunes e Patricia Gomes
+10,13:05,7,137,sim,"Urna reiniciou 3 vezes, suporte técnico ainda não resolveu.",Camila Rocha e Gustavo Moreira
+11,08:27,6,31,nao,Já é a segunda queda de energia da manhã.,Debora Farias e Vanessa Teixeira
+11,10:05,6,64,nao,Já é a segunda queda de energia da manhã.,Debora Farias e Vanessa Teixeira
+11,11:28,7,98,nao,Já é a segunda queda de energia da manhã.,Larissa Pinto e Rafael Souza
+11,12:58,11,138,nao,Já é a segunda queda de energia da manhã.,Patricia Gomes e Leandro Batista
+12,08:27,6,33,sim,,Marcelo Dias e Leandro Batista
+12,09:57,4,66,sim,,Joao Pedro Alves e Larissa Pinto
+12,11:32,8,101,sim,,Renata Duarte e Tatiane Melo
+12,12:59,9,134,sim,"Tumulto pequeno na fila, precisou de reforço.",Joao Pedro Alves e Marcelo Dias
+13,08:30,7,38,sim,,Debora Farias e Marcelo Dias
+13,10:01,5,69,sim,,Camila Rocha e Gustavo Moreira
+13,11:29,5,105,sim,,Larissa Pinto e Rodrigo Nunes
+13,13:02,13,137,sim,,Vanessa Teixeira e Patricia Gomes
+14,08:28,3,29,sim,,Rafael Souza e Camila Rocha
+14,10:04,7,69,sim,,Felipe Araujo e Thiago Barros
+15,08:31,9,18,sim,"Ritmo de votação muito abaixo do esperado, motivo não claro.",Larissa Pinto e Thiago Barros
+15,10:04,11,33,sim,"Ritmo de votação muito abaixo do esperado, motivo não claro.",Debora Farias e Fernanda Alves
+15,11:32,6,48,sim,"Ritmo de votação muito abaixo do esperado, motivo não claro.",Diego Ferreira e Camila Rocha
+15,13:04,11,63,sim,"Ritmo de votação muito abaixo do esperado, motivo não claro.",Debora Farias e Thiago Barros
+16,08:29,13,17,sim,"Ritmo de votação muito abaixo do esperado, motivo não claro.",Tatiane Melo e Gustavo Moreira
+16,09:57,10,37,sim,"Ritmo de votação muito abaixo do esperado, motivo não claro.",Lucas Martins e Bruno Costa
+16,11:35,16,47,sim,"Ritmo de votação muito abaixo do esperado, motivo não claro.",Priscila Nascimento e Felipe Araujo
+16,13:02,18,66,sim,"Ritmo de votação muito abaixo do esperado, motivo não claro.",Renata Duarte e Simone Cavalcanti

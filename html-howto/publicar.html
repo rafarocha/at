@@ -56,7 +56,7 @@
       <tr><td>html-howto/</td><td>Guias e material de apoio (este arquivo, o guia de configuração da planilha, o de segurança).</td></tr>
       <tr><td>scripts/dados/</td><td>Os 3 CSVs fictícios de cada cenário (checkpoints/rondas/ocorrencias) — a matéria-prima dos samples e da demo.</td></tr>
       <tr><td>scripts/build_public.py</td><td>O "release": lê html-mockups/ + scripts/dados/ e gera tudo que fica em public/ e teste-local/. Roda sozinho no CI também.</td></tr>
-      <tr><td>public/</td><td>Saída publicada no GitHub Pages — <code>index.html</code> (landing, escrita à mão) + <code>demo/</code> e <code>samples/</code> (gerados pelo build_public.py, nunca edite à mão).</td></tr>
+      <tr><td>public/</td><td>Saída publicada no GitHub Pages — <code>index.html</code> (landing, escrita à mão) + <code>demo/</code> (conectado à planilha real, ao vivo) e <code>samples/</code> (cenários fictícios, lendo um CSV publicado ao lado da própria página) — os dois gerados pelo build_public.py, nunca edite à mão.</td></tr>
       <tr><td>teste-local/</td><td>Cópia de html-mockups/ apontando pros CSVs locais — testa o fetch() de verdade sem planilha. Também gerado pelo build_public.py.</td></tr>
       <tr><td>.github/workflows/pages.yml</td><td>A esteira de CI: a cada push relevante, builda e publica public/ sozinho.</td></tr>
     </table>
@@ -121,6 +121,51 @@ git push</pre>
         <div class="s-detail">Na primeira vez, isso já ativa e publica o site.</div>
       </div>
     </div>
+  </section>
+
+  <section class="block">
+    <h2>🟢 Ativando o demo/ (conectado à planilha real)</h2>
+    <p>
+      <code>public/demo/</code> é gerado a partir dos mesmos <code>html-mockups/*.html</code>, mas com os
+      <code>CSV_URL_*</code> já preenchidos com os links reais da sua planilha — sem precisar commitar esses
+      links no código. Quem preenche isso é o próprio workflow do GitHub Actions, lendo 3 variáveis do
+      repositório. A URL publicada pelo Google ("Publicar na Web") é só de <strong>leitura</strong> — ninguém
+      consegue editar a planilha por ela, só o bot edita, por uma credencial de serviço completamente
+      separada (<code>creds.json</code>) — por isso não tem problema publicar esse link junto com o site.
+    </p>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <div class="s-title">Publique as 3 abas da planilha como CSV</div>
+        <div class="s-detail">Arquivo → Compartilhar → Publicar na web, uma aba de cada vez (<code>checkpoints</code>,
+        <code>ocorrencias</code>, <code>rondas</code>), formato CSV — copie os 3 links gerados.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <div class="s-title">No GitHub: Settings → Secrets and variables → Actions → aba <strong>Variables</strong></div>
+        <div class="s-detail">Crie 3 "Repository variables" com esses nomes exatos, colando o link CSV correspondente em cada uma:</div>
+        <pre>CSV_URL_CHECKPOINTS
+CSV_URL_OCORRENCIAS
+CSV_URL_RONDAS</pre>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <div class="s-title">Rode o workflow de novo (push ou Run workflow)</div>
+        <div class="s-detail">Na próxima execução, <code>public/demo/index.html</code>, <code>secao.html</code> e
+        <code>painel.html</code> já saem com os 3 links reais preenchidos — acessíveis em
+        <code>https://rafarocha.github.io/at/demo/</code>.</div>
+      </div>
+    </div>
+    <div class="badge-nota">⚠️ Ao contrário de <code>samples/</code> (sempre fictício, com um CSV fixo publicado ao lado
+    da própria página), <code>public/demo/</code> lê e mostra dados reais e ao vivo da eleição — e, como o repositório é
+    público, essa página fica visível a qualquer pessoa com o link, inclusive buscadores. Variáveis do
+    repositório ("Variables", não "Secrets") não são criptografadas — usamos esse mecanismo só para não
+    deixar o link hardcoded no código-fonte versionado, não para escondê-lo do público (o link em si já é
+    público por natureza, uma vez publicado pelo Google Sheets).</div>
   </section>
 
   <section class="block">

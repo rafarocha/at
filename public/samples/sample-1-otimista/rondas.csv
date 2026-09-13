@@ -1,0 +1,97 @@
+secao,horario,fila,votados,bateria_ok,observacao,confirmado_por
+01,08:31,7,23,sim,Fila tranquila.,Camila Rocha e Rodrigo Nunes
+01,10:05,2,81,sim,Sem novidades.,Felipe Araujo e Gustavo Moreira
+01,11:27,5,127,sim,,João Pedro e Diego Ferreira
+01,13:00,2,190,sim,Tudo calmo por aqui.,Patricia Gomes e Paulo Henrique
+01,14:31,2,240,sim,,Camila Rocha e Leandro Batista
+01,16:06,6,284,sim,,Gustavo Moreira e Simone Cavalcanti
+02,08:31,5,29,sim,,Camila Rocha e Larissa Pinto
+02,09:59,4,87,sim,Tudo calmo por aqui.,Juliana Ramos e Ana Beatriz
+02,11:36,3,136,sim,Tudo calmo por aqui.,Gustavo Moreira e Bruno Costa
+02,13:05,4,205,sim,Sem novidades.,Renata Duarte e Aline Correia
+02,14:35,7,256,sim,,Felipe Araujo e Leandro Batista
+02,15:56,7,312,sim,Fila tranquila.,Mariana Lima e Leandro Batista
+03,08:35,10,24,sim,Tudo calmo por aqui.,Renata Duarte e Paulo Henrique
+03,09:59,4,79,sim,Tudo calmo por aqui.,Juliana Ramos e Camila Rocha
+03,11:28,7,145,sim,,Carlos Eduardo e Larissa Pinto
+03,12:57,5,200,sim,,Ana Beatriz e Juliana Ramos
+03,14:33,7,266,sim,,Beatriz Cardoso e Eduardo Castro
+03,15:56,6,317,sim,,Mariana Lima e Carlos Eduardo
+04,08:27,7,27,sim,,João Pedro e Gustavo Moreira
+04,09:57,2,80,sim,Fila tranquila.,Ana Beatriz e Mariana Lima
+04,11:30,5,132,sim,,Lucas Martins e Leandro Batista
+04,12:58,2,186,sim,Sem novidades.,Tatiane Melo e Fernanda Alves
+04,14:36,8,232,sim,,Gustavo Moreira e Leandro Batista
+04,16:04,10,285,sim,,Thiago Barros e Debora Farias
+05,08:30,8,33,sim,,Eduardo Castro e Tatiane Melo
+05,10:04,2,71,sim,,Vanessa Teixeira e Tatiane Melo
+05,11:29,3,130,sim,,Eduardo Castro e Juliana Ramos
+05,13:02,6,187,sim,,Diego Ferreira e Simone Cavalcanti
+05,14:29,5,247,sim,Sem novidades.,Simone Cavalcanti e Eduardo Castro
+05,16:02,9,288,sim,,Larissa Pinto e Fernanda Alves
+06,08:28,6,34,sim,,Fernanda Alves e Priscila Nascimento
+06,10:04,5,69,sim,Sem novidades.,Vanessa Teixeira e Andre Vieira
+06,11:27,3,122,sim,,Ana Beatriz e Priscila Nascimento
+06,13:06,4,179,sim,,Aline Correia e Ana Beatriz
+06,14:26,4,230,sim,,Rafael Souza e Mariana Lima
+06,15:58,10,283,sim,,Paulo Henrique e Fernanda Alves
+07,08:35,6,36,sim,,Andre Vieira e Felipe Araujo
+07,10:06,8,86,sim,,Gustavo Moreira e Andre Vieira
+07,11:27,5,148,sim,,João Pedro e Marcelo Dias
+07,12:56,8,199,sim,,Rafael Souza e Tatiane Melo
+07,14:27,8,254,sim,Sem novidades.,Ana Beatriz e Marcelo Dias
+07,16:05,5,301,sim,,Priscila Nascimento e Renata Duarte
+08,08:32,7,22,sim,,Tatiane Melo e Diego Ferreira
+08,10:01,2,67,sim,Sem novidades.,Rodrigo Nunes e Renata Duarte
+08,11:35,4,127,sim,,Renata Duarte e Patricia Gomes
+08,13:02,5,175,sim,Tudo calmo por aqui.,Eduardo Castro e Larissa Pinto
+08,14:30,2,227,sim,Sem novidades.,Lucas Martins e Priscila Nascimento
+08,15:56,9,282,sim,,Priscila Nascimento e Mariana Lima
+09,08:31,6,38,sim,"Leitor biométrico um pouco lento, mesários resolvendo.",Rodrigo Nunes e Eduardo Castro
+09,10:01,9,76,sim,"Biometria travou 2x, reiniciada pelo presidente.",Eduardo Castro e Simone Cavalcanti
+09,11:35,11,104,sim,"Leitor ainda lento, fila começando a aumentar.",Renata Duarte e Thiago Barros
+09,13:02,14,120,sim,"Fila aumentando, leitor biométrico continua lento. Pedimos apoio informalmente.",Simone Cavalcanti e Leandro Batista
+09,14:27,22,128,sim,"Fila grande se formando, leitor trocado de mesa mas segue lento. Precisa de reforço.",Ana Beatriz e Leandro Batista
+09,16:02,34,132,sim,Fila crítica — leitor biométrico muito lento desde a manhã. Risco real de não atender todos até o fechamento.,Diego Ferreira e Ana Beatriz
+10,08:27,6,27,sim,,João Pedro e Mariana Lima
+10,10:00,7,74,sim,Fila tranquila.,Lucas Martins e Ana Beatriz
+10,11:35,6,142,sim,,Simone Cavalcanti e Renata Duarte
+10,12:58,2,194,sim,,Fernanda Alves e Juliana Ramos
+10,14:26,8,256,sim,,Rafael Souza e Andre Vieira
+10,15:57,10,302,sim,,João Pedro e Eduardo Castro
+11,08:35,5,33,sim,,Felipe Araujo e Mariana Lima
+11,10:00,4,79,sim,,Patricia Gomes e Priscila Nascimento
+11,11:36,3,133,sim,,Gustavo Moreira e Eduardo Castro
+11,13:05,5,195,sim,,Renata Duarte e Patricia Gomes
+11,14:27,7,252,sim,,João Pedro e Priscila Nascimento
+11,15:57,10,299,sim,,Ana Beatriz e Simone Cavalcanti
+12,08:29,10,36,sim,,Bruno Costa e Rafael Souza
+12,10:04,8,82,sim,Tudo calmo por aqui.,Priscila Nascimento e Vanessa Teixeira
+12,11:28,2,144,sim,,Carlos Eduardo e Rodrigo Nunes
+12,12:59,5,216,sim,,Juliana Ramos e Vanessa Teixeira
+12,14:36,6,262,sim,,Aline Correia e Mariana Lima
+12,15:59,6,331,sim,,Bruno Costa e Juliana Ramos
+13,08:36,10,28,sim,Sem novidades.,Gustavo Moreira e Simone Cavalcanti
+13,10:01,8,78,sim,Fila tranquila.,Rodrigo Nunes e Rafael Souza
+13,11:29,7,128,sim,,Paulo Henrique e Juliana Ramos
+13,12:59,5,184,sim,Sem novidades.,Tatiane Melo e Juliana Ramos
+13,14:28,8,234,sim,,Carlos Eduardo e Rafael Souza
+13,16:05,10,278,sim,Sem novidades.,Renata Duarte e Rodrigo Nunes
+14,08:29,5,35,sim,Fila tranquila.,Bruno Costa e Mariana Lima
+14,10:03,3,68,sim,,Marcelo Dias e Juliana Ramos
+14,11:27,2,126,sim,,João Pedro e Fernanda Alves
+14,13:05,8,190,sim,Fila tranquila.,Eduardo Castro e Felipe Araujo
+14,14:30,7,235,sim,,Patricia Gomes e Eduardo Castro
+14,16:06,8,280,sim,,Aline Correia e Beatriz Cardoso
+15,08:31,10,33,sim,,Rodrigo Nunes e Camila Rocha
+15,10:05,4,79,sim,,Paulo Henrique e Renata Duarte
+15,11:33,7,131,sim,,Beatriz Cardoso e Carlos Eduardo
+15,13:05,4,183,sim,,Tatiane Melo e Eduardo Castro
+15,14:29,2,240,sim,,Juliana Ramos e Tatiane Melo
+15,15:56,6,282,sim,,Mariana Lima e Marcelo Dias
+16,08:28,9,39,sim,,Carlos Eduardo e Patricia Gomes
+16,10:01,2,95,sim,,Camila Rocha e Rodrigo Nunes
+16,11:26,8,148,sim,Tudo calmo por aqui.,Mariana Lima e Rafael Souza
+16,13:05,4,213,sim,,Felipe Araujo e Larissa Pinto
+16,14:26,2,263,sim,Fila tranquila.,Mariana Lima e Aline Correia
+16,16:04,6,332,sim,,Thiago Barros e Fernanda Alves

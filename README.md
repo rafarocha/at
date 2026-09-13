@@ -1,93 +1,131 @@
-# Acompanhamento em Tempo Real — 150ª Zona Eleitoral
+# at — Real-Time Election-Day Tracking for the 150th Electoral Zone
 
-Sistema simples de acompanhamento operacional para o dia da eleição: administradores de prédio e
-mesários confirmam tarefas, rondas e ocorrências pelo **Telegram**, e isso alimenta ao vivo um mapa,
-gráficos e painéis — sem ninguém precisar ligar seção por seção pra saber o que está acontecendo.
+**`at` → reversed, `ta` → short for _Timeline for Admins_.** A small, static-site system that
+turns phone calls and paper checklists into a live map, charts and dashboards for election day —
+so nobody has to call every polling section to find out what's going on.
 
-**Público-alvo:** mesários, administradores de prédio, gestores de administradores e juízes eleitorais.
+## Why this exists
 
-👉 **[Veja a demonstração e os cenários de treinamento](https://rafarocha.github.io/at/)** — nenhum
-dado real, só para conhecer a interface.
+This project comes out of 20 years of hands-on experience as a *mesário* (poll worker) — from a
+software developer and architect who, this year, gets to take on the *administrador de prédio*
+(building administrator) role for the first time at a Brazilian election. That overhead view of
+the day — the tasks, the rounds, the incidents, the moments where five sections need help at
+once — is what this tool is built around.
 
-📄 Guia técnico de deploy: [`html-howto/publicar.html`](html-howto/publicar.html).
+**Audience:** poll workers (*mesários*), building administrators, the managers who oversee
+several administrators, and electoral judges.
 
-## Como funciona
+👉 **[See it live](https://rafarocha.github.io/at/)** — the "live" pages connect to the real
+spreadsheet for this election; the scenario pages are fictional training data, clearly labeled.
 
-1. O administrador/mesário abre um link do Telegram (do guia de bolso impresso) e confirma uma
-   tarefa, ronda ou ocorrência com poucos toques.
-2. O bot grava isso numa planilha do Google Sheets (`checkpoints`, `rondas`, `ocorrencias`).
-3. Três páginas HTML estáticas leem essa planilha publicada como CSV e se atualizam sozinhas:
-   **Visão Geral** (mapa + indicadores agregados), **Detalhe por Seção** (os 5 aspectos de uma seção
-   específica) e **Painel Gestor** (grade com todas as seções lado a lado).
+📄 Deployment guide: [`html-howto/publicar.html`](html-howto/publicar.html).
 
-## Estrutura do repositório
+## How it works
 
-| Pasta | Conteúdo |
+1. The administrator/poll worker opens a Telegram link (from the printed pocket guide) and
+   confirms a task, a round, or an incident in a few taps.
+2. The bot writes that confirmation into a Google Sheet (`checkpoints`, `rondas`, `ocorrencias`).
+3. Three static HTML pages read that sheet (published as CSV) and refresh themselves: **Overview**
+   (map + aggregate indicators), **Section Detail** (the 5 tracked aspects of one section) and
+   **Manager Panel** (a grid with every section side by side).
+
+## Repository layout
+
+| Folder | Contents |
 |---|---|
-| `html-mockups/` | Código-fonte real das 3 páginas (`index.html`, `secao.html`, `painel.html`). Precisam de `CSV_URL_CHECKPOINTS` etc. configurados no início do `<script>` para funcionar com uma planilha de verdade. **É aqui que você edita.** Também guarda alguns arquivos antigos/de referência (`sunday.html`, `painel-exemplo-*.html`, `days.html`, `checkpoints-150ze.xlsx`) — me avise se algum desses devia ir para outro lugar. |
-| `html-howto/` | Guias e material de apoio em HTML: `publicar.html` (como publicar no Pages), `sunday-tracking.html` e `tracking_guide.html` (configuração da planilha/CSV), `acoes-seguranca.html` (segurança/segredos). |
-| `scripts/dados/` | Os 3 CSVs fictícios (`checkpoints`/`rondas`/`ocorrencias`) de cada cenário — matéria-prima dos samples e da demo. |
-| `scripts/build_public.py` | Gera `public/` e `teste-local/` a partir de `html-mockups/` + `scripts/dados/`. É o "release" — veja `html-howto/publicar.html`. |
-| `public/` | **Saída publicada no GitHub Pages.** `index.html` é escrito à mão (landing page); `demo/` e `samples/` são gerados — nunca edite à mão. |
-| `teste-local/` | Cópia de `html-mockups/` apontando pros 3 CSVs locais — testa o fetch() de verdade sem depender de planilha. Também gerado pelo build. |
-| `.github/workflows/pages.yml` | CI: builda e publica `public/` a cada push relevante. |
-| `eleicoes-bot/` | Bot do Telegram (Python) que grava as confirmações na planilha. |
-| `docs/` | Manuais de referência (mesário/administrador) — uso interno, não fica no site público. |
+| `html-mockups/` | The real source of the 3 pages (`index.html`, `secao.html`, `painel.html`). Each needs `CSV_URL_CHECKPOINTS` etc. set at the top of the `<script>` to work against a real spreadsheet. **This is where you edit.** Also holds a few older/reference files (`sunday.html`, `painel-exemplo-*.html`, `days.html`, `checkpoints-150ze.xlsx`). |
+| `html-howto/` | HTML guides: `publicar.html` (deploying to Pages), `sunday-tracking.html` and `tracking_guide.html` (spreadsheet/CSV setup), `acoes-seguranca.html` (security/secrets). |
+| `scripts/dados/` | The 3 fictional CSVs (`checkpoints`/`rondas`/`ocorrencias`) for each training scenario — raw material for `public/samples/`. |
+| `scripts/build_public.py` | Generates `public/` and `teste-local/` from `html-mockups/` + `scripts/dados/`. This is the "release" step — see `html-howto/publicar.html`. |
+| `public/` | **What's published on GitHub Pages.** `index.html` is hand-written (the landing page); `demo/` and `samples/` are generated — never edit those by hand. `demo/` is the real, live page, connected to the actual spreadsheet; each `samples/<scenario>/` is a frozen fictional scenario that fetches its own local CSV files (same 3-file split, just not from Google). |
+| `teste-local/` | A copy of `html-mockups/` pointed at 3 local CSV files — exercises the real `fetch()` flow without a spreadsheet. Also generated by the build. |
+| `.github/workflows/pages.yml` | CI: builds and publishes `public/` on every relevant push. |
+| `eleicoes-bot/` | The Telegram bot (Python) that writes confirmations into the spreadsheet. |
+| `docs/` | Reference manuals (poll worker/administrator) — internal use, not part of the public site. |
 
-## Por que 3 CSVs/URLs em vez de um só
+## Why 3 CSVs/URLs instead of one
 
-A planilha do Google Sheets tem 3 abas: `checkpoints`, `ocorrencias` e `rondas`. O recurso
-"Publicar na web" do Google Sheets publica **uma aba por vez** — cada aba gera seu próprio link CSV,
-por isso `html-mockups/*.html` pedem 3 constantes separadas (`CSV_URL_CHECKPOINTS`,
-`CSV_URL_OCORRENCIAS`, `CSV_URL_RONDAS`), uma por aba/link.
+The Google Sheet has 3 tabs: `checkpoints`, `ocorrencias` and `rondas`. Google Sheets' "Publish to
+the web" feature publishes **one tab at a time** — each tab gets its own CSV link, which is why
+`html-mockups/*.html` need 3 separate constants (`CSV_URL_CHECKPOINTS`, `CSV_URL_OCORRENCIAS`,
+`CSV_URL_RONDAS`), one per tab/link.
 
-`scripts/dados/` segue exatamente essa mesma divisão em 3 arquivos brutos por cenário. O
-`scripts/build_public.py` lê esses 3 arquivos e embute o conteúdo deles dentro do `.html` gerado (como
-`MOCK_CHECKPOINTS`, `MOCK_OCORRENCIAS`, `MOCK_RONDAS`), pra virar uma demonstração 100% offline em
-`public/`. A organização em 3 partes é a mesma nos dois casos — o que muda é só se o dado vem de uma
-planilha ao vivo (3 URLs) ou já vem embutido no arquivo (offline).
+`scripts/dados/` mirrors that same 3-file split for each fictional scenario. `public/samples/`
+copies those 3 CSVs next to the generated pages, so they `fetch()` them locally — same shape as
+the real thing, just reading 3 files sitting beside the page instead of 3 Google Sheets URLs.
+`public/demo/` uses that exact same code path, pointed at the real, live URLs instead.
 
-## Gerando um "release" (atualizando public/)
+The published CSV link is **read-only** — anyone with the link can only read it, never edit the
+sheet through it. Editing is done exclusively by the bot, through a completely separate service
+account credential (`eleicoes-bot/creds.json`, never committed) — which is why it's safe to embed
+the read-only CSV link in a public page.
 
-`public/demo/` e `public/samples/` **não são editados à mão** — eles são build output de
-`html-mockups/` + `scripts/dados/`. Pra atualizar:
+## Building a "release" (updating public/)
+
+`public/demo/` and `public/samples/` are **never edited by hand** — they're build output of
+`html-mockups/` + `scripts/dados/`. To rebuild:
 
 ```bash
 python3 scripts/build_public.py
 ```
 
-Isso regenera `public/demo/`, `public/samples/*` e `teste-local/*`. O GitHub Actions roda o mesmo
-comando sozinho a cada push que mexer em `html-mockups/`, `scripts/` ou `public/` — então normalmente
-você nem precisa rodar isso localmente, só `git push` e o site atualiza em 1–2 minutos. Detalhes
-completos (inclusive como ativar o Pages a primeira vez) em
+This regenerates `public/demo/`, `public/samples/*` and `teste-local/*`. GitHub Actions runs the
+same command automatically on every push touching `html-mockups/`, `scripts/` or `public/` — so
+you normally don't need to run this locally, just `git push` and the site updates in 1–2 minutes.
+Full details (including the one-time Pages setup) in
 [`html-howto/publicar.html`](html-howto/publicar.html).
 
-## Testando
+## Connecting demo/ to the real spreadsheet
 
-Duas pontas para testar, sem misturar uma com a outra:
+`public/demo/` is the live version — unlike `public/samples/` (always fictional, frozen in time),
+it reads real, live data from this election. Since the repository is public, this page is visible
+to anyone with the link, including search engines — publishing it this way (rather than keeping it
+local-only or behind a private host) was a deliberate choice.
 
-**1) Interface/UX** (sem planilha nenhuma) — abra qualquer arquivo de `public/samples/` ou
-`public/demo/` com duplo clique. É 100% offline (só os 3 gráficos da Visão Geral precisam de internet,
-por causa da biblioteca de gráficos).
+To turn it on:
 
-**2) Fluxo real de planilha** (fetch, atualização a cada 30s, botão "Atualizar agora", banner de erro)
-— use `teste-local/`. É literalmente `html-mockups/` de produção, só que `CSV_URL_*` apontam pros 3
-`.csv` locais dessa mesma pasta em vez de um link do Google Sheets. Como usa `fetch()` de verdade,
-**precisa rodar por um servidor local** (duplo clique não funciona — navegador bloqueia `fetch` de
-arquivo local):
+1. Publish the 3 spreadsheet tabs as CSV (**File → Share → Publish to the web**, one tab at a
+   time: `checkpoints`, `ocorrencias`, `rondas`) and copy the 3 links.
+2. On GitHub: **Settings → Secrets and variables → Actions → Variables tab** → create 3
+   "Repository variables" named `CSV_URL_CHECKPOINTS`, `CSV_URL_OCORRENCIAS` and `CSV_URL_RONDAS`,
+   pasting the matching link into each.
+3. Re-run the workflow (push, or **Actions → Run workflow**). `public/demo/index.html`,
+   `secao.html` and `painel.html` come out with the 3 real links already filled in, published at
+   `https://rafarocha.github.io/at/demo/`.
+
+Without those variables set, `public/demo/` is generated with the usual placeholder (the page
+itself will ask for configuration). Full walkthrough with screenshots in
+[`html-howto/publicar.html`](html-howto/publicar.html).
+
+## Testing
+
+Because `public/demo/` and every `public/samples/*` page now do a real `fetch()` (of the live
+sheet, or of a local CSV sitting next to the page), **none of them can be opened by double-click**
+— browsers block `fetch()` of local `file://` resources. This only matters for local previewing;
+once pushed to GitHub Pages, everything is served over HTTPS and just works.
+
+Two ways to test locally, without mixing them up:
+
+**1) Any generated page** (`public/demo/`, any `public/samples/<scenario>/`, or `teste-local/`) —
+serve the folder over HTTP and open it in a browser:
 
 ```bash
-cd teste-local
+cd public/samples/sample-1-otimista   # or public/demo, or teste-local
 python3 -m http.server 8000
-# depois abra http://localhost:8000/index.html
+# then open http://localhost:8000/index.html
 ```
 
-Edite qualquer um dos 3 CSVs, salve, e clique em "🔄 Atualizar agora" (ou espere os 30s) — dá pra ver a
-mudança aparecer, exatamente como vai se comportar com a planilha real. Quando a planilha definitiva
-estiver pronta, publique cada aba (`checkpoints`, `ocorrencias`, `rondas`) individualmente em **Arquivo
-→ Compartilhar → Publicar na web**, escolhendo a aba certa e o formato CSV — isso gera um link por aba,
-que você cola nas constantes `CSV_URL_*` de `html-mockups/index.html`, `secao.html` e `painel.html`.
+`public/samples/*` and `teste-local/` read from CSV files sitting right there in the folder — edit
+one, save, and click "🔄 Atualizar agora" (or wait for the 30s auto-refresh) to see it update,
+exactly like it will behave with the real spreadsheet. `public/demo/` needs the real `CSV_URL_*`
+filled in (see the section above) to show anything.
 
-## Licença
+**2) Editing `html-mockups/` directly** — once your spreadsheet is ready, publish each tab
+(`checkpoints`, `ocorrencias`, `rondas`) individually via **File → Share → Publish to the web**,
+CSV format, and paste each link into the matching `CSV_URL_*` constant in
+`html-mockups/index.html`, `secao.html` and `painel.html`. Serve that folder locally the same way
+to confirm it reads your real sheet before relying on `public/demo/`.
 
-GNU GPLv3 — veja [LICENSE](LICENSE).
+## License
+
+GNU GPLv3 — see [LICENSE](LICENSE).

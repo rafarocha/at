@@ -7,10 +7,13 @@ Nenhum dos nomes, horários ou números aqui é real.
 ## Como usar com o grupo
 
 1. Abra os 3 arquivos com as pessoas que vão analisar (dê a cada uma um notebook ou celular, ou
-   projete na tela): **`index.html`** primeiro, depois **`secao.html`** e **`painel.html`** — os
-   três já vêm com os dados fixos embutidos, então basta dar duplo clique para abrir (funciona
-   offline, exceto pelos gráficos, que carregam uma biblioteca (D3) da internet — se não houver
-   internet no momento do treino, os 3 gráficos da home não aparecem, mas o resto funciona normalmente).
+   projete na tela): **`index.html`** primeiro, depois **`secao.html`** e **`painel.html`**. O
+   mais simples é abrir direto pelo link publicado no GitHub Pages (`.../at/samples/sample-1-otimista/`)
+   — os dados deste cenário são fixos (o relógio fica sempre em 16:12, não importa quando você abrir).
+   Testando localmente antes de publicar? Estas páginas leem um CSV pela mesma pasta, então **dar
+   duplo clique não funciona** — sirva a pasta com `python3 -m http.server` (veja o `README.md` na
+   raiz do repositório, seção "Testando"). Os 3 gráficos da home também precisam de internet, por
+   causa da biblioteca (D3) que carregam.
 2. Peça para o grupo responder, só olhando os painéis (sem ler o `GABARITO.md` ainda):
    - "Na sua opinião, está tudo bem neste local de votação agora, às 16:12?"
    - "Se você tivesse que agir em cima de UMA coisa agora mesmo, qual seria?"

@@ -35,6 +35,11 @@
     border:1px solid rgba(227,171,63,0.35); border-radius:9px; padding:8px 12px; font-size:12.5px;
     font-weight:800; margin-top:14px;
   }
+  .badge-live {
+    display:inline-flex; align-items:center; gap:7px; background: var(--red-dim); color: var(--red);
+    border:1px solid rgba(255,107,107,0.35); border-radius:10px; padding:9px 13px; font-size:12.5px; font-weight:700;
+    margin-top:10px;
+  }
 
   section.block {
     background: var(--bg-card); border:1px solid var(--border); border-radius:14px;
@@ -99,7 +104,7 @@
       ocorrências pelo Telegram — e para gestores, administradores e a Justiça Eleitoral acompanharem
       tudo isso ao vivo, em um mapa e em painéis, sem precisar ligar seção por seção.
     </div>
-    <div class="badge-aviso">⚠️ Esta é a página pública de demonstração — todos os dados mostrados abaixo são fictícios.</div>
+    <div class="badge-aviso">⚠️ Os cenários de simulação abaixo usam dados fictícios — a Visão Geral/Detalhe/Painel "ao vivo" já lê a planilha real.</div>
   </header>
 
   <section class="block">
@@ -138,17 +143,19 @@
 
   <section class="block">
     <h2>🚀 Explore agora</h2>
-    <div class="section-sub">Nenhum passo aqui mexe em dados reais — é tudo demonstração</div>
+    <div class="section-sub">O passo 1 é a versão real; o passo 2 é treino com dados fictícios</div>
 
     <div class="step">
       <div class="step-num">1</div>
       <div class="step-body">
-        <div class="s-title">Veja o sistema "ao vivo" (dados fictícios)</div>
+        <div class="s-title">Visão Geral, Detalhe e Painel — ao vivo</div>
         <div class="s-detail">
-          As três páginas como ficam no dia da eleição, já com dados de exemplo carregados — dá pra clicar
-          em qualquer seção e ver o detalhe.
+          Estas três páginas <strong>não são demonstração</strong>: leem a planilha real do dia da eleição
+          (publicada pelo Google Sheets como CSV, a cada 30s) e mostram o que está acontecendo agora — fila,
+          votos, ocorrências e quem confirmou cada item.
         </div>
-        <div class="link-row">
+        <div class="badge-live">🔴 Ao vivo — os dados aqui são reais e ficam visíveis a qualquer pessoa com este link, inclusive buscadores.</div>
+        <div class="link-row" style="margin-top:10px;">
           <a class="link-btn primary" href="demo/index.html">🛰️ Visão Geral</a>
           <a class="link-btn primary" href="demo/secao.html">🔍 Detalhe por Seção</a>
           <a class="link-btn primary" href="demo/painel.html">📊 Painel Gestor</a>
@@ -159,7 +166,7 @@
     <div class="step">
       <div class="step-num">2</div>
       <div class="step-body">
-        <div class="s-title">Treine decisões com os cenários de simulação</div>
+        <div class="s-title">Treine decisões com os cenários de simulação (dados fictícios)</div>
         <div class="s-detail">
           Quatro fotografias fictícias do dia — uma tranquila e três de um mesmo dia difícil em horários
           diferentes (10:30, 13:30 e 16:30). Bom para treinar equipe: "o que você faria agora, com o que
@@ -205,13 +212,15 @@
         </div>
       </div>
     </div>
+
   </section>
 
   <footer class="page-footer">
     Projeto independente de apoio operacional para o dia da eleição · código aberto em
     <a href="https://github.com/rafarocha/at">github.com/rafarocha/at</a><br>
-    Todas as páginas acima são <code>100% estáticas</code> e não enviam nem recebem dados reais — servem só para
-    conhecer a interface.
+    Todas as páginas acima são <code>100% estáticas</code> (HTML+JS puro, sem servidor) e só fazem uma
+    requisição de <code>fetch()</code> para ler um CSV — a Visão Geral/Detalhe/Painel "ao vivo" lê a planilha
+    real; os cenários de simulação leem um CSV fixo publicado ao lado da própria página.
   </footer>
 
 </div>

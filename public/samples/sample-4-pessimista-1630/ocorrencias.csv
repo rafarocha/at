@@ -1,0 +1,19 @@
+codigo,secao,descricao,reportado_por,horario,status
+FILA,01,"Fila muito grande, eleitores reclamando da demora.",Patricia Gomes e Larissa Pinto,15:21,aberta
+URNA,02,"Urna parada, votação suspensa nesta seção aguardando substituição.",Tatiane Melo e Simone Cavalcanti,15:33,aberta
+ENERGIA,03,"Sem energia há mais de 20 minutos, urna rodando no limite da bateria.",Simone Cavalcanti e Fernanda Alves,15:17,aberta
+SEGURANCA,04,"Confusão generalizada na entrada, PM já está no local.",Paulo Henrique e Fernanda Alves,15:53,aberta
+OUTRO,05,Diversas tarefas do administrador ainda não confirmadas.,Renata Duarte e Beatriz Cardoso,15:22,aberta
+OUTRO,06,"Sem contato com a seção há mais de uma ronda, tentando localizar.",Tatiane Melo e Paulo Henrique,16:00,aberta
+OUTRO,07,"Ritmo de votação anormalmente lento, causa ainda não identificada.",Beatriz Cardoso e Renata Duarte,15:34,aberta
+FILA,08,Fila grande e mesa sem administrador para organizar.,Rodrigo Nunes e Fernanda Alves,15:37,aberta
+OUTRO,08,Administrador da seção não localizado desde o início da tarde.,Paulo Henrique e Vanessa Teixeira,15:37,aberta
+FILA,09,"Fila muito grande, eleitores reclamando da demora.",Larissa Pinto e Fernanda Alves,15:07,aberta
+URNA,10,"Urna parada, votação suspensa nesta seção aguardando substituição.",Bruno Costa e Felipe Araujo,15:25,aberta
+ENERGIA,11,"Sem energia há mais de 20 minutos, urna rodando no limite da bateria.",Simone Cavalcanti e Tatiane Melo,15:15,aberta
+SEGURANCA,12,"Confusão generalizada na entrada, PM já está no local.",Aline Correia e Ana Beatriz,15:16,aberta
+OUTRO,13,Diversas tarefas do administrador ainda não confirmadas.,Vanessa Teixeira e Carlos Eduardo,16:16,aberta
+OUTRO,14,"Sem contato com a seção há mais de uma ronda, tentando localizar.",Beatriz Cardoso e Juliana Ramos,15:45,aberta
+OUTRO,15,"Ritmo de votação anormalmente lento, causa ainda não identificada.",Paulo Henrique e Carlos Eduardo,16:12,aberta
+URNA,16,"Urna parada, votação suspensa nesta seção aguardando substituição.",Eduardo Castro e Paulo Henrique,15:19,aberta
+OUTRO,16,"Votação parada por tempo prolongado, fila parada esperando.",Larissa Pinto e Thiago Barros,15:19,aberta

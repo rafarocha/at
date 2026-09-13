@@ -1,0 +1,6 @@
+codigo,secao,descricao,reportado_por,horario,status
+URNA,05,"Urna reiniciou sozinha, voltou a funcionar normalmente em seguida.",Diego Ferreira e Rodrigo Nunes,09:40,resolvida
+FILA,12,"Fila um pouco maior no início da manhã, normalizada até 09h.",João Pedro e Beatriz Cardoso,08:10,resolvida
+ENERGIA,03,"Oscilação breve de energia, sem impacto na votação.",Aline Correia e Mariana Lima,10:15,resolvida
+OUTRO,14,"Eleitor sem título, orientado a procurar o local correto.",Renata Duarte e Beatriz Cardoso,11:05,resolvida
+FILA,07,"Fila formou no almoço, dissolvida em 20 minutos.",Tatiane Melo e Gustavo Moreira,12:20,resolvida

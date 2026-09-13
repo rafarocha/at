@@ -31,6 +31,13 @@ jobs:
         with:
           python-version: "3.x"
       - name: Gerar public/ e teste-local/ a partir de html-mockups/ + scripts/dados/
+        # CSV_URL_* vêm das "Variables" do repositório (Settings → Secrets and variables →
+        # Actions → aba Variables) — é o que faz public/demo/ sair conectado à planilha real,
+        # sem precisar commitar esses links no código. Veja html-howto/publicar.html.
+        env:
+          CSV_URL_CHECKPOINTS: ${{ vars.CSV_URL_CHECKPOINTS }}
+          CSV_URL_OCORRENCIAS: ${{ vars.CSV_URL_OCORRENCIAS }}
+          CSV_URL_RONDAS: ${{ vars.CSV_URL_RONDAS }}
         run: python3 scripts/build_public.py
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
