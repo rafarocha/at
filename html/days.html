@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atividades Operacionais de Campo: Sexta, Sábado & Segunda (150ª ZE • TRE-PE)</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg-card: #161b22;
+    --border: #30363d;
+    --fg: #e6edf3;
+    --fg-muted: #9da7b3;
+    --fg-sub: #6e7681;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --amber: #d29922;
+    --red: #f85149;
+    --purple: #bc8cff;
+    --cyan: #39c5cf;
+    --mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  body.light-mode {
+    --bg: #f8fafc;
+    --bg-card: #ffffff;
+    --border: #cbd5e1;
+    --fg: #0f172a;
+    --fg-muted: #475569;
+    --fg-sub: #64748b;
+    --accent: #0284c7;
+    --green: #16a34a;
+    --amber: #b45309;
+    --red: #dc2626;
+    --purple: #7c3aed;
+    --cyan: #0891b2;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background-color: var(--bg);
+    color: var(--fg);
+    font-family: var(--sans);
+    line-height: 1.4;
+    font-size: 12.5px;
+    padding: 14px 20px 36px;
+    transition: background-color 0.2s, color 0.2s;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .wrap { max-width: 1380px; margin: 0 auto; }
+
+  header.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+    gap: 16px;
+  }
+
+  .header-left { display: flex; align-items: center; gap: 14px; }
+  .logo-box { display: flex; align-items: center; gap: 8px; }
+
+  .logo-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    color: var(--fg);
+  }
+
+  .logo-badge svg { width: 16px; height: 16px; }
+
+  .header-titles h1 {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    margin-bottom: 2px;
+  }
+
+  .header-titles p {
+    color: var(--fg-muted);
+    font-size: 11px;
+  }
+
+  .header-actions { display: flex; gap: 8px; }
+
+  .btn {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--fg);
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .phases-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+
+  .phase-col { display: flex; flex-direction: column; }
+
+  .phase-header {
+    padding: 7px 10px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px 8px 0 0;
+    border-bottom: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .phase-title {
+    font-weight: 700;
+    font-size: 11.5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .phase-tag {
+    font-family: var(--mono);
+    font-size: 9px;
+    padding: 1px 6px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    color: var(--fg-muted);
+  }
+
+  .timeline-stream {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 0 0 8px 8px;
+    padding: 12px 10px 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: relative;
+    flex: 1;
+  }
+
+  .timeline-stream::before {
+    content: "";
+    position: absolute;
+    top: 16px;
+    bottom: 16px;
+    left: 21px;
+    width: 2px;
+    background: var(--border);
+  }
+
+  .timeline-entry {
+    position: relative;
+    padding-left: 22px;
+  }
+
+  .timeline-entry::before {
+    content: "";
+    position: absolute;
+    left: 1px;
+    top: 4px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--bg-card);
+    border: 2px solid var(--accent);
+    z-index: 2;
+  }
+
+  .timeline-entry.green::before { border-color: var(--green); }
+  .timeline-entry.purple::before { border-color: var(--purple); }
+  .timeline-entry.amber::before { border-color: var(--amber); }
+
+  .entry-meta {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 2px;
+  }
+
+  .entry-time {
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 10.5px;
+    color: var(--accent);
+  }
+
+  .timeline-entry.green .entry-time { color: var(--green); }
+  .timeline-entry.purple .entry-time { color: var(--purple); }
+  .timeline-entry.amber .entry-time { color: var(--amber); }
+
+  .entry-item-code {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    color: var(--cyan);
+  }
+
+  .entry-page {
+    font-size: 9px;
+    font-weight: 600;
+    padding: 1px 4px;
+    border-radius: 4px;
+    background: rgba(88, 166, 255, 0.12);
+    color: var(--accent);
+    border: 1px solid rgba(88, 166, 255, 0.25);
+  }
+
+  .entry-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--fg);
+    margin-bottom: 2px;
+  }
+
+  .entry-desc {
+    font-size: 10px;
+    color: var(--fg-muted);
+    line-height: 1.32;
+  }
+
+  .entry-desc strong { color: var(--fg); font-weight: 600; }
+
+  .footer-strip {
+    margin-top: 12px;
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 12px;
+  }
+
+  .callout {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 9.5px;
+    color: var(--fg-muted);
+  }
+
+  .callout.green { border-left-color: var(--green); }
+
+  @media print {
+    @page {
+      size: A4 landscape;
+      margin: 4mm 6mm;
+    }
+
+    body {
+      padding: 0 !important;
+      background: #ffffff !important;
+      color: #0f172a !important;
+      font-size: 9px !important;
+    }
+
+    .wrap { max-width: 100% !important; }
+    .header-actions { display: none !important; }
+    header.page-header { padding-bottom: 4px !important; margin-bottom: 6px !important; }
+    .phases-grid { gap: 6px !important; }
+    .phase-header { padding: 3px 5px !important; }
+    .timeline-stream {
+      padding: 5px 6px 5px 12px !important;
+      gap: 6px !important;
+      background: #ffffff !important;
+      border-color: #cbd5e1 !important;
+    }
+    .timeline-stream::before {
+      left: 15px !important;
+      background: #cbd5e1 !important;
+    }
+    .timeline-entry { padding-left: 15px !important; }
+    .timeline-entry::before { left: 0px !important; width: 6px !important; height: 6px !important; }
+    .entry-time { font-size: 8.5px !important; }
+    .entry-title { font-size: 9px !important; }
+    .entry-desc { font-size: 7.8px !important; line-height: 1.18 !important; }
+    .entry-page { font-size: 7px !important; padding: 0 2px !important; }
+    .footer-strip { margin-top: 5px !important; gap: 6px !important; }
+    .callout { padding: 4px 6px !important; font-size: 7.5px !important; background: #f8fafc !important; border-color: #cbd5e1 !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="page-header">
+    <div class="header-left">
+      <div class="logo-box">
+        <div class="logo-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="9" stroke="var(--amber)"/>
+            <path d="M12 7v5l3 3" stroke="var(--accent)"/>
+            <path d="M5 12h14" stroke="var(--green)"/>
+          </svg>
+          <span>JUSTIÇA ELEITORAL</span>
+        </div>
+        <div class="logo-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 6h16M4 12h16M4 18h10" stroke="var(--accent)"/>
+            <circle cx="18" cy="18" r="2.5" fill="var(--amber)"/>
+          </svg>
+          <span>150ª ZE • RECIFE/PE</span>
+        </div>
+      </div>
+      <div class="header-titles">
+        <h1>Atividades de Campo: Sexta-Feira, Sábado e Segunda-Feira</h1>
+        <p>Ações logísticas práticas, testes elétricos, layout de acessibilidade e devolução (Manual 2026, págs. 5 a 30)</p>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button class="btn" onclick="toggleTheme()">🌓 Modo Claro / Escuro</button>
+      <button class="btn" onclick="window.print()">🖨️ Imprimir A4</button>
+    </div>
+  </header>
+
+  <div class="phases-grid">
+
+    <!-- SEXTA-FEIRA: RECEBIMENTO E TESTES -->
+    <div class="phase-col">
+      <div class="phase-header">
+        <div class="phase-title"><span>📦</span> 1º Dia: Sexta-Feira</div>
+        <span class="phase-tag">Recebimento &amp; Testes</span>
+      </div>
+      <div class="timeline-stream">
+
+        <div class="timeline-entry">
+          <div class="entry-meta">
+            <span class="entry-time">07:30</span>
+            <span class="entry-item-code">Cap. 2, Item 1 / 2</span>
+            <span class="entry-page">Pág. 5</span>
+          </div>
+          <div class="entry-title">📦 Receber as Urnas da Transportadora</div>
+          <div class="entry-desc">Estar no colégio às 07h30 (entrega inicia a partir das 08h). Conferir fisicamente quantidade total de urnas e numeração de cada seção antes de assinar o recibo de entrega.</div>
+        </div>
+
+        <div class="timeline-entry amber">
+          <div class="entry-meta">
+            <span class="entry-time">09:00 – 10:00</span>
+            <span class="entry-item-code">Cap. 2, Item 3</span>
+            <span class="entry-page">Pág. 5, 8</span>
+          </div>
+          <div class="entry-title">🏢 Retirar Sacolas de Materiais no QG</div>
+          <div class="entry-desc">1 a 2 administradores comparecem em 1 carro com mala ao QG San Martin (Av. Cônsul Vilares Fragoso, 291). Transportar materiais diretamente ao colégio, sem paradas intermediárias.</div>
+        </div>
+
+        <div class="timeline-entry">
+          <div class="entry-meta">
+            <span class="entry-time">Manhã</span>
+            <span class="entry-item-code">Cap. 2, Item 8 / 5</span>
+            <span class="entry-page">Pág. 8, 9</span>
+          </div>
+          <div class="entry-title">🔌 Testar Tomadas &amp; Trancar Sala Segura</div>
+          <div class="entry-desc">Testar todas as tomadas das salas com carregador de celular. Guardar urnas e sacolas em sala segura e manter a posse física exclusiva da chave com o administrador designado.</div>
+        </div>
+
+        <div class="timeline-entry green">
+          <div class="entry-meta">
+            <span class="entry-time">Encerramento</span>
+            <span class="entry-item-code">Cap. 2, Item 3 (Check)</span>
+            <span class="entry-page">Pág. 7, 9</span>
+          </div>
+          <div class="entry-title">📋 Conferir Sacolas pelo Recibo &amp; PM</div>
+          <div class="entry-desc">Conferir cada item das sacolas dos mesários usando o formulário de recibo. Faltas devem ser comunicadas na própria sexta-feira ao Cartório. Alinhar acesso com a Polícia Militar.</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SÁBADO: MONTAGEM E AUDITORIA -->
+    <div class="phase-col">
+      <div class="phase-header">
+        <div class="phase-title"><span>📐</span> 2º Dia: Sábado</div>
+        <span class="phase-tag">Montagem &amp; Auditoria</span>
+      </div>
+      <div class="timeline-stream">
+
+        <div class="timeline-entry amber">
+          <div class="entry-meta">
+            <span class="entry-time">07:30</span>
+            <span class="entry-item-code">Cap. 3, Item 1 / 2</span>
+            <span class="entry-page">Pág. 10</span>
+          </div>
+          <div class="entry-title">🗳️ Ligar Urnas nas Tomadas c/ Extensões</div>
+          <div class="entry-desc">Primeira tarefa ao chegar: tirar urnas das caixas e ligar nas tomadas com réguas/extensões <strong>antes</strong> da chegada dos técnicos do Cartório para teste oficial (visitas até 13h).</div>
+        </div>
+
+        <div class="timeline-entry green">
+          <div class="entry-meta">
+            <span class="entry-time">Manhã</span>
+            <span class="entry-item-code">Cap. 3, Item 3 / 4</span>
+            <span class="entry-page">Pág. 10–13</span>
+          </div>
+          <div class="entry-title">📐 Montar Layout c/ Presidentes de Mesa</div>
+          <div class="entry-desc">Organizar salas com os Presidentes: isolar cabina de janelas/vãos; posicionar cadeira para celular ao lado da urna; fixar fios no piso com papel e fita; liberar portas (&gt;80cm) sem degraus.</div>
+        </div>
+
+        <div class="timeline-entry">
+          <div class="entry-meta">
+            <span class="entry-time">Manhã</span>
+            <span class="entry-item-code">Cap. 3, Item 3.f–i</span>
+            <span class="entry-page">Pág. 11, 12</span>
+          </div>
+          <div class="entry-title">📌 Afixar Indicadores, Avisos &amp; Candidatos</div>
+          <div class="entry-desc">Colar indicadores plastificados nas portas (usar fita apenas atrás p/ reuso), aviso de proibição de celular, relação de candidatos no papel madeira no pátio e cartaz do Disque Eleitor.</div>
+        </div>
+
+        <div class="timeline-entry purple">
+          <div class="entry-meta">
+            <span class="entry-time">Tarde</span>
+            <span class="entry-item-code">Cap. 3, Item 5 / 6</span>
+            <span class="entry-page">Pág. 13</span>
+          </div>
+          <div class="entry-title">🔍 Colher Frequência &amp; Checar Auditoria</div>
+          <div class="entry-desc">Cobrir lentes de câmeras das salas. Colher frequência dos Presidentes e entregar declarações. Aguardar resultado do sorteio de auditoria de autenticidade para liberar a equipe.</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SEGUNDA-FEIRA: DEVOLUÇÃO -->
+    <div class="phase-col">
+      <div class="phase-header">
+        <div class="phase-title"><span>🚚</span> 4º Dia: Segunda-Feira</div>
+        <span class="phase-tag">Devolução &amp; Relatório</span>
+      </div>
+      <div class="timeline-stream">
+
+        <div class="timeline-entry amber">
+          <div class="entry-meta">
+            <span class="entry-time">07:00</span>
+            <span class="entry-item-code">Cap. 5, Item 3</span>
+            <span class="entry-page">Pág. 30</span>
+          </div>
+          <div class="entry-title">🚚 Entregar Urnas à Transportadora</div>
+          <div class="entry-desc">Administradores no colégio pontualmente às 07h00 aguardando o caminhão para recolhimento das urnas trancadas na sala segura (a rota começa cedo e segue cronograma próprio).</div>
+        </div>
+
+        <div class="timeline-entry green">
+          <div class="entry-meta">
+            <span class="entry-time">09:00 – 10:00</span>
+            <span class="entry-item-code">Cap. 5, Item 1</span>
+            <span class="entry-page">Pág. 28</span>
+          </div>
+          <div class="entry-title">📁 Devolver Envelope Branco &amp; Sacolas no QG</div>
+          <div class="entry-desc">1 a 2 administradores entregam no QG San Martin: <em>Envelope Branco</em> (Zerésima, BUs, Atas, BJ, BIM, BEHB), sacolas dos mesários e indicadores de seção sem fitas adesivas.</div>
+        </div>
+
+        <div class="timeline-entry purple">
+          <div class="entry-meta">
+            <span class="entry-time">Segunda (Online)</span>
+            <span class="entry-item-code">Cap. 5, Item 2</span>
+            <span class="entry-page">Pág. 29</span>
+          </div>
+          <div class="entry-title">📝 Redigir &amp; Enviar Relatório Crítico</div>
+          <div class="entry-desc">Elaborado em casa pelo administrador escalado: avaliação de desempenho dos Presidentes de mesa, problemas operacionais e croqui do prédio enviado para <code>ze150@tre-pe.jus.br</code>.</div>
+        </div>
+
+        <div class="timeline-entry">
+          <div class="entry-meta">
+            <span class="entry-time">Prazo Final</span>
+            <span class="entry-item-code">Cap. 5, Item 5</span>
+            <span class="entry-page">Pág. 30</span>
+          </div>
+          <div class="entry-title">🎽 Devolver Coletes Oficiais Limpos</div>
+          <div class="entry-desc">Entregar coletes lavados e ensacados no QG até quarta pós-pleito, ou no Cartório Eleitoral (Forte das Cinco Pontas) até 15/10 (1º Turno) ou 15/11 (2º Turno).</div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer-strip">
+    <div class="callout">
+      <strong>⚠️ Materiais Reutilizáveis (Pág. 28):</strong> Apenas os Indicadores de Seção plastificados e os Coletes devem retornar ao TRE. Todos os demais avisos comuns de papel devem ser descartados no colégio após as 17h.
+    </div>
+    <div class="callout green">
+      <strong>🔒 Regra de Segurança das Urnas (Pág. 8):</strong> Em nenhuma hipótese as urnas eletrônicas podem ser abertas ou ligadas na sexta-feira. A chave da sala das urnas permanece em poder do administrador.
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function toggleTheme() { document.body.classList.toggle('light-mode'); }
+</script>
+
+</body>
+</html>

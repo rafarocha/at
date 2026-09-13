@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎓 Exemplo — Fila grande em várias seções</title>
+<style>
+  :root {
+    --bg: #0a0e14; --bg-card: #141a24; --bg-card-2: #1a2230; --bg-chip: #19212c;
+    --border: #2a3342; --fg: #eef2f7; --fg-muted: #a8b3c2; --fg-sub: #7c8798;
+    --accent: #5eaaff; --accent-dim: rgba(94,170,255,0.14);
+    --green: #3ecf82; --green-dim: rgba(62,207,130,0.14);
+    --amber: #e3ab3f; --amber-dim: rgba(227,171,63,0.14);
+    --red: #ff6b6b; --red-dim: rgba(255,107,107,0.14);
+    --purple: #c792ea; --purple-dim: rgba(199,146,234,0.14);
+    --gray: #6b7686; --gray-dim: rgba(107,118,134,0.18);
+    --mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; margin:0; padding:0; }
+  body { background: var(--bg); color: var(--fg); font-family: var(--sans); font-size: 15px; line-height: 1.55; font-weight: 500; padding: 16px 14px 60px; }
+  .wrap { max-width: 900px; margin: 0 auto; }
+
+  header.hero { background: linear-gradient(160deg, var(--bg-card) 0%, var(--bg-card-2) 100%); border:1px solid var(--border); border-radius:16px; padding:16px 18px; margin-bottom:16px; display:flex; flex-wrap:wrap; gap:14px; align-items:center; justify-content:space-between; }
+  header.hero h1 { font-size:19px; font-weight:800; letter-spacing:-0.2px; }
+  header.hero .sub { color:var(--fg-muted); font-size:12.5px; font-weight:600; margin-top:2px; }
+  .clock-box { display:flex; align-items:center; gap:10px; }
+  .clock { font-family: var(--mono); font-size:20px; font-weight:800; color: var(--accent); background: var(--bg); border:1px solid var(--border); border-radius:10px; padding:8px 14px; }
+  .refresh-btn { background: var(--accent-dim); color: var(--accent); border:1px solid var(--border); border-radius:8px; padding:8px 12px; font-weight:800; font-size:12.5px; cursor:pointer; font-family: var(--sans); }
+  .refresh-btn:active { filter: brightness(1.2); }
+  .last-sync { font-size:11px; color: var(--fg-sub); font-weight:700; margin-top:4px; }
+
+  #errorBanner { display:none; background: var(--red-dim); border:1px solid var(--red); color: var(--red); border-radius:10px; padding:10px 14px; font-size:13px; font-weight:700; margin-bottom:14px; }
+
+  .summary-bar { display:flex; gap:8px; flex-wrap:wrap; margin-bottom: 16px; }
+  .summary-chip { flex:1; min-width:80px; text-align:center; border-radius:10px; padding:10px 8px; font-size:11.5px; font-weight:800; border:1px solid var(--border); }
+  .summary-chip .n { font-family: var(--mono); font-size:19px; display:block; }
+  .summary-chip.ok { background: var(--green-dim); color: var(--green); }
+  .summary-chip.warn { background: var(--amber-dim); color: var(--amber); }
+  .summary-chip.late { background: var(--red-dim); color: var(--red); }
+  .summary-chip.wait { background: var(--gray-dim); color: var(--gray); }
+
+  section.block { background: var(--bg-card); border:1px solid var(--border); border-radius:14px; padding:14px 14px 12px; margin-bottom:16px; }
+  section.block h2 { font-size:14.5px; font-weight:800; margin-bottom:10px; display:flex; align-items:center; gap:7px; }
+
+  .geral-list { display:flex; flex-direction:column; gap:6px; }
+  .geral-item { display:flex; align-items:center; gap:8px; background: var(--bg-card-2); border:1px solid var(--border); border-radius:8px; padding:7px 10px; font-size:12.5px; }
+  .geral-item .dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+  .geral-item .dot.ok { background: var(--green); }
+  .geral-item .dot.warn { background: var(--amber); }
+  .geral-item .dot.late { background: var(--red); }
+  .geral-item .dot.wait { background: var(--gray); }
+  .geral-item .gcode { font-family: var(--mono); font-weight:800; font-size:11px; color: var(--fg-sub); flex-shrink:0; }
+  .geral-item .gtxt { color: var(--fg-muted); flex:1; }
+
+  .grid-checklist { display:grid; grid-template-columns: repeat(auto-fill, minmax(150px,1fr)); gap:8px; }
+  .sec-card { border-radius:10px; padding:10px 11px; border:1px solid var(--border); background: var(--bg-card-2); }
+  .sec-card .sec-name { font-size:13px; font-weight:800; display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; }
+  .sec-card .dot { width:9px; height:9px; border-radius:50%; display:inline-block; }
+  .sec-card .dot.ok { background: var(--green); }
+  .sec-card .dot.warn { background: var(--amber); }
+  .sec-card .dot.late { background: var(--red); }
+  .sec-card .dot.wait { background: var(--gray); }
+  .sec-meta { font-size:11px; color:var(--fg-sub); font-weight:700; margin-bottom:5px; }
+  .task-pips { display:flex; gap:3px; flex-wrap:wrap; }
+  .pip { width:17px; height:17px; border-radius:4px; font-size:8.5px; display:flex; align-items:center; justify-content:center; font-weight:800; font-family: var(--mono); cursor:default; }
+  .pip.ok { background: var(--green-dim); color: var(--green); }
+  .pip.warn { background: var(--amber-dim); color: var(--amber); }
+  .pip.late { background: var(--red-dim); color: var(--red); }
+  .pip.wait { background: var(--gray-dim); color: var(--gray); }
+
+  .occ-feed { display:flex; flex-direction:column; gap:8px; }
+  .occ-item { background: var(--bg-card-2); border:1px solid var(--border); border-left:3px solid var(--purple); border-radius:8px; padding:9px 11px; font-size:12.5px; color: var(--fg-muted); display:flex; flex-direction:column; gap:3px; }
+  .occ-item b { color: var(--fg); }
+  .occ-head { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .occ-sec, .occ-time { font-size:10.5px; color:var(--fg-sub); font-weight:700; }
+  .occ-text { color: var(--fg-muted); }
+  .occ-foot { font-size:10.5px; color:var(--fg-sub); font-style:italic; }
+  .occ-empty { color: var(--fg-sub); font-size:12.5px; font-style:italic; }
+
+  /* tooltip discreto (nome de quem confirmou + observação) — usado em pips e itens confirmados */
+  .tip-target { position: relative; cursor: help; }
+  .tip-bubble {
+    display:none; position:absolute; left:50%; bottom:calc(100% + 6px); transform:translateX(-50%);
+    background: var(--bg-card-2); border:1px solid var(--border); border-radius:8px; padding:6px 9px;
+    font-size:10.5px; font-weight:600; color: var(--fg); white-space:normal; width:max-content; max-width:180px;
+    box-shadow:0 6px 16px rgba(0,0,0,.45); z-index:30; line-height:1.4; text-align:left; pointer-events:none;
+  }
+  .tip-bubble b { color: var(--accent); display:block; font-size:11px; margin-bottom:2px; }
+  .tip-target:hover .tip-bubble { display:block; }
+
+  .legend-row { display:flex; flex-wrap:wrap; gap:12px; font-size:11.5px; color:var(--fg-muted); }
+  .legend-row span { display:flex; align-items:center; gap:5px; }
+  .legend-dot { width:9px; height:9px; border-radius:50%; display:inline-block; }
+
+  footer.page-footer { text-align:center; color: var(--fg-sub); font-size:11px; font-weight:600; padding: 16px 6px 4px; }
+  footer.page-footer code { font-family: var(--mono); background: var(--bg-chip); border:1px solid var(--border); border-radius:5px; padding:1px 5px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div style="background:var(--purple-dim);border:1px solid var(--purple);color:var(--purple);border-radius:10px;padding:9px 14px;font-size:12.5px;font-weight:800;margin-bottom:14px;text-align:center;">🎓 EXEMPLO DE TREINAMENTO — dados fictícios, cenário: Fila grande em várias seções. Não é o painel ao vivo.</div>
+
+  <header class="hero">
+    <div>
+      <h1>🛰️ Mapa de Atividades — 150ª ZE</h1>
+      <div class="sub">Painel ao vivo · lê a planilha publicada a cada <span id="refreshSecs">30</span>s · 💡 passe o mouse num item verde para ver quem confirmou e a observação</div>
+      <div class="last-sync" id="lastSync">Carregando dados pela primeira vez…</div>
+    </div>
+    <div class="clock-box">
+      <div class="clock" id="clockDisplay">--:--</div>
+      <button class="refresh-btn" id="refreshBtn">🔄 Atualizar agora</button>
+    </div>
+  </header>
+
+  <div id="errorBanner"></div>
+
+  <div class="summary-bar" id="summaryBar"></div>
+
+  <section class="block">
+    <h2>🔵 Tarefas Gerais (G) — visão geral</h2>
+    <div class="geral-list" id="geralList"></div>
+  </section>
+
+  <section class="block">
+    <h2>📍 Grid por Seção — Tarefas T##</h2>
+    <div class="grid-checklist" id="gridChecklist"></div>
+    <div class="legend-row" style="margin-top:12px;">
+      <span><span class="legend-dot" style="background:var(--gray)"></span> Ainda não chegou a hora</span>
+      <span><span class="legend-dot" style="background:var(--amber)"></span> No horário / pendente</span>
+      <span><span class="legend-dot" style="background:var(--green)"></span> Confirmado</span>
+      <span><span class="legend-dot" style="background:var(--red)"></span> Atrasado</span>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>🚶 Grid de Rondas por Seção — 6 horários/dia</h2>
+    <div class="grid-checklist" id="gridRondas"></div>
+    <div class="legend-row" style="margin-top:12px;">
+      <span><span class="legend-dot" style="background:var(--gray)"></span> Ainda não chegou a hora</span>
+      <span><span class="legend-dot" style="background:var(--amber)"></span> No horário / pendente</span>
+      <span><span class="legend-dot" style="background:var(--green)"></span> Confirmada</span>
+      <span><span class="legend-dot" style="background:var(--red)"></span> Atrasada</span>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>📋 Feed de Alertas / Ocorrências</h2>
+    <div class="occ-feed" id="occFeed"><div class="occ-empty">Carregando…</div></div>
+  </section>
+
+  <footer class="page-footer">
+    Painel V1 · Telegram + Google Sheets + CSV publicado · edite <code>CSV_URL_CHECKPOINTS</code> no início do <code>&lt;script&gt;</code> deste arquivo para ligar aos seus dados reais — veja <em>sunday-tracking.html</em>, passo 14.
+  </footer>
+</div>
+
+<script>
+(function () {
+  // =====================================================================
+  // CONFIGURAÇÃO — edite estas 4 linhas com os seus dados reais
+  // =====================================================================
+  const CSV_URL_CHECKPOINTS = "COLE_AQUI_O_LINK_CSV_DA_ABA_CHECKPOINTS"; // obrigatório — passo 13 do guia
+  const CSV_URL_OCORRENCIAS = "EXEMPLO_SEM_CSV_REAL"; // opcional — deixe como está para ocultar o feed
+  const NUM_SECOES = 16;          // quantidade de seções eleitorais do seu local
+  const REFRESH_MS = 30000;       // intervalo de atualização (ms) — 30000 = 30s, conforme roadmap V1
+  // =====================================================================
+
+  const SECOES = Array.from({length: NUM_SECOES}, (_, i) => String(i + 1).padStart(2, "0"));
+  document.getElementById("refreshSecs").textContent = Math.round(REFRESH_MS / 1000);
+
+  // Cronograma real das tarefas por seção (T##) — código, horário previsto (min desde 00:00),
+  // tolerância (min) antes de virar "atrasado", e o título resumido (gerado a partir do guia de bolso).
+  const TAREFAS_T = [
+  { code: "T01", hora: 405, tol: 20, titulo: "Vistoriar a seção e cobrir fisicamente com papel todas as câmeras existentes, mesmo des..." },
+  { code: "T02", hora: 420, tol: 20, titulo: "Entregar urna, sacola e Caderno de Votação ao Presidente, colhendo assinatura no recibo..." },
+  { code: "T03", hora: 420, tol: 20, titulo: "Se o material ainda não foi entregue ao Presidente, entregar a qualquer mesário já pres..." },
+  { code: "T04", hora: 420, tol: 20, titulo: "👁️ Convidar até 2 eleitores da fila para acompanhar a emissão da Zerésima; registrar os..." },
+  { code: "T05", hora: 450, tol: 20, titulo: "Até 07h30: conferir se a Zerésima e o Resumo foram impressos e assinados pelo President..." },
+  { code: "T06", hora: 450, tol: 20, titulo: "Guardar a Zerésima oficial no Envelope Branco e afixar o Resumo assinado, visível, na p..." },
+  { code: "T07", hora: 465, tol: 20, titulo: "Checar os leds traseiros e o símbolo de bateria no terminal — a urna não pode operar na..." },
+  { code: "T08", hora: 480, tol: 20, titulo: "Colher a 1ª frequência (manhã) no momento da apresentação de cada mesário." },
+  { code: "T09", hora: 480, tol: 20, titulo: "Mesário que chegar após as 08h: escrever \"FALTOU\" e chamar o suplente para assumir." },
+  { code: "T10", hora: 480, tol: 20, titulo: "Cobrar do Presidente o registro imediato de todos os mesários no Terminal do Mesário." },
+  { code: "T11", hora: 510, tol: 20, titulo: "Checar novamente energia/bateria das urnas em funcionamento." },
+  { code: "T12", hora: 510, tol: 20, titulo: "Confirmar que a presença da manhã de todos os mesários foi corretamente registrada." },
+  { code: "T13", hora: 600, tol: 15, titulo: "Realizar o Pix na presença do mesário, colhendo assinatura no formulário específico; se..." },
+  { code: "T14", hora: 900, tol: 20, titulo: "Colher a assinatura da tarde às 15h; quem não retornou sem justificativa plausível leva..." },
+  { code: "T15", hora: 900, tol: 20, titulo: "Conferir o registro dos mesários na urna e o preenchimento da ata." },
+  { code: "T16", hora: 990, tol: 20, titulo: "Distribuir o lacre azul de reposição do compartimento da MR (descartar o antigo)." },
+  { code: "T17", hora: 990, tol: 20, titulo: "Conferir se a ata está parcialmente preenchida e se todos os mesários foram registrados..." },
+  { code: "T18", hora: 1015, tol: 20, titulo: "Se houver fila grande, instruir o secretário a distribuir senhas a partir das 17h (nume..." },
+  { code: "T19", hora: 1020, tol: 20, titulo: "👁️ Convidar os 2 últimos eleitores de cada seção a acompanhar a emissão dos Boletins de..." },
+  { code: "T20", hora: 1035, tol: 30, titulo: "Conferir pelo recibo de entrega/devolução: urna guardada corretamente e Envelope Branco..." },
+  { code: "T21", hora: 1035, tol: 30, titulo: "Só retirar a mídia de resultado após a mensagem na tela, colando o novo lacre." },
+  ];
+
+  // Tarefas gerais (G##) — feitas uma vez para o local inteiro, não por seção.
+  const TAREFAS_G = [
+  { code: "G01", hora: 390, tol: 20, titulo: "Abrir o colégio às 06h30 e acolher os mesários na chegada." },
+  { code: "G02", hora: 390, tol: 20, titulo: "Anotar o telefone da equipe da PM presente e combinar o ponto fixo e a forma de acionam..." },
+  { code: "G03", hora: 420, tol: 20, titulo: "Abrir o portão externo para fiscais e eleitores." },
+  { code: "G04", hora: 480, tol: 20, titulo: "Início oficial da votação às 08h." },
+  { code: "G05", hora: 510, tol: 20, titulo: "Liberar os suplentes excedentes que não foram chamados, colhendo assinatura na Ata de F..." },
+  { code: "G06", hora: 900, tol: 20, titulo: "Coordenar o revezamento de almoço (~1h), mantendo ao menos 50% dos administradores no l..." },
+  { code: "G07", hora: 1020, tol: 20, titulo: "Trancar pontualmente os portões de acesso do local de votação." },
+  { code: "G08", hora: 1020, tol: 20, titulo: "Fazer varredura em banheiros e corredores comuns." },
+  { code: "G09", hora: 1050, tol: 30, titulo: "Administrador escalado recolhe todas as mídias no Envelope Pardo e desloca-se ao Ponto ..." },
+  { code: "G10", hora: 1080, tol: 30, titulo: "Aguardar a confirmação da transmissão pelo Cartório." },
+  { code: "G11", hora: 1080, tol: 30, titulo: "Trancar todas as urnas e os Envelopes Brancos na sala segura, guardando a chave até seg..." },
+  ];
+
+  // Rondas (R01-R07) — checklist fixo de 7 itens, confirmado com UM único botão por
+  // visita ("📲 Registrar Ronda desta Seção"), repetido em cada seção a cada ~1h30.
+  // "short" é o rótulo curto do pip (apenas a hora — os 6 horários caem em horas distintas).
+  const RONDA_SLOTS = [
+  { label: "08:30", short: "08", hora: 510 },
+  { label: "10:00", short: "10", hora: 600 },
+  { label: "11:30", short: "11", hora: 690 },
+  { label: "13:00", short: "13", hora: 780 },
+  { label: "14:30", short: "14", hora: 870 },
+  { label: "16:00", short: "16", hora: 960 },
+  ];
+  const RONDA_TOL = 25; // min de tolerância antes de considerar a ronda atrasada
+
+  // --------------------------------------------------------------- utilidades
+  function fmt(min) {
+    const h = Math.floor(min / 60).toString().padStart(2, "0");
+    const m = Math.floor(min % 60).toString().padStart(2, "0");
+    return h + ":" + m;
+  }
+
+  function nowMinutes() {
+    return 615; // hora fixa do cenário de exemplo — não usa o relógio real
+  }
+
+  // Parser de CSV simples com suporte a campos entre aspas (o formato que o
+  // Google Sheets usa quando publica "Arquivo > Compartilhar > Publicar na Web > CSV").
+  function parseCSV(text) {
+    const rows = [];
+    let row = [], field = "", inQuotes = false;
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i], next = text[i + 1];
+      if (inQuotes) {
+        if (c === '"' && next === '"') { field += '"'; i++; }
+        else if (c === '"') { inQuotes = false; }
+        else { field += c; }
+      } else {
+        if (c === '"') inQuotes = true;
+        else if (c === ",") { row.push(field); field = ""; }
+        else if (c === "\n" || c === "\r") {
+          if (c === "\r" && next === "\n") i++;
+          row.push(field); field = "";
+          if (row.length > 1 || row[0] !== "") rows.push(row);
+          row = [];
+        } else { field += c; }
+      }
+    }
+    if (field !== "" || row.length) { row.push(field); rows.push(row); }
+    if (!rows.length) return [];
+    const header = rows[0].map(h => h.trim());
+    return rows.slice(1).map(r => Object.fromEntries(header.map((h, i) => [h, (r[i] || "").trim()])));
+  }
+
+  async function fetchCSV(url) {
+    if (!url || url.startsWith("COLE_AQUI")) return null; // não configurado ainda
+    const resp = await fetch(url + (url.includes("?") ? "&" : "?") + "_=" + Date.now());
+    if (!resp.ok) throw new Error("HTTP " + resp.status);
+    return parseCSV(await resp.text());
+  }
+
+  // --------------------------------------------------------------- estado
+  let checkpointsPorSecaoECodigo = {}; // "secao|codigo" -> {status, confirmado_por, confirmado_em}
+  let checkpointsGeral = {};           // "codigo" -> {status, confirmado_por, confirmado_em}  (secao vazia = G##)
+  let rondasPorSecao = {};             // "secao" -> [ {status, confirmado_por, confirmado_em}, ... ] (pode haver até 6/dia)
+  let ocorrencias = [];
+
+  function indexarCheckpoints(registros) {
+    checkpointsPorSecaoECodigo = {};
+    checkpointsGeral = {};
+    rondasPorSecao = {};
+    registros.forEach(r => {
+      const codigo = (r.codigo || "").trim();
+      const secao = (r.secao || "").trim();
+      if (!codigo) return;
+      const info = { status: r.status || "concluido", confirmado_por: r.confirmado_por || "", confirmado_em: r.confirmado_em || "", observacao: r.observacao || "" };
+      if (codigo === "RONDA") {
+        if (!secao) return; // ronda sem seção registrada (dado legado) — não é possível localizar no grid
+        (rondasPorSecao[secao] = rondasPorSecao[secao] || []).push(info);
+        return;
+      }
+      if (secao) checkpointsPorSecaoECodigo[secao + "|" + codigo] = info;
+      else checkpointsGeral[codigo] = info;
+    });
+    // ordena cronologicamente para casar a Nª ronda confirmada com o Nº horário esperado
+    Object.keys(rondasPorSecao).forEach(sec => {
+      rondasPorSecao[sec].sort((a, b) => (a.confirmado_em || "").localeCompare(b.confirmado_em || ""));
+    });
+  }
+
+  function statusFor(confirmado, hora, tol, now) {
+    if (confirmado) return "ok";
+    if (now > hora + tol) return "late";
+    if (now >= hora - 10) return "warn";
+    return "wait";
+  }
+
+  // escapa texto vindo da planilha (nomes/observações digitados por terceiros no bot) antes de jogar em innerHTML
+  function esc(s) {
+    return String(s || "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+
+  // monta o mini tooltip discreto (nome de quem confirmou + observação, se houver) — some hover
+  function tipBubble(nome, observacao) {
+    if (!nome && !observacao) return "";
+    return `<span class="tip-bubble">${nome ? `<b>${esc(nome)}</b>` : ""}${observacao ? esc(observacao) : ""}</span>`;
+  }
+
+  const TIPO_OCORRENCIA_LABEL = {
+    FILA: "🚶 Fila grande", URNA: "🗳️ Problema na urna", ENERGIA: "⚡ Energia/bateria",
+    SEGURANCA: "🚨 Segurança/ordem", OUTRO: "⚠️ Outro",
+  };
+
+  // --------------------------------------------------------------- render
+  function render() {
+    const now = nowMinutes();
+    document.getElementById("clockDisplay").textContent = "🕐 " + fmt(now);
+
+    // ---- tarefas gerais
+    const geralList = document.getElementById("geralList");
+    geralList.innerHTML = "";
+    let gCounts = { ok: 0, warn: 0, late: 0, wait: 0 };
+    TAREFAS_G.forEach(t => {
+      const conf = checkpointsGeral[t.code];
+      const st = statusFor(!!conf, t.hora, t.tol, now);
+      gCounts[st]++;
+      const tip = conf ? tipBubble(conf.confirmado_por, conf.observacao) : "";
+      geralList.innerHTML += `<div class="geral-item${tip ? ' tip-target' : ''}">
+        <span class="dot ${st}"></span>
+        <span class="gcode">${t.code}</span>
+        <span class="gtxt">${t.titulo}</span>
+        ${tip}
+      </div>`;
+    });
+
+    // ---- grid por seção
+    const grid = document.getElementById("gridChecklist");
+    grid.innerHTML = "";
+    let tCounts = { ok: 0, warn: 0, late: 0, wait: 0 };
+    SECOES.forEach(sec => {
+      const pips = TAREFAS_T.map(t => {
+        const conf = checkpointsPorSecaoECodigo[sec + "|" + t.code];
+        const st = statusFor(!!conf, t.hora, t.tol, now);
+        tCounts[st]++;
+        const title = t.code + " — " + t.titulo + (conf && conf.confirmado_por ? (" (✓ " + conf.confirmado_por + ")") : "");
+        const tip = conf ? tipBubble(conf.confirmado_por, conf.observacao) : "";
+        return `<span class="pip ${st}${tip ? ' tip-target' : ''}" title="${title.replace(/"/g, '&quot;')}">${t.code.replace('T', '')}${tip}</span>`;
+      }).join("");
+      const worst = TAREFAS_T.map(t => {
+        const conf = checkpointsPorSecaoECodigo[sec + "|" + t.code];
+        return statusFor(!!conf, t.hora, t.tol, now);
+      });
+      const overall = worst.includes("late") ? "late" : worst.includes("warn") ? "warn" : worst.every(s => s === "ok") ? "ok" : "wait";
+      const feitos = worst.filter(s => s === "ok").length;
+      grid.innerHTML += `<div class="sec-card">
+        <div class="sec-name">Seção ${sec} <span class="dot ${overall}"></span></div>
+        <div class="sec-meta">${feitos}/${TAREFAS_T.length} tarefas confirmadas</div>
+        <div class="task-pips">${pips}</div>
+      </div>`;
+    });
+
+    // ---- grid de rondas por seção (R01-R07, várias vezes ao dia)
+    const gridR = document.getElementById("gridRondas");
+    gridR.innerHTML = "";
+    let rCounts = { ok: 0, warn: 0, late: 0, wait: 0 };
+    SECOES.forEach(sec => {
+      const feitas = rondasPorSecao[sec] || [];
+      const status = RONDA_SLOTS.map((slot, i) => statusFor(!!feitas[i], slot.hora, RONDA_TOL, now));
+      const pips = RONDA_SLOTS.map((slot, i) => {
+        const conf = feitas[i]; // a i-ésima ronda confirmada (em ordem cronológica) cobre o i-ésimo horário esperado
+        const st = status[i];
+        rCounts[st]++;
+        const title = "Ronda " + slot.label + (conf ? (" — ✓ " + (conf.confirmado_por || "confirmada") + (conf.confirmado_em ? " (" + conf.confirmado_em + ")" : "")) : " — prevista");
+        const tip = conf ? tipBubble(conf.confirmado_por, conf.observacao) : "";
+        return `<span class="pip ${st}${tip ? ' tip-target' : ''}" title="${title.replace(/"/g, '&quot;')}">${slot.short}${tip}</span>`;
+      }).join("");
+      const overall = status.includes("late") ? "late" : status.includes("warn") ? "warn" : status.every(s => s === "ok") ? "ok" : "wait";
+      gridR.innerHTML += `<div class="sec-card">
+        <div class="sec-name">Seção ${sec} <span class="dot ${overall}"></span></div>
+        <div class="sec-meta">${feitas.length}/${RONDA_SLOTS.length} rondas confirmadas</div>
+        <div class="task-pips">${pips}</div>
+      </div>`;
+    });
+
+    // ---- resumo (soma geral + por seção + rondas)
+    const bar = document.getElementById("summaryBar");
+    const totalCounts = {
+      ok: gCounts.ok + tCounts.ok + rCounts.ok, warn: gCounts.warn + tCounts.warn + rCounts.warn,
+      late: gCounts.late + tCounts.late + rCounts.late, wait: gCounts.wait + tCounts.wait + rCounts.wait,
+    };
+    bar.innerHTML = `
+      <div class="summary-chip ok"><span class="n">${totalCounts.ok}</span>concluídas</div>
+      <div class="summary-chip warn"><span class="n">${totalCounts.warn}</span>no horário</div>
+      <div class="summary-chip late"><span class="n">${totalCounts.late}</span>atrasadas</div>
+      <div class="summary-chip wait"><span class="n">${totalCounts.wait}</span>a caminho</div>
+    `;
+
+    // ---- ocorrências
+    const feed = document.getElementById("occFeed");
+    if (!CSV_URL_OCORRENCIAS || CSV_URL_OCORRENCIAS.startsWith("COLE_AQUI")) {
+      feed.innerHTML = `<div class="occ-empty">Feed de ocorrências não configurado — preencha CSV_URL_OCORRENCIAS no início do &lt;script&gt; para ativar.</div>`;
+    } else if (!ocorrencias.length) {
+      feed.innerHTML = `<div class="occ-empty">Nenhuma ocorrência registrada até agora.</div>`;
+    } else {
+      feed.innerHTML = ocorrencias.slice().reverse().map(o => {
+        const tipo = TIPO_OCORRENCIA_LABEL[(o.codigo || "").toUpperCase()] || (o.codigo ? esc(o.codigo) : "⚠️ Ocorrência");
+        return `<div class="occ-item">
+          <div class="occ-head"><b>${tipo}</b><span class="occ-sec">Seção ${esc(o.secao || "-")}</span><span class="occ-time">${esc(o.horario || "")}</span></div>
+          <div class="occ-text">${esc(o.descricao || "")}</div>
+          <div class="occ-foot">relatado por ${esc(o.reportado_por || "—")}${o.status ? " · " + esc(o.status) : ""}</div>
+        </div>`;
+      }).join("");
+    }
+  }
+
+  // --------------------------------------------------------------- carregamento
+  async function atualizar(manual) {
+    const errorBanner = document.getElementById("errorBanner");
+    try {
+      const checkpoints = await fetchCSV(CSV_URL_CHECKPOINTS);
+      if (checkpoints === null) {
+        errorBanner.style.display = "block";
+        errorBanner.textContent = "⚠️ CSV_URL_CHECKPOINTS ainda não foi configurado — edite o início do <script> deste arquivo (veja sunday-tracking.html, passo 14).";
+        render();
+        return;
+      }
+      indexarCheckpoints(checkpoints);
+
+      const occRows = await fetchCSV(CSV_URL_OCORRENCIAS);
+      ocorrencias = occRows || [];
+
+      errorBanner.style.display = "none";
+      document.getElementById("lastSync").textContent =
+        "Última atualização: " + new Date().toLocaleTimeString("pt-BR") + (manual ? " (manual)" : " (automática)");
+      render();
+    } catch (err) {
+      errorBanner.style.display = "block";
+      errorBanner.textContent = "⚠️ Não foi possível carregar a planilha agora (" + err.message + "). Confira sua internet e se o link CSV ainda está publicado — vou tentar de novo em " + Math.round(REFRESH_MS / 1000) + "s.";
+      render();
+    }
+  }
+
+  // ============================================================
+  // 🎓 MODO EXEMPLO — dados fictícios embutidos aqui embaixo, sem CSV/rede.
+  // Isto é só para treinar a leitura do painel; a versão real usa CSV_URL_CHECKPOINTS.
+  // ============================================================
+  const MOCK_CHECKPOINTS = [{"codigo": "G01", "secao": "", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Administração", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "G02", "secao": "", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Administração", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "G03", "secao": "", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Administração", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "G04", "secao": "", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Administração", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "G05", "secao": "", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Administração", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T01", "secao": "01", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 01", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T02", "secao": "01", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 01", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T03", "secao": "01", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 01", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T04", "secao": "01", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 01", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T05", "secao": "01", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 01", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T06", "secao": "01", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 01", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T07", "secao": "01", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 01", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T08", "secao": "01", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 01", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T09", "secao": "01", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 01", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T10", "secao": "01", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 01", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T11", "secao": "01", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 01", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T12", "secao": "01", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 01", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "RONDA", "secao": "01", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 01", "confirmado_em": "2026-10-04 08:35:00", "observacao": ""}, {"codigo": "T01", "secao": "02", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 02", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T02", "secao": "02", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 02", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T03", "secao": "02", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 02", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T04", "secao": "02", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 02", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T05", "secao": "02", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 02", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T06", "secao": "02", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 02", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T07", "secao": "02", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 02", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T08", "secao": "02", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 02", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T09", "secao": "02", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 02", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T10", "secao": "02", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 02", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T11", "secao": "02", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 02", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T12", "secao": "02", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 02", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "RONDA", "secao": "02", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 02", "confirmado_em": "2026-10-04 08:35:00", "observacao": ""}, {"codigo": "T01", "secao": "03", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 03", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T02", "secao": "03", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 03", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T03", "secao": "03", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 03", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T04", "secao": "03", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 03", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T05", "secao": "03", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 03", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T06", "secao": "03", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 03", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T07", "secao": "03", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 03", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T08", "secao": "03", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 03", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T09", "secao": "03", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 03", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T10", "secao": "03", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 03", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T11", "secao": "03", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 03", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T12", "secao": "03", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 03", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "RONDA", "secao": "03", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 03", "confirmado_em": "2026-10-04 08:35:00", "observacao": ""}, {"codigo": "T01", "secao": "04", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 04", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T02", "secao": "04", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 04", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T03", "secao": "04", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 04", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T04", "secao": "04", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 04", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T05", "secao": "04", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 04", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T06", "secao": "04", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 04", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T07", "secao": "04", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 04", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T08", "secao": "04", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 04", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T09", "secao": "04", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 04", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T10", "secao": "04", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 04", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "RONDA", "secao": "04", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 04", "confirmado_em": "2026-10-04 08:35:00", "observacao": "Fila grande desde 8h30, mais de 30 pessoas"}, {"codigo": "RONDA", "secao": "04", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 04", "confirmado_em": "2026-10-04 10:05:00", "observacao": "Fila ainda maior, considerar reforço"}, {"codigo": "T01", "secao": "05", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 05", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T02", "secao": "05", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 05", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T03", "secao": "05", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 05", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T04", "secao": "05", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 05", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T05", "secao": "05", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 05", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T06", "secao": "05", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 05", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T07", "secao": "05", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 05", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T08", "secao": "05", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 05", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T09", "secao": "05", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 05", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T10", "secao": "05", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 05", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T11", "secao": "05", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 05", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T12", "secao": "05", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 05", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "RONDA", "secao": "05", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 05", "confirmado_em": "2026-10-04 08:35:00", "observacao": ""}, {"codigo": "T01", "secao": "06", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 06", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T02", "secao": "06", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 06", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T03", "secao": "06", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 06", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T04", "secao": "06", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 06", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T05", "secao": "06", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 06", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T06", "secao": "06", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 06", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T07", "secao": "06", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 06", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T08", "secao": "06", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 06", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T09", "secao": "06", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 06", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T10", "secao": "06", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 06", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T11", "secao": "06", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 06", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T12", "secao": "06", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 06", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "RONDA", "secao": "06", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 06", "confirmado_em": "2026-10-04 08:35:00", "observacao": ""}, {"codigo": "T01", "secao": "07", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 07", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T02", "secao": "07", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 07", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T03", "secao": "07", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 07", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T04", "secao": "07", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 07", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T05", "secao": "07", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 07", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T06", "secao": "07", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 07", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T07", "secao": "07", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 07", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T08", "secao": "07", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 07", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T09", "secao": "07", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 07", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T10", "secao": "07", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 07", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T11", "secao": "07", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 07", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T12", "secao": "07", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 07", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "RONDA", "secao": "07", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 07", "confirmado_em": "2026-10-04 08:35:00", "observacao": ""}, {"codigo": "T01", "secao": "08", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 08", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T02", "secao": "08", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 08", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T03", "secao": "08", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 08", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T04", "secao": "08", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 08", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T05", "secao": "08", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 08", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T06", "secao": "08", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 08", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T07", "secao": "08", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 08", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T08", "secao": "08", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 08", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T09", "secao": "08", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 08", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T10", "secao": "08", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 08", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T11", "secao": "08", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 08", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T12", "secao": "08", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 08", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "RONDA", "secao": "08", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 08", "confirmado_em": "2026-10-04 08:35:00", "observacao": ""}, {"codigo": "T01", "secao": "09", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 09", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T02", "secao": "09", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 09", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T03", "secao": "09", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 09", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T04", "secao": "09", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 09", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T05", "secao": "09", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 09", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T06", "secao": "09", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 09", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T07", "secao": "09", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 09", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T08", "secao": "09", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 09", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T09", "secao": "09", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 09", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T10", "secao": "09", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 09", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T11", "secao": "09", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 09", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "RONDA", "secao": "09", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 09", "confirmado_em": "2026-10-04 08:35:00", "observacao": "Fila grande, muitos idosos aguardando"}, {"codigo": "RONDA", "secao": "09", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 09", "confirmado_em": "2026-10-04 10:05:00", "observacao": "Fila diminuiu um pouco apos reforco"}, {"codigo": "T01", "secao": "10", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 10", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T02", "secao": "10", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 10", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T03", "secao": "10", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 10", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T04", "secao": "10", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 10", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T05", "secao": "10", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 10", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T06", "secao": "10", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 10", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T07", "secao": "10", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 10", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T08", "secao": "10", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 10", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T09", "secao": "10", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 10", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T10", "secao": "10", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 10", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T11", "secao": "10", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 10", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T12", "secao": "10", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 10", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "RONDA", "secao": "10", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 10", "confirmado_em": "2026-10-04 08:35:00", "observacao": ""}, {"codigo": "T01", "secao": "11", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 11", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T02", "secao": "11", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 11", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T03", "secao": "11", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 11", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T04", "secao": "11", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 11", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T05", "secao": "11", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 11", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T06", "secao": "11", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 11", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T07", "secao": "11", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 11", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T08", "secao": "11", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 11", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T09", "secao": "11", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 11", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T10", "secao": "11", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 11", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T11", "secao": "11", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 11", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T12", "secao": "11", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 11", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "RONDA", "secao": "11", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 11", "confirmado_em": "2026-10-04 08:35:00", "observacao": ""}, {"codigo": "T01", "secao": "12", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 12", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T02", "secao": "12", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 12", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T03", "secao": "12", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 12", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T04", "secao": "12", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 12", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T05", "secao": "12", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 12", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T06", "secao": "12", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 12", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T07", "secao": "12", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 12", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T08", "secao": "12", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 12", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T09", "secao": "12", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 12", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T10", "secao": "12", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 12", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "RONDA", "secao": "12", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 12", "confirmado_em": "2026-10-04 08:35:00", "observacao": "Fila grande, urna lenta pra biometria"}, {"codigo": "RONDA", "secao": "12", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 12", "confirmado_em": "2026-10-04 10:05:00", "observacao": "Fila grande continua, urna lenta"}, {"codigo": "T01", "secao": "13", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 13", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T02", "secao": "13", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 13", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T03", "secao": "13", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 13", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T04", "secao": "13", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 13", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T05", "secao": "13", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 13", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T06", "secao": "13", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 13", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T07", "secao": "13", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 13", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T08", "secao": "13", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 13", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T09", "secao": "13", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 13", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T10", "secao": "13", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 13", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T11", "secao": "13", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 13", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T12", "secao": "13", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 13", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "RONDA", "secao": "13", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 13", "confirmado_em": "2026-10-04 08:35:00", "observacao": ""}, {"codigo": "T01", "secao": "14", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 14", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T02", "secao": "14", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 14", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T03", "secao": "14", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 14", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T04", "secao": "14", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 14", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T05", "secao": "14", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 14", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T06", "secao": "14", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 14", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T07", "secao": "14", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 14", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T08", "secao": "14", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 14", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T09", "secao": "14", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 14", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T10", "secao": "14", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 14", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T11", "secao": "14", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 14", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T12", "secao": "14", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 14", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "RONDA", "secao": "14", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 14", "confirmado_em": "2026-10-04 08:35:00", "observacao": ""}, {"codigo": "T01", "secao": "15", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 15", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T02", "secao": "15", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 15", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T03", "secao": "15", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 15", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T04", "secao": "15", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 15", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T05", "secao": "15", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 15", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T06", "secao": "15", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 15", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T07", "secao": "15", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 15", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T08", "secao": "15", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 15", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T09", "secao": "15", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 15", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T10", "secao": "15", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 15", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T11", "secao": "15", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 15", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T12", "secao": "15", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 15", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "RONDA", "secao": "15", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 15", "confirmado_em": "2026-10-04 08:35:00", "observacao": ""}, {"codigo": "T01", "secao": "16", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 16", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T02", "secao": "16", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 16", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T03", "secao": "16", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 16", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T04", "secao": "16", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 16", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T05", "secao": "16", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 16", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T06", "secao": "16", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 16", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T07", "secao": "16", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 16", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T08", "secao": "16", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 16", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T09", "secao": "16", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 16", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T10", "secao": "16", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 16", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T11", "secao": "16", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 16", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "T12", "secao": "16", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 16", "confirmado_em": "2026-10-04 10:15:00", "observacao": ""}, {"codigo": "RONDA", "secao": "16", "titulo": "", "horario_previsto": "", "status": "concluido", "confirmado_por": "Equipe 16", "confirmado_em": "2026-10-04 08:35:00", "observacao": ""}];
+  const MOCK_OCORRENCIAS = [{"codigo": "FILA", "secao": "04", "descricao": "Fila com mais de 40 pessoas as 10h, prioridade nao esta sendo respeitada", "reportado_por": "Presidente Marcos", "horario": "10:02", "status": "aberta"}, {"codigo": "FILA", "secao": "09", "descricao": "Fila grande principalmente de idosos, pedir reforco de administrador", "reportado_por": "Presidente Iva", "horario": "09:50", "status": "aberta"}, {"codigo": "FILA", "secao": "12", "descricao": "Biometria lenta esta represando a fila ha 40 minutos", "reportado_por": "Mesaria Deborah", "horario": "10:10", "status": "aberta"}, {"codigo": "OUTRO", "secao": "04", "descricao": "Estacionamento lotado dificultando acesso de idosos e PCD", "reportado_por": "Administrador Rafael", "horario": "10:05", "status": "aberta"}];
+
+  function atualizarExemplo() {
+    indexarCheckpoints(MOCK_CHECKPOINTS);
+    ocorrencias = MOCK_OCORRENCIAS;
+    document.getElementById("lastSync").textContent = "Exemplo fictício — Fila grande em várias seções (não é dado ao vivo)";
+    render();
+  }
+
+  document.getElementById("refreshBtn").addEventListener("click", atualizarExemplo);
+  atualizarExemplo();
+  setInterval(() => { document.getElementById("clockDisplay").textContent = "🕐 " + fmt(nowMinutes()); }, 15000);
+})();
+</script>
+</body>
+</html>

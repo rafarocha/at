@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🛰️ Mapa de Atividades em Tempo Real — Guia de Implementação</title>
+<style>
+  :root {
+    --bg: #0a0e14; --bg-card: #141a24; --bg-card-2: #1a2230; --bg-chip: #19212c;
+    --border: #2a3342; --fg: #eef2f7; --fg-muted: #a8b3c2; --fg-sub: #7c8798;
+    --accent: #5eaaff; --accent-dim: rgba(94,170,255,0.14);
+    --green: #3ecf82; --green-dim: rgba(62,207,130,0.14);
+    --amber: #e3ab3f; --amber-dim: rgba(227,171,63,0.14);
+    --red: #ff6b6b; --red-dim: rgba(255,107,107,0.14);
+    --purple: #c792ea; --purple-dim: rgba(199,146,234,0.14);
+    --cyan: #4dd4e0; --cyan-dim: rgba(77,212,224,0.14);
+    --gray: #6b7686; --gray-dim: rgba(107,118,134,0.18);
+    --mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; margin:0; padding:0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--fg); font-family: var(--sans); font-size: 15px; line-height: 1.6; font-weight: 500; padding: 18px 16px 80px; }
+  .wrap { max-width: 760px; margin: 0 auto; }
+
+  header.hero { background: linear-gradient(160deg, var(--bg-card) 0%, var(--bg-card-2) 100%); border:1px solid var(--border); border-radius:16px; padding:20px; margin-bottom:16px; }
+  header.hero .kicker { font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.6px; color:var(--accent); margin-bottom:6px; }
+  header.hero h1 { font-size:23px; font-weight:800; margin-bottom:8px; letter-spacing:-0.3px; }
+  header.hero p { color: var(--fg-muted); font-size:13.5px; font-weight:500; }
+
+  nav.index { margin-bottom:20px; }
+  nav.index .chips { display:flex; flex-wrap:wrap; gap:7px; }
+  nav.index .chips a { background:var(--bg-card); border:1px solid var(--border); color:var(--fg); text-decoration:none; border-radius:20px; padding:7px 12px; font-size:12.5px; font-weight:700; }
+
+  section { margin-bottom: 26px; scroll-margin-top: 14px; }
+  h2 { font-size:17px; font-weight:800; display:flex; align-items:center; gap:8px; margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid var(--border); }
+  h3 { font-size:14.5px; font-weight:800; margin: 14px 0 8px; color: var(--accent); }
+  p { color: var(--fg-muted); font-size: 13.5px; margin-bottom: 10px; }
+  p strong, li strong { color: var(--fg); font-weight: 800; }
+  ul, ol { margin: 4px 0 12px 20px; color: var(--fg-muted); font-size: 13.5px; }
+  li { margin-bottom: 6px; }
+  code { font-family: var(--mono); background: var(--bg-chip); border:1px solid var(--border); border-radius:5px; padding: 1px 6px; font-size: 12.5px; color: var(--cyan); }
+  pre { font-family: var(--mono); background: var(--bg-chip); border:1px solid var(--border); border-radius:10px; padding: 12px 14px; font-size: 12px; color: var(--fg); overflow-x: auto; margin: 10px 0 14px; line-height: 1.5; }
+
+  .card { background: var(--bg-card); border:1px solid var(--border); border-radius: 12px; padding: 14px 16px; margin-bottom: 12px; }
+  .callout { background: var(--bg-card-2); border:1px solid var(--border); border-left:3px solid var(--amber); border-radius:10px; padding:10px 12px; font-size:13px; color:var(--fg-muted); margin-bottom:12px; }
+  .callout.blue { border-left-color: var(--accent); }
+  .callout.green { border-left-color: var(--green); }
+  .callout.red { border-left-color: var(--red); }
+
+  .arch-flow { display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin: 12px 0 16px; }
+  .arch-box { background: var(--bg-card-2); border:1px solid var(--border); border-radius:10px; padding:10px 12px; font-size:12px; font-weight:700; text-align:center; flex: 1 1 120px; min-width:110px; }
+  .arch-box .sub { font-weight:500; color:var(--fg-sub); font-size:10.5px; margin-top:2px; }
+  .arch-arrow { color: var(--fg-sub); font-size: 18px; }
+
+  table { width:100%; border-collapse: collapse; margin-bottom: 14px; font-size: 12.5px; }
+  th, td { text-align:left; padding: 7px 8px; border-bottom: 1px solid var(--border); color: var(--fg-muted); }
+  th { color: var(--fg); font-size: 11px; text-transform: uppercase; letter-spacing: 0.3px; }
+  td code { font-size: 11.5px; }
+
+  .step-num { display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:50%; background: var(--accent-dim); color: var(--accent); font-weight:800; font-size:12px; margin-right:8px; flex-shrink:0; }
+  .step { display:flex; align-items:flex-start; margin-bottom: 6px; }
+  .step .step-body { flex:1; }
+  .step .step-body strong { display:block; color:var(--fg); font-size:13.5px; margin-bottom:2px; }
+  .step .step-body span { color: var(--fg-muted); font-size: 13px; }
+
+  /* ---------------- DIDACTIC TUTORIAL STEPS (V1) ---------------- */
+  .phase { background: var(--bg-card); border:1px solid var(--border); border-radius: 14px; padding: 14px 14px 10px; margin-bottom: 16px; }
+  .phase-head { display:flex; align-items:center; gap:8px; margin-bottom: 10px; }
+  .phase-head .phase-n { font-family: var(--mono); font-size:10.5px; font-weight:800; color: var(--bg); background: var(--accent); border-radius:6px; padding:2px 7px; flex-shrink:0; }
+  .phase-head h3 { margin:0; color: var(--fg); font-size:14px; }
+  .tstep { border-left: 2px solid var(--border); padding: 2px 0 12px 14px; margin-left: 10px; position: relative; }
+  .tstep:last-child { border-left-color: transparent; padding-bottom: 2px; }
+  .tstep::before { content: attr(data-n); position:absolute; left:-13px; top:0; width:24px; height:24px; border-radius:50%; background: var(--accent); color:#08111f; font-family: var(--mono); font-weight:800; font-size:11.5px; display:flex; align-items:center; justify-content:center; }
+  .tstep .tstep-title { font-weight:800; color: var(--fg); font-size:13.5px; margin-bottom:3px; }
+  .tstep p, .tstep li { font-size: 13px; }
+  .step-result { background: var(--green-dim); border:1px solid var(--border); border-left:3px solid var(--green); border-radius:8px; padding:8px 10px; font-size:12.5px; color:var(--fg-muted); margin: 8px 0 2px; }
+  .step-result b { color: var(--green); }
+  .step-warn { background: var(--red-dim); border:1px solid var(--border); border-left:3px solid var(--red); border-radius:8px; padding:8px 10px; font-size:12.5px; color:var(--fg-muted); margin: 8px 0 2px; }
+  .step-warn b { color: var(--red); }
+  .progress-overview { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:16px; }
+  .progress-overview a { flex: 1 1 auto; text-align:center; background:var(--bg-chip); border:1px solid var(--border); color:var(--fg-muted); text-decoration:none; border-radius:8px; padding:6px 8px; font-size:11px; font-weight:700; }
+
+  /* ---------------- MOCK DASHBOARD ---------------- */
+  .demo-wrap { background: var(--bg-card); border:1px solid var(--border); border-radius: 14px; padding: 14px; }
+  .demo-toolbar { display:flex; flex-wrap:wrap; align-items:center; justify-content: space-between; gap:10px; margin-bottom: 12px; }
+  .demo-title { font-size:13px; font-weight:800; }
+  .time-controls { display:flex; flex-wrap:wrap; gap:6px; }
+  .time-controls button {
+    background: var(--bg-chip); border:1px solid var(--border); color: var(--fg); font-family: var(--mono);
+    font-weight:700; font-size:12px; padding:6px 10px; border-radius:8px; cursor:pointer;
+  }
+  .time-controls button.active { background: var(--accent); color: #08111f; border-color: var(--accent); }
+  .clock { font-family: var(--mono); font-size: 13px; font-weight:800; color: var(--accent); background: var(--bg); border:1px solid var(--border); border-radius:8px; padding:5px 10px; }
+
+  .summary-bar { display:flex; gap:8px; flex-wrap:wrap; margin-bottom: 12px; }
+  .summary-chip { flex:1; min-width:70px; text-align:center; border-radius:10px; padding:8px 6px; font-size:11px; font-weight:800; border:1px solid var(--border); }
+  .summary-chip .n { font-family: var(--mono); font-size:17px; display:block; }
+  .summary-chip.ok { background: var(--green-dim); color: var(--green); }
+  .summary-chip.warn { background: var(--amber-dim); color: var(--amber); }
+  .summary-chip.late { background: var(--red-dim); color: var(--red); }
+  .summary-chip.wait { background: var(--gray-dim); color: var(--gray); }
+
+  .grid-checklist { display:grid; grid-template-columns: repeat(auto-fill, minmax(140px,1fr)); gap:8px; }
+  .sec-card { border-radius:10px; padding:9px 10px; border:1px solid var(--border); background: var(--bg-card-2); }
+  .sec-card .sec-name { font-size:12.5px; font-weight:800; display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
+  .sec-card .dot { width:9px; height:9px; border-radius:50%; display:inline-block; }
+  .sec-card .dot.ok { background: var(--green); }
+  .sec-card .dot.warn { background: var(--amber); }
+  .sec-card .dot.late { background: var(--red); }
+  .sec-card .dot.wait { background: var(--gray); }
+  .task-pips { display:flex; gap:3px; flex-wrap:wrap; margin-top:5px; }
+  .pip { width:16px; height:16px; border-radius:4px; font-size:8.5px; display:flex; align-items:center; justify-content:center; font-weight:800; font-family: var(--mono); }
+  .pip.ok { background: var(--green-dim); color: var(--green); }
+  .pip.warn { background: var(--amber-dim); color: var(--amber); }
+  .pip.late { background: var(--red-dim); color: var(--red); }
+  .pip.wait { background: var(--gray-dim); color: var(--gray); }
+
+  .occ-feed { display:flex; flex-direction:column; gap:8px; margin-top: 6px; }
+  .occ-item { background: var(--bg-card-2); border:1px solid var(--border); border-left:3px solid var(--purple); border-radius:8px; padding:8px 10px; font-size:12.5px; color: var(--fg-muted); }
+  .occ-item b { color: var(--fg); }
+
+  .legend-row { display:flex; flex-wrap:wrap; gap:10px; font-size:11.5px; color:var(--fg-muted); margin-top:10px; }
+  .legend-row span { display:flex; align-items:center; gap:5px; }
+  .legend-dot { width:9px; height:9px; border-radius:50%; display:inline-block; }
+
+  footer.page-footer { text-align:center; color: var(--fg-sub); font-size:11px; font-weight:600; padding: 16px 6px 4px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="kicker">Companion do Guia de Bolso · OBS01</div>
+    <h1>🛰️ Mapa de Atividades em Tempo Real</h1>
+    <p>Passo a passo para saber, seção por seção, <strong>quem confirmou o quê e a que horas</strong> — alimentado por um bot no Telegram e visualizado num painel ao vivo para os supervisores. Inclui uma prévia funcional (com dados fictícios) ao final desta página.</p>
+  </header>
+
+  <nav class="index">
+    <div class="chips">
+      <a href="#problema">🎯 O problema</a>
+      <a href="#arquitetura">🏗️ Arquitetura</a>
+      <a href="#dados">🗂️ Dados</a>
+      <a href="#bot">🛠️ Montar a V1 (passo a passo)</a>
+      <a href="#passos">✅ Checklist do dia</a>
+      <a href="#demo">🖥️ Painel (demo)</a>
+      <a href="#contingencia">🆘 Contingência</a>
+      <a href="#roadmap">🚀 Roadmap</a>
+    </div>
+  </nav>
+
+  <section id="problema">
+    <h2>🎯 O problema (OBS01)</h2>
+    <p>Cada tarefa <code>T##</code> do guia de bolso se repete uma vez por seção — numa escola com 20 seções, isso são até 500 confirmações no domingo (25 tarefas × 20 seções). Hoje isso fica só na cabeça do Administrador. O que falta saber, em tempo real:</p>
+    <ul>
+      <li>a tarefa <strong>foi feita</strong> naquela seção específica;</li>
+      <li><strong>quem</strong> confirmou (idealmente uma dupla de administradores);</li>
+      <li><strong>a que horas</strong> foi confirmada, comparado ao horário previsto;</li>
+      <li>e um jeito do <strong>supervisor</strong> (que acompanha vários locais de votação ao mesmo tempo) enxergar tudo isso sem precisar ligar seção por seção.</li>
+    </ul>
+    <div class="callout blue">A resposta mais simples e mais rápida de colocar em pé para <strong>um evento de 1 dia</strong> não é um app novo — é usar o Telegram (que todo mundo já tem) como formulário de entrada, e uma planilha/banco simples como fonte da verdade para um painel web.</div>
+  </section>
+
+  <section id="arquitetura">
+    <h2>🏗️ Visão geral da arquitetura</h2>
+    <div class="arch-flow">
+      <div class="arch-box">📱 Guia de Bolso<div class="sub">botão "Confirmar T07"</div></div>
+      <span class="arch-arrow">→</span>
+      <div class="arch-box">✈️ Telegram<div class="sub">deep link t.me/bot?start=</div></div>
+      <span class="arch-arrow">→</span>
+      <div class="arch-box">🤖 Bot (webhook)<div class="sub">pergunta seção + quem confirmou</div></div>
+      <span class="arch-arrow">→</span>
+      <div class="arch-box">🗂️ Planilha / Banco<div class="sub">1 linha por confirmação</div></div>
+      <span class="arch-arrow">→</span>
+      <div class="arch-box">🖥️ Painel web<div class="sub">grid + cores por status</div></div>
+    </div>
+    <p>Cada botão <strong>"📲 Confirmar T07"</strong> que já existe no guia de bolso abre o Telegram com <code>t.me/SEU_BOT?start=T07</code>. O bot pergunta a seção (teclado com os números) e quem confirmou — tudo em 2 toques. Não precisa digitar nada além do nome.</p>
+    <h3>Duas opções de "fonte da verdade" — escolha por complexidade</h3>
+    <table>
+      <tr><th>Opção</th><th>Como funciona</th><th>Quando usar</th></tr>
+      <tr><td><strong>A · Google Sheets</strong></td><td>Bot grava uma linha por confirmação via <code>gspread</code> ou Apps Script Web App. Painel lê a planilha publicada como CSV/JSON.</td><td>MVP para este ano — zero infraestrutura, qualquer um da equipe consegue abrir e conferir.</td></tr>
+      <tr><td><strong>B · Firebase/Firestore</strong></td><td>Bot grava documentos numa coleção. Painel usa <code>onSnapshot</code> para atualização instantânea (sem precisar dar refresh).</td><td>V2, se quiser tempo real "de verdade" e múltiplos locais de votação no mesmo painel.</td></tr>
+    </table>
+    <p>Para o primeiro ano, recomendo <strong>A (Sheets)</strong>: dá pra montar em uma tarde, qualquer supervisor sabe abrir uma planilha, e o painel pode reler a cada 20-30s (suficiente para esse uso — ninguém precisa de latência de milissegundo aqui).</p>
+  </section>
+
+  <section id="dados">
+    <h2>🗂️ Esquema de dados</h2>
+    <h3>Aba/coleção <code>checkpoints</code> — uma linha por confirmação de tarefa</h3>
+    <table>
+      <tr><th>Campo</th><th>Exemplo</th></tr>
+      <tr><td><code>codigo</code></td><td>T07</td></tr>
+      <tr><td><code>secao</code></td><td>14 <span style="color:var(--fg-sub)">(vazio para tarefas G##)</span></td></tr>
+      <tr><td><code>titulo</code></td><td>Colher a 1ª frequência</td></tr>
+      <tr><td><code>horario_previsto</code></td><td>08:00</td></tr>
+      <tr><td><code>status</code></td><td>pendente | proximo | concluido | atrasado</td></tr>
+      <tr><td><code>confirmado_por</code></td><td>Rafael e João <span style="color:var(--fg-sub)">(use "e", nunca vírgula — veja o alerta no passo 11)</span></td></tr>
+      <tr><td><code>confirmado_em</code></td><td>2026-10-04 08:04</td></tr>
+      <tr><td><code>observacao</code></td><td>texto livre, opcional <span style="color:var(--fg-sub)">(o bot pergunta isso automaticamente após o nome, em toda confirmação — até 20 palavras)</span></td></tr>
+    </table>
+    <h3>Aba/coleção <code>rondas</code> — uma linha por ronda em cada seção (fila &amp; votos)</h3>
+    <table>
+      <tr><th>Campo</th><th>Exemplo</th></tr>
+      <tr><td><code>secao</code></td><td>14</td></tr>
+      <tr><td><code>horario</code></td><td>12:05</td></tr>
+      <tr><td><code>fila</code></td><td>6 <span style="color:var(--fg-sub)">(R01 — pessoas na fila)</span></td></tr>
+      <tr><td><code>votados</code></td><td>315 <span style="color:var(--fg-sub)">(R02 — já votaram, de 370)</span></td></tr>
+      <tr><td><code>bateria_ok</code></td><td>sim <span style="color:var(--fg-sub)">(R03)</span></td></tr>
+      <tr><td><code>observacao</code></td><td>texto livre <span style="color:var(--fg-sub)">(R04, opcional)</span></td></tr>
+      <tr><td><code>confirmado_por</code></td><td>Rafael e João</td></tr>
+    </table>
+    <div class="callout blue">As duas confirmações de "eleitor convidado" do guia de bolso (Zerésima às 07h e emissão do BU às 17h) não precisam de tabela própria — elas são apenas mais duas linhas em <code>checkpoints</code>, usando o campo <code>observacao</code> para registrar quem foi convidado e como transcorreu o acompanhamento.</div>
+
+    <h3>Aba/coleção <code>ocorrencias</code> — uma linha por aviso rápido ao administrador</h3>
+    <table>
+      <tr><th>Campo</th><th>Exemplo</th></tr>
+      <tr><td><code>codigo</code></td><td>URNA <span style="color:var(--fg-sub)">(categoria simples do botão "📢 Reportar Ocorrência": FILA, URNA, ENERGIA, SEGURANCA ou OUTRO)</span></td></tr>
+      <tr><td><code>secao</code></td><td>12</td></tr>
+      <tr><td><code>descricao</code></td><td>Urna travou na biometria, Presidente reiniciou (até 20 palavras)</td></tr>
+      <tr><td><code>reportado_por</code></td><td>Rafael</td></tr>
+      <tr><td><code>horario</code></td><td>10:42</td></tr>
+      <tr><td><code>status</code></td><td>aberta | encaminhada | resolvida</td></tr>
+    </table>
+    <div class="callout blue">Este <code>codigo</code> é uma <strong>categoria operacional simples</strong> para o aviso em tempo real — não confundir com os códigos oficiais <code>A01</code>–<code>A28</code> do guia de bolso (seção "Ocorrências"), que continuam sendo a referência para o que vai <strong>na ata</strong>. A ideia é: a ata registra tudo em detalhe (feita pelo Presidente/mesário); esta aba só alimenta o painel para o administrador saber na hora que algo aconteceu, sem esperar a leitura da ata no fim do dia.</div>
+  </section>
+
+  <section id="bot">
+    <h2>🛠️ Montando a V1 — Planilha + Bot + Painel (passo a passo)</h2>
+    <p>Este é o roteiro completo para sair do zero até ter a <strong>V1 funcionando</strong>: <code>Telegram + Google Sheets + painel HTML lendo CSV a cada 30s</code>. São 15 passos organizados em 7 fases — cada um termina com um <span class="step-result" style="display:inline;padding:2px 6px;">✅ Resultado esperado</span> para você confirmar que deu certo antes de seguir pro próximo. Reserve umas 2-3h numa tarde tranquila (dá pra fazer em etapas ao longo da semana antes da eleição).</p>
+    <div class="callout green">📦 <strong>Vários arquivos já vêm prontos</strong> junto com este guia — você não precisa criar nada do zero: <code>checkpoints-150ze.xlsx</code> (a planilha com as 3 abas e cabeçalhos certos, usada no passo 1), <code>painel.html</code> (o painel completo, já com o cronograma real deste guia embutido, usado no passo 14) e dois exemplos preenchidos com dados fictícios — <code>painel-exemplo-fila.html</code> (fila grande em várias seções) e <code>painel-exemplo-urna.html</code> (problema de urna, energia e segurança) — que abrem sozinhos, sem precisar de CSV nenhum, só para você e os supervisores treinarem a leitura do painel antes do dia. Você só edita algumas linhas de configuração no <code>painel.html</code> real — o resto é escrever e testar o <code>bot.py</code>.</div>
+    <div class="progress-overview">
+      <a href="#fase1">1 · Planilha</a>
+      <a href="#fase2">2 · Credenciais</a>
+      <a href="#fase3">3 · Python</a>
+      <a href="#fase4">4 · Bot</a>
+      <a href="#fase5">5 · Código</a>
+      <a href="#fase6">6 · Guia</a>
+      <a href="#fase7">7 · Painel</a>
+    </div>
+
+    <div class="phase" id="fase1">
+      <div class="phase-head"><span class="phase-n">FASE 1</span><h3>🗂️ Importar a planilha pronta (Google Sheets)</h3></div>
+      <div class="tstep" data-n="1">
+        <div class="tstep-title">Baixar e importar checkpoints-150ze.xlsx</div>
+        <p>Você não precisa criar a planilha do zero — o arquivo <code>checkpoints-150ze.xlsx</code> (entregue junto com este guia) já vem exatamente como deve ser: as 3 abas <code>checkpoints</code>, <code>rondas</code> e <code>ocorrencias</code>, cada uma com a linha de cabeçalho certa na linha 1 (veja os campos em 🗂️ Esquema de dados). Para transformá-lo numa Planilha Google editável:</p>
+        <ol style="margin:6px 0 6px 20px;">
+          <li>Acesse <code>drive.google.com</code> → <strong>Novo → Upload de arquivo</strong> → selecione <code>checkpoints-150ze.xlsx</code>.</li>
+          <li>Depois do upload, clique com o botão direito no arquivo → <strong>Abrir com → Google Planilhas</strong> (isso cria uma cópia já convertida, com as 3 abas e cabeçalhos preservados).</li>
+          <li>Renomeie essa nova Planilha Google para <code>checkpoints-150ze</code>, se quiser (o arquivo <code>.xlsx</code> original pode ser apagado do Drive depois).</li>
+        </ol>
+        <div class="step-result"><b>✅ Resultado esperado:</b> você tem uma <strong>Planilha Google</strong> (não mais um arquivo .xlsx) chamada <code>checkpoints-150ze</code>, com 3 abas — <code>checkpoints</code>, <code>rondas</code>, <code>ocorrencias</code> — cada uma já com a linha de cabeçalho pronta e nenhuma outra linha ainda.</div>
+      </div>
+    </div>
+
+    <div class="phase" id="fase2">
+      <div class="phase-head"><span class="phase-n">FASE 2</span><h3>🔑 Ativar a API e criar a "conta de serviço"</h3></div>
+      <p style="margin-top:0;">É assim que o programa Python consegue escrever na sua planilha sem que você precise digitar sua própria senha do Google nele.</p>
+      <div class="tstep" data-n="2">
+        <div class="tstep-title">Criar um projeto e ativar as APIs do Google Sheets e do Google Drive</div>
+        <p>Acesse <code>console.cloud.google.com</code> com a mesma conta Google da planilha. No topo, crie um projeto novo (ex.: <code>eleicoes-150ze</code>). Com o projeto selecionado, use a busca no topo e digite <code>Google Sheets API</code> → abra o resultado → clique em <strong>Ativar</strong>. Repita o mesmo processo para <code>Google Drive API</code> — <strong>as duas precisam estar ativadas</strong>, mesmo que o bot não vá guardar arquivos no Drive: é a Drive API que permite ao código encontrar a planilha pelo nome (<code>.open("checkpoints-150ze")</code>).</p>
+        <div class="step-result"><b>✅ Resultado esperado:</b> as páginas de <strong>ambas</strong> as APIs passam a mostrar o botão <strong>Gerenciar</strong> (em vez de "Ativar"), confirmando que as duas estão ligadas para esse projeto.</div>
+        <div class="step-warn"><b>⚠️ Pulou essa etapa?</b> Rodar o bot sem a Drive API ativada dá o erro <code>APIError: [403]: Google Drive API has not been used in project ... or it is disabled</code>. Se aparecer, acesse o link que o próprio erro mostra, clique em Ativar, espere 1-2 minutos e rode <code>python3 bot.py</code> de novo — não precisa refazer mais nada.</div>
+      </div>
+      <div class="tstep" data-n="3">
+        <div class="tstep-title">Criar a conta de serviço</div>
+        <p>No menu (☰) vá em <strong>IAM e administrador → Contas de serviço → + Criar conta de serviço</strong>. Dê um nome (ex.: <code>bot-checkpoints</code>) e clique em Concluir — não precisa marcar nenhum papel/permissão especial.</p>
+        <div class="step-result"><b>✅ Resultado esperado:</b> a conta aparece na lista com um e-mail parecido com <code>bot-checkpoints@eleicoes-150ze.iam.gserviceaccount.com</code>. Copie esse e-mail — vai precisar dele no passo 5.</div>
+      </div>
+      <div class="tstep" data-n="4">
+        <div class="tstep-title">Gerar a chave JSON</div>
+        <p>Clique na conta de serviço recém-criada → aba <strong>Chaves</strong> → <strong>Adicionar chave → Criar nova chave → JSON</strong> → Criar. O navegador baixa um arquivo automaticamente.</p>
+        <p>Renomeie esse arquivo baixado para <code>creds.json</code>. Guarde-o para o passo 7 (vai morar na mesma pasta do bot).</p>
+        <div class="step-warn"><b>⚠️ Cuidado:</b> esse arquivo é a "senha" de acesso à planilha. Nunca envie por WhatsApp/e-mail público nem suba num repositório Git público.</div>
+      </div>
+      <div class="tstep" data-n="5">
+        <div class="tstep-title">Compartilhar a planilha com a conta de serviço</div>
+        <p>Volte na planilha <code>checkpoints-150ze</code> → botão <strong>Compartilhar</strong> (canto superior direito) → cole o e-mail da conta de serviço (do passo 3) → deixe a permissão como <strong>Editor</strong> → Enviar.</p>
+        <div class="step-result"><b>✅ Resultado esperado:</b> o e-mail da conta de serviço aparece na lista de "Pessoas com acesso" da planilha, como Editor — mesmo sem nunca ter feito login com ela.</div>
+      </div>
+    </div>
+
+    <div class="phase" id="fase3">
+      <div class="phase-head"><span class="phase-n">FASE 3</span><h3>🐍 Preparar o computador (Python)</h3></div>
+      <div class="tstep" data-n="6">
+        <div class="tstep-title">Conferir o Python e criar a pasta do projeto</div>
+        <p>Abra o Terminal (Mac/Linux) ou PowerShell (Windows) e digite <code>python3 --version</code> (Windows: <code>python --version</code>). Se aparecer um erro, instale em <code>python.org/downloads</code> primeiro. Depois, crie uma pasta para o projeto e entre nela:</p>
+        <pre>mkdir ~/eleicoes-bot
+cd ~/eleicoes-bot</pre>
+        <p>Copie o <code>creds.json</code> do passo 4 para dentro dessa pasta.</p>
+        <div class="step-result"><b>✅ Resultado esperado:</b> o terminal mostra algo como <code>Python 3.11.4</code>, e a pasta <code>eleicoes-bot</code> existe com o <code>creds.json</code> dentro (confira com <code>ls</code> no Mac/Linux ou <code>dir</code> no Windows).</div>
+      </div>
+      <div class="tstep" data-n="7">
+        <div class="tstep-title">Criar o ambiente virtual e instalar as bibliotecas</div>
+        <p>Ainda dentro de <code>~/eleicoes-bot</code>, rode:</p>
+        <pre>python3 -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
+pip install python-telegram-bot gspread google-auth</pre>
+        <div class="step-result"><b>✅ Resultado esperado:</b> os três pacotes instalam sem erro (a última linha do terminal costuma dizer <code>Successfully installed ...</code>), e o prompt do terminal passa a começar com <code>(venv)</code> — sinal de que o ambiente virtual está ativo.</div>
+      </div>
+    </div>
+
+    <div class="phase" id="fase4">
+      <div class="phase-head"><span class="phase-n">FASE 4</span><h3>🤖 Criar o bot e o grupo no Telegram</h3></div>
+      <div class="tstep" data-n="8">
+        <div class="tstep-title">Criar o bot com o BotFather</div>
+        <p>No Telegram, procure e abra a conversa com <code>@BotFather</code>. Envie <code>/newbot</code>, escolha um nome de exibição (ex.: "Bot 150ª ZE") e depois um <em>username</em> terminado em <code>bot</code> (ex.: <code>ze150_admin_bot</code>).</p>
+        <div class="step-result"><b>✅ Resultado esperado:</b> o BotFather responde com uma mensagem contendo "Use this token to access the HTTP API" seguida de um token (algo como <code>123456789:AAHk...</code>). Copie esse token inteiro — vai usá-lo no passo 9.</div>
+      </div>
+      <div class="tstep" data-n="9">
+        <div class="tstep-title">Criar o grupo fechado dos administradores</div>
+        <p>Crie um grupo no Telegram só com os Administradores daquele local de votação e adicione o bot como membro. Sem eleitores, sem grupos abertos — serve só para vocês acompanharem as confirmações entre si, se quiserem (o registro "de verdade" vai para a planilha via conversa privada com o bot).</p>
+        <div class="step-result"><b>✅ Resultado esperado:</b> o grupo existe, o bot está na lista de membros, e todos os administradores daquele local já entraram.</div>
+      </div>
+    </div>
+
+    <div class="phase" id="fase5">
+      <div class="phase-head"><span class="phase-n">FASE 5</span><h3>📝 Escrever e testar o bot.py</h3></div>
+      <div class="tstep" data-n="10">
+        <div class="tstep-title">Criar o arquivo bot.py</div>
+        <p>Dentro de <code>~/eleicoes-bot</code>, crie um arquivo chamado <code>bot.py</code> (pode usar o Bloco de Notas, VS Code, ou <code>nano bot.py</code> no terminal) e cole o código abaixo. Troque <code>SEU_TOKEN_AQUI</code> pelo token do passo 8, e confira que o nome <code>"checkpoints-150ze"</code> é exatamente igual ao nome da sua planilha. Esta versão já faz <strong>três coisas</strong>: (1) confirma T##/G##/RONDA como antes, mas agora pergunta também uma <strong>observação opcional</strong> (até 20 palavras) depois do nome; (2) atende ao botão "📢 Reportar Ocorrência", com um fluxo separado (seção → tipo → nome → texto de até 20 palavras) que grava na aba <code>ocorrencias</code>; (3) valida o limite de 20 palavras, pedindo pra resumir se passar disso.</p>
+        <pre>from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
+from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters
+import gspread, datetime
+
+# --- conecta nas abas da planilha, usando a chave do passo 4 ---
+PLANILHA = gspread.service_account(filename="creds.json").open("checkpoints-150ze")
+SHEET_CHECKPOINTS = PLANILHA.worksheet("checkpoints")
+SHEET_OCORRENCIAS = PLANILHA.worksheet("ocorrencias")
+
+# Tipos de ocorrência disponíveis no fluxo rápido de reporte (1 toque + nome + texto curto).
+# São categorias operacionais simples — não confundir com os códigos A01-A28 oficiais da ata.
+TIPOS_OCORRENCIA = [
+    ("FILA", "🚶 Fila grande"),
+    ("URNA", "🗳️ Problema na urna"),
+    ("ENERGIA", "⚡ Energia/bateria"),
+    ("SEGURANCA", "🚨 Segurança/ordem"),
+    ("OUTRO", "⚠️ Outro"),
+]
+
+def teclado_secoes(prefixo):
+    botoes = [InlineKeyboardButton(f"Seção {i:02d}", callback_data=f"{prefixo}:{i:02d}") for i in range(1, 21)]
+    return InlineKeyboardMarkup([botoes[i:i + 4] for i in range(0, len(botoes), 4)])
+
+def teclado_tipos():
+    return InlineKeyboardMarkup([[InlineKeyboardButton(label, callback_data=f"tipo:{cod}")] for cod, label in TIPOS_OCORRENCIA])
+
+def contar_palavras(texto):
+    return len([p for p in texto.strip().split() if p])
+
+async def start(update: Update, ctx):
+    # chamado ao tocar em "📲 Confirmar T##", "📲 Registrar Ronda" ou "📢 Reportar Ocorrência" do guia de bolso
+    # (o Telegram abre com /start T07, /start RONDA, /start OCORRENCIA, /start G01, etc.)
+    code = ctx.args[0] if ctx.args else None
+    if not code:
+        await update.message.reply_text("Use o botão do guia de bolso para abrir com o código certo.")
+        return
+    ctx.user_data.clear()
+    ctx.user_data["codigo"] = code
+
+    if code == "OCORRENCIA":
+        ctx.user_data["fluxo"] = "ocorrencia"
+        await update.message.reply_text("Em qual seção aconteceu?", reply_markup=teclado_secoes("osec"))
+        return
+
+    ctx.user_data["fluxo"] = "checkpoint"
+    # T## e RONDA são por seção; G## é único para o local inteiro (pula a pergunta de seção)
+    if code.startswith("T") or code == "RONDA":
+        await update.message.reply_text("Qual seção?", reply_markup=teclado_secoes("sec"))
+    else:
+        ctx.user_data["secao"] = ""
+        ctx.user_data["etapa"] = "nomes"
+        await update.message.reply_text("Quem confirmou? (nomes separados por 'e', nunca por vírgula)")
+
+async def secao_escolhida(update: Update, ctx):
+    query = update.callback_query
+    ctx.user_data["secao"] = query.data.split(":")[1]
+    ctx.user_data["etapa"] = "nomes"
+    await query.answer()
+    await query.edit_message_text(
+        f"Seção {ctx.user_data['secao']} — quem confirmou? (nomes separados por 'e', nunca por vírgula)"
+    )
+
+async def ocorrencia_secao_escolhida(update: Update, ctx):
+    query = update.callback_query
+    ctx.user_data["secao"] = query.data.split(":")[1]
+    await query.answer()
+    await query.edit_message_text(
+        f"Seção {ctx.user_data['secao']} — qual o tipo de ocorrência?", reply_markup=teclado_tipos()
+    )
+
+async def ocorrencia_tipo_escolhido(update: Update, ctx):
+    query = update.callback_query
+    ctx.user_data["tipo"] = query.data.split(":")[1]
+    ctx.user_data["etapa"] = "nome_ocorrencia"
+    await query.answer()
+    await query.edit_message_text("Quem está reportando? (seu nome)")
+
+async def texto_recebido(update: Update, ctx):
+    etapa = ctx.user_data.get("etapa")
+    if not etapa:
+        return
+    texto = update.message.text.strip()
+
+    if etapa == "nomes":
+        nomes = texto.replace(",", " e ")  # rede de segurança contra vírgula (quebraria o CSV)
+        ctx.user_data["nomes"] = nomes
+        ctx.user_data["etapa"] = "observacao"
+        await update.message.reply_text('Alguma observação sobre este item? (até 20 palavras — ou envie "não" para pular)')
+        return
+
+    if etapa == "observacao":
+        observacao = "" if texto.lower() in ("não", "nao", "n", "-") else texto
+        if contar_palavras(observacao) > 20:
+            await update.message.reply_text("Observação muito longa — resuma em até 20 palavras, por favor:")
+            return
+        codigo = ctx.user_data.get("codigo")
+        SHEET_CHECKPOINTS.append_row([
+            codigo, ctx.user_data.get("secao", ""), "", "", "concluido",
+            ctx.user_data.get("nomes", ""), datetime.datetime.now().strftime("%Y-%m-%d %H:%M"), observacao,
+        ])
+        await update.message.reply_text(f"✅ {codigo} confirmado às {datetime.datetime.now():%H:%M}. Obrigado!")
+        ctx.user_data.clear()
+        return
+
+    if etapa == "nome_ocorrencia":
+        ctx.user_data["nome"] = texto
+        ctx.user_data["etapa"] = "descricao_ocorrencia"
+        await update.message.reply_text("Descreva em até 20 palavras o que aconteceu:")
+        return
+
+    if etapa == "descricao_ocorrencia":
+        if contar_palavras(texto) > 20:
+            await update.message.reply_text("Muito longo — resuma em até 20 palavras, por favor:")
+            return
+        SHEET_OCORRENCIAS.append_row([
+            ctx.user_data.get("tipo", "OUTRO"), ctx.user_data.get("secao", ""), texto,
+            ctx.user_data.get("nome", ""), datetime.datetime.now().strftime("%Y-%m-%d %H:%M"), "aberta",
+        ])
+        await update.message.reply_text("📢 Ocorrência registrada — os administradores vão ver no painel. Obrigado!")
+        ctx.user_data.clear()
+        return
+
+app = Application.builder().token("SEU_TOKEN_AQUI").build()
+app.add_handler(CommandHandler("start", start))
+app.add_handler(CallbackQueryHandler(secao_escolhida, pattern="^sec:"))
+app.add_handler(CallbackQueryHandler(ocorrencia_secao_escolhida, pattern="^osec:"))
+app.add_handler(CallbackQueryHandler(ocorrencia_tipo_escolhido, pattern="^tipo:"))
+app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, texto_recebido))
+
+print("Bot rodando... deixe este terminal aberto (Ctrl+C para parar).")
+app.run_polling()</pre>
+        <div class="step-result"><b>✅ Resultado esperado:</b> o arquivo <code>bot.py</code> está salvo dentro de <code>~/eleicoes-bot</code>, na mesma pasta onde já estão <code>creds.json</code> e a pasta <code>venv</code>.</div>
+      </div>
+      <div class="tstep" data-n="11">
+        <div class="tstep-title">Rodar e testar de ponta a ponta</div>
+        <p>Com o ambiente virtual ativo (prompt começando com <code>(venv)</code> — se não estiver, repita <code>source venv/bin/activate</code>), rode:</p>
+        <pre>python3 bot.py</pre>
+        <p>O terminal deve imprimir <code>Bot rodando...</code> e ficar "parado" — isso é normal, é o <code>run_polling()</code> escutando mensagens. Agora, no celular, abra o Telegram, procure seu bot pelo username e envie <code>/start T07</code>. Toque numa seção de teste (ex.: Seção 01), digite um nome de teste (ex.: <code>Teste</code>) e, quando ele perguntar a observação, digite algo curto (ex.: <code>tudo certo</code>) ou <code>não</code> para pular. Depois teste também <code>/start OCORRENCIA</code> — escolha uma seção, um tipo, um nome e um texto de teste.</p>
+        <div class="step-result"><b>✅ Resultado esperado:</b> o bot responde "✅ T07 confirmado às HH:MM. Obrigado!" no Telegram, e ao abrir a planilha (aba <code>checkpoints</code>) aparece uma <strong>nova linha</strong> com <code>T07</code>, a seção, o nome digitado, o horário e a observação (ou vazio, se você pulou). O teste de <code>/start OCORRENCIA</code> deve gerar uma nova linha na aba <code>ocorrencias</code>, com o tipo escolhido, a seção, o texto e o nome. Se <code>python3 bot.py</code> já der erro antes mesmo de mandar mensagem no Telegram, confira: (a) as duas APIs (Sheets <strong>e</strong> Drive) estão ativadas no passo 2 — erro <code>Google Drive API has not been used...</code> significa que só a Sheets foi ativada, (b) o nome da planilha no código bate exatamente com o real, (c) o e-mail da conta de serviço foi mesmo compartilhado como Editor (passo 5).</div>
+        <div class="step-warn"><b>⚠️ Pitfall comum:</b> nunca deixe o mesário/administrador digitar nomes separados por <strong>vírgula</strong> (ex.: "Rafael, João") — o código de exemplo já troca vírgula por " e " automaticamente, mas se for adaptar o bot, lembre-se que o CSV do passo 14 usa vírgula como separador de colunas, e um nome com vírgula "quebra" a linha ao ser lida pelo painel.</div>
+      </div>
+    </div>
+
+    <div class="phase" id="fase6">
+      <div class="phase-head"><span class="phase-n">FASE 6</span><h3>🔗 Conectar ao guia de bolso</h3></div>
+      <div class="tstep" data-n="12">
+        <div class="tstep-title">Colocar o username do bot no sunday.html</div>
+        <p>O <code>sunday.html</code> (guia de bolso) é <strong>gerado</strong> por dois scripts Python (<code>build_sunday.py</code> e <code>build_sunday_html.py</code>) — os links dos botões já saem prontos no HTML final, sem JavaScript nenhum (isso é proposital: o WhatsApp e outros navegadores embutidos nem sempre executam <code>&lt;script&gt;</code>, então o link precisa já vir pronto no <code>href</code>). Para trocar o bot, edite a constante <code>BOT_USERNAME = "..."</code> perto do topo de <strong>ambos</strong> os scripts (sem <code>@</code> e sem <code>t.me/</code>, ex.: <code>"ze150_admin_bot"</code>) e rode <code>python3 build_sunday.py</code> seguido de <code>python3 build_sunday_html.py</code> para regerar o <code>sunday.html</code>. Se você recebeu o <code>sunday.html</code> já pronto junto com este guia, o bot já está configurado — só confirme se o username bate com o seu.</p>
+        <div class="step-result"><b>✅ Resultado esperado:</b> ao abrir o guia de bolso no celular e tocar em qualquer botão "📲 Confirmar T##", "📲 Registrar Ronda" ou "📢 Reportar Ocorrência", o Telegram abre direto na conversa com o seu bot, já com o comando certo preenchido (<code>/start T07</code>, <code>/start RONDA</code>, <code>/start OCORRENCIA</code>...) — sem precisar digitar nada, mesmo dentro do navegador do WhatsApp.</div>
+      </div>
+    </div>
+
+    <div class="phase" id="fase7">
+      <div class="phase-head"><span class="phase-n">FASE 7</span><h3>🌐 Publicar a planilha e ligar o painel</h3></div>
+      <div class="tstep" data-n="13">
+        <div class="tstep-title">Publicar as abas checkpoints e ocorrencias como CSV</div>
+        <p>Na planilha: <strong>Arquivo → Compartilhar → Publicar na Web</strong>. No primeiro menu, escolha a aba <code>checkpoints</code> (não "Documento inteiro"); no segundo, escolha <strong>CSV</strong>. Clique em <strong>Publicar</strong> e confirme. Copie o link gerado — algo como <code>https://docs.google.com/spreadsheets/d/e/2PACX-.../pub?gid=0&amp;single=true&amp;output=csv</code>.</p>
+        <p>Repita o mesmo processo escolhendo agora a aba <code>ocorrencias</code> (gera um segundo link, com um <code>gid</code> diferente). Guarde os dois links — o painel do próximo passo usa ambos.</p>
+        <div class="step-result"><b>✅ Resultado esperado:</b> colar cada link direto na barra de endereço do navegador faz o download (ou mostra na tela) um arquivo <code>.csv</code> com os dados daquela aba — o de <code>checkpoints</code> já deve incluir a linha de teste do passo 11.</div>
+      </div>
+      <div class="tstep" data-n="14">
+        <div class="tstep-title">Configurar o painel.html pronto</div>
+        <p>Você não precisa escrever o painel do zero — o arquivo <code>painel.html</code> (entregue junto com este guia) já vem <strong>totalmente pronto</strong>: grid por seção, resumo de tarefas gerais (G##), feed de ocorrências, relógio ao vivo, botão de atualizar manualmente e — o mais importante — já traz embutido o cronograma real de horário previsto de cada tarefa G##/T## deste guia de bolso, para calcular sozinho quando algo está "no horário", "atrasado" ou "confirmado".</p>
+        <p>Abra o arquivo num editor de texto e edite só estas 4 linhas, logo no início da tag <code>&lt;script&gt;</code>:</p>
+        <pre>const CSV_URL_CHECKPOINTS = "COLE_AQUI_O_LINK_CSV_DA_ABA_CHECKPOINTS"; // link do passo 13 (aba checkpoints)
+const CSV_URL_OCORRENCIAS = "COLE_AQUI_O_LINK_CSV_DA_ABA_OCORRENCIAS"; // link do passo 13 (aba ocorrencias)
+const NUM_SECOES = 16;          // troque pela quantidade real de seções do seu local
+const REFRESH_MS = 30000;       // 30s, conforme o roadmap V1 — pode ajustar depois</pre>
+        <div class="step-warn"><b>⚠️ Não abra o arquivo com duplo clique</b> (endereço começando com <code>file:///...</code>) — o navegador bloqueia por segurança o carregamento do CSV quando a página é um arquivo local, mesmo com a planilha publicada corretamente. O sintoma é sempre a mesma mensagem: "Não foi possível carregar a planilha agora (Failed to fetch)". O <code>painel.html</code> precisa estar servido por <code>http://</code> ou <code>https://</code> — veja as duas opções abaixo.</div>
+        <p><strong>Opção rápida, só para testar agora:</strong> no Terminal, dentro da pasta onde está o <code>painel.html</code>, rode <code>python3 -m http.server 8000</code> e abra <code>http://localhost:8000/painel.html</code> no navegador.</p>
+        <p><strong>Opção definitiva, para o dia da eleição</strong> (supervisores acessando do próprio celular, de qualquer lugar) — escolha uma:</p>
+        <table>
+          <tr><th>Onde hospedar</th><th>Como</th><th>Repositório privado?</th></tr>
+          <tr><td><strong>GitHub Pages</strong></td><td>Crie um repositório no GitHub, arraste o <code>painel.html</code> pela própria interface web (sem precisar de terminal/git) e ative em <strong>Settings → Pages → Deploy from a branch</strong>, apontando para a branch <code>main</code> e a pasta raiz. O link fica em <code>https://seu-usuario.github.io/nome-do-repo/painel.html</code>, é permanente e gratuito.</td><td>Só com <strong>GitHub Pro</strong> (≈ US$ 4/mês) ou superior — no plano <strong>Free</strong>, publicar pelo Pages exige que o repositório seja <strong>público</strong> (docs.github.com). Se o repositório for privado no plano Free, o Pages simplesmente não fica acessível publicamente.</td></tr>
+          <tr><td><strong>Netlify Drop</strong></td><td>Crie uma conta gratuita em <code>app.netlify.com</code> (sem conta, o link expira depois de um tempo) e arraste o <code>painel.html</code> em <code>app.netlify.com/drop</code>. Gera um link tipo <code>https://algum-nome.netlify.app</code> na hora. Para atualizar depois, é só arrastar o arquivo de novo.</td><td>Não há repositório — não se aplica.</td></tr>
+        </table>
+        <p>Qualquer uma das duas resolve o bloqueio do <code>file://</code> de vez, porque o problema nunca é o Google Sheets nem o código do painel — é só onde o arquivo está rodando.</p>
+        <div class="step-result"><b>✅ Resultado esperado:</b> o <code>painel.html</code>, aberto via <code>http(s)://</code>, mostra o grid de todas as seções e a lista de tarefas gerais, com a linha de teste do passo 11 aparecendo já <strong>verde</strong> (confirmada) na seção certa — sem precisar escrever nenhuma linha de código. Enquanto isso não está configurado, abra <code>painel-exemplo-fila.html</code> ou <code>painel-exemplo-urna.html</code> (esses sim funcionam com duplo clique, porque os dados vêm embutidos no arquivo) para já visualizar como o painel se comporta.</div>
+      </div>
+      <div class="tstep" data-n="15">
+        <div class="tstep-title">Teste ponta a ponta com 2 pessoas</div>
+        <p>Repita o teste do passo 11, mas agora com <code>painel.html</code> aberto ao lado (fazendo o papel do supervisor) e uma segunda pessoa de verdade confirmando pelo Telegram (fazendo o papel do administrador na seção).</p>
+        <div class="step-result"><b>✅ Resultado esperado:</b> entre o "✅ confirmado" no Telegram e a nova linha aparecer no <code>painel.html</code>, passam no máximo uns 30-40 segundos. Se demorar muito mais que isso, revise se o <code>setInterval</code> está mesmo em 30000ms e se o link do CSV publicado é o correto. <strong>Chegando até aqui com sucesso, a V1 está pronta</strong> — o resto é reproduzir os passos 5, 9 e 12 para cada local de votação, e treinar os administradores com o esqueleto do bot.py já testado.</div>
+      </div>
+    </div>
+
+    <div class="callout green">
+      <strong>✅ Já incluído no <code>bot.py</code> do passo 10:</strong> a pergunta de observação (até 20 palavras) depois de qualquer confirmação, e o fluxo completo de "📢 Reportar Ocorrência" (seção → tipo → nome → texto). Fica pra V2/V3 deixar isso mais robusto (fila de mensagens, validação mais esperta, gravar métricas estruturadas de fila/votos na aba <code>rondas</code>) — o importante para este ano é o fluxo de <code>checkpoints</code> e <code>ocorrencias</code> rodando de ponta a ponta, e é o que este guia já entrega.
+    </div>
+  </section>
+
+  <section id="passos">
+    <h2>✅ Checklist operacional do dia</h2>
+    <p>Isto pressupõe que a montagem da V1 (planilha + bot + painel, os 15 passos de 🛠️ acima) já foi feita e testada. Este checklist é só o cronograma de uso no dia a dia.</p>
+    <div class="step"><span class="step-num">1</span><div class="step-body"><strong>Semana antes:</strong><span>seguir os 15 passos da seção 🛠️ Montar a V1 até o teste de ponta a ponta (passo 15) dar certo com 2 pessoas.</span></div></div>
+    <div class="step"><span class="step-num">2</span><div class="step-body"><strong>Dia da vistoria (sábado):</strong><span>repetir o teste com pelo menos 2 administradores reais, simulando 2-3 seções, para pegar erros de fluxo antes do domingo.</span></div></div>
+    <div class="step"><span class="step-num">3</span><div class="step-body"><strong>Domingo de manhã:</strong><span>enviar o link do <code>painel.html</code> para os supervisores; deixar o <code>bot.py</code> rodando (terminal aberto com <code>python3 bot.py</code>) monitorado por alguém o dia inteiro.</span></div></div>
+    <div class="step"><span class="step-num">4</span><div class="step-body"><strong>Durante o dia:</strong><span>painel aberto numa aba do supervisor, atualizando sozinho a cada 30s; qualquer célula vermelha/atrasada vira ligação direta para aquele Administrador.</span></div></div>
+    <div class="step"><span class="step-num">5</span><div class="step-body"><strong>Depois da eleição:</strong><span>exportar a planilha — ela já é um rascunho pronto para o Relatório final (seção 5 do manual) e para o histórico de Ocorrências.</span></div></div>
+  </section>
+
+  <section id="demo">
+    <h2>🖥️ Painel ao vivo — prévia com dados fictícios</h2>
+    <p>Esta prévia usa dados de exemplo (não é ligada ao bot ainda). Use os botões de horário para simular a passagem do dia e ver como as cores mudariam automaticamente: <span style="color:var(--gray)">cinza</span> = ainda não chegou a hora, <span style="color:var(--amber)">laranja</span> = no horário/pendente, <span style="color:var(--green)">verde</span> = confirmado, <span style="color:var(--red)">vermelho</span> = atrasado.</p>
+
+    <div class="demo-wrap">
+      <div class="demo-toolbar">
+        <div class="demo-title">📍 Grid Checklist — Local de Votação (exemplo)</div>
+        <div class="clock" id="clockDisplay">08:00</div>
+      </div>
+      <div class="time-controls" id="timeControls"></div>
+
+      <div class="summary-bar" id="summaryBar"></div>
+      <div class="grid-checklist" id="gridChecklist"></div>
+
+      <div class="legend-row">
+        <span><span class="legend-dot" style="background:var(--gray)"></span> Ainda não chegou a hora</span>
+        <span><span class="legend-dot" style="background:var(--amber)"></span> No horário / pendente</span>
+        <span><span class="legend-dot" style="background:var(--green)"></span> Confirmado</span>
+        <span><span class="legend-dot" style="background:var(--red)"></span> Atrasado</span>
+      </div>
+
+      <h3 style="margin-top:16px;">📋 Feed de Ocorrências (exemplo)</h3>
+      <div class="occ-feed" id="occFeed"></div>
+    </div>
+  </section>
+
+  <section id="contingencia">
+    <h2>🆘 Contingência</h2>
+    <ul>
+      <li><strong>Sem internet no local:</strong> imprimir a grade de tarefas (G##/T## × seções) em papel como plano B; o administrador marca a mão e alguém sincroniza depois pelo Telegram assim que a rede voltar.</li>
+      <li><strong>Bot fora do ar:</strong> ter um número de WhatsApp reserva (o mesmo canal interno já usado hoje) para reportar verbalmente enquanto alguém reinicia o serviço.</li>
+      <li><strong>Nunca depender de 1 pessoa só:</strong> pelo menos 2 pessoas (um administrador local + um supervisor) devem saber reiniciar o bot/checar a planilha.</li>
+    </ul>
+  </section>
+
+  <section id="roadmap">
+    <h2>🚀 Roadmap sugerido</h2>
+    <ol>
+      <li><strong>V1 (este ano):</strong> Telegram + Google Sheets + painel HTML simples lendo CSV publicado a cada 30s.</li>
+      <li><strong>V2:</strong> migrar para Firestore para atualização instantânea e suportar vários locais de votação num único painel de zona eleitoral.</li>
+      <li><strong>V3:</strong> mapa da planta real do local (como no protótipo visual), com pins clicáveis por seção, e exportação automática do relatório final a partir dos dados coletados.</li>
+    </ol>
+  </section>
+
+  <footer class="page-footer">Companion do Guia de Bolso de Domingo · 150ª ZE · TRE-PE</footer>
+</div>
+
+<script>
+(function () {
+  const SECOES = Array.from({length: 16}, (_, i) => String(i + 1).padStart(2, "0"));
+
+  // tarefas de exemplo com horário previsto (minutos desde 00:00)
+  const TAREFAS = [
+    { code: "T02", hora: 7 * 60, tol: 20 },
+    { code: "T07", hora: 8 * 60, tol: 20 },
+    { code: "T12", hora: 10 * 60, tol: 30 },
+    { code: "T18", hora: 15 * 60, tol: 20 },
+    { code: "T24", hora: 17 * 60 + 15, tol: 20 },
+  ];
+
+  // gera confirmações fictícias fixas (seed determinístico simples)
+  function seedRand(n) { const x = Math.sin(n) * 10000; return x - Math.floor(x); }
+  const confirmacoes = {}; // "secao|code" -> minutos confirmados (ou null)
+  SECOES.forEach((sec, si) => {
+    TAREFAS.forEach((t, ti) => {
+      const r = seedRand(si * 31 + ti * 7 + 1);
+      let delta;
+      if (r < 0.08) delta = null; // nunca confirmado (vai ficar atrasado)
+      else delta = Math.round((r - 0.5) * 24); // +-12min de variação
+      confirmacoes[sec + "|" + t.code] = delta === null ? null : t.hora + delta;
+    });
+  });
+
+  // dados fictícios de ronda (fila / % votado) por seção, crescem ao longo do dia
+  const APTOS = 370;
+  function rondaFor(sec, si, now) {
+    const progresso = Math.max(0, Math.min(1, (now - 480) / (1020 - 480))); // 08:00 -> 17:00
+    const ruido = seedRand(si * 13 + 3);
+    const votadosPct = Math.round(Math.min(97, progresso * 92 + ruido * 10));
+    const fila = now < 480 ? 0 : Math.round(3 + seedRand(si * 5 + 9) * 9 * (1 - progresso * 0.6));
+    return { votadosPct, fila };
+  }
+
+  const OCORRENCIAS = [
+    { codigo: "A04", secao: "12", desc: "Urna travou às 09:52, procedimento padrão não resolveu.", hora: "09:54" },
+    { codigo: "A02", secao: "07", desc: "Discussão entre fiscal e mesário sobre propaganda de partido.", hora: "11:20" },
+    { codigo: "A01", secao: "03", desc: "Presidente com dificuldade de conduzir a mesa — anotar para relatório.", hora: "13:05" },
+  ];
+
+  const TIMES = [420, 450, 480, 510, 600, 720, 900, 1035, 1050]; // minutos: 07:00..17:30
+  let currentIdx = 5; // começa às 12:00
+
+  function fmt(min) {
+    const h = Math.floor(min / 60).toString().padStart(2, "0");
+    const m = (min % 60).toString().padStart(2, "0");
+    return h + ":" + m;
+  }
+
+  function statusFor(sec, t, now) {
+    const conf = confirmacoes[sec + "|" + t.code];
+    if (conf !== null && conf <= now) return "ok";
+    if (now > t.hora + t.tol) return "late";
+    if (now >= t.hora - 10) return "warn";
+    return "wait";
+  }
+
+  function render() {
+    const now = TIMES[currentIdx];
+    document.getElementById("clockDisplay").textContent = "🕐 " + fmt(now);
+
+    // grid
+    const grid = document.getElementById("gridChecklist");
+    grid.innerHTML = "";
+    let counts = { ok: 0, warn: 0, late: 0, wait: 0 };
+
+    SECOES.forEach(sec => {
+      const pips = TAREFAS.map(t => {
+        const st = statusFor(sec, t, now);
+        counts[st]++;
+        return `<span class="pip ${st}" title="${t.code}">${t.code.replace('T','')}</span>`;
+      }).join("");
+      // status geral da seção = pior status entre as tarefas
+      const worst = TAREFAS.map(t => statusFor(sec, t, now));
+      const overall = worst.includes("late") ? "late" : worst.includes("warn") ? "warn" : worst.every(s => s === "ok") ? "ok" : "wait";
+      const si = SECOES.indexOf(sec);
+      const { votadosPct, fila } = rondaFor(sec, si, now);
+      grid.innerHTML += `<div class="sec-card">
+        <div class="sec-name">Seção ${sec} <span class="dot ${overall}"></span></div>
+        <div style="font-size:11px;color:var(--fg-sub);font-weight:700;margin:2px 0 4px;">🗳️ ${votadosPct}% votaram · 👥 fila ${fila}</div>
+        <div class="task-pips">${pips}</div>
+      </div>`;
+    });
+
+    const bar = document.getElementById("summaryBar");
+    bar.innerHTML = `
+      <div class="summary-chip ok"><span class="n">${counts.ok}</span>concluídas</div>
+      <div class="summary-chip warn"><span class="n">${counts.warn}</span>no horário</div>
+      <div class="summary-chip late"><span class="n">${counts.late}</span>atrasadas</div>
+      <div class="summary-chip wait"><span class="n">${counts.wait}</span>a caminho</div>
+    `;
+
+    // occurrences up to "now"
+    const feed = document.getElementById("occFeed");
+    const nowStr = fmt(now);
+    const visible = OCORRENCIAS.filter(o => o.hora <= nowStr);
+    feed.innerHTML = visible.length ? visible.map(o => `
+      <div class="occ-item"><b>${o.codigo}</b> · Seção ${o.secao} · ${o.hora} — ${o.desc}</div>
+    `).join("") : `<div class="occ-item" style="border-left-color:var(--fg-sub);">Nenhuma ocorrência registrada até este horário.</div>`;
+  }
+
+  const tc = document.getElementById("timeControls");
+  TIMES.forEach((t, i) => {
+    const btn = document.createElement("button");
+    btn.textContent = fmt(t);
+    btn.className = i === currentIdx ? "active" : "";
+    btn.onclick = () => {
+      currentIdx = i;
+      [...tc.children].forEach((c, ci) => c.classList.toggle("active", ci === i));
+      render();
+    };
+    tc.appendChild(btn);
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

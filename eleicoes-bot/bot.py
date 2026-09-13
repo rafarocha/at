@@ -1,0 +1,133 @@
+from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
+from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters
+import gspread, datetime
+
+# --- conecta nas abas da planilha, usando a chave do passo 4 ---
+PLANILHA = gspread.service_account(filename="creds.json").open("checkpoints-150ze")
+SHEET_CHECKPOINTS = PLANILHA.worksheet("checkpoints")
+SHEET_OCORRENCIAS = PLANILHA.worksheet("ocorrencias")
+
+# Tipos de ocorrência disponíveis no fluxo rápido de reporte (1 toque + nome + texto curto).
+TIPOS_OCORRENCIA = [
+    ("FILA", "🚶 Fila grande"),
+    ("URNA", "🗳️ Problema na urna"),
+    ("ENERGIA", "⚡ Energia/bateria"),
+    ("SEGURANCA", "🚨 Segurança/ordem"),
+    ("OUTRO", "⚠️ Outro"),
+]
+
+def teclado_secoes(prefixo):
+    botoes = [InlineKeyboardButton(f"Seção {i:02d}", callback_data=f"{prefixo}:{i:02d}") for i in range(1, 21)]
+    return InlineKeyboardMarkup([botoes[i:i + 4] for i in range(0, len(botoes), 4)])
+
+def teclado_tipos():
+    return InlineKeyboardMarkup([[InlineKeyboardButton(label, callback_data=f"tipo:{cod}")] for cod, label in TIPOS_OCORRENCIA])
+
+def contar_palavras(texto):
+    return len([p for p in texto.strip().split() if p])
+
+async def start(update: Update, ctx):
+    # chamado ao tocar em "📲 Confirmar T##", "📲 Registrar Ronda" ou "📢 Reportar Ocorrência" do guia de bolso
+    # (o Telegram abre com /start T07, /start RONDA, /start OCORRENCIA, /start G01, etc.)
+    code = ctx.args[0] if ctx.args else None
+    if not code:
+        await update.message.reply_text("Use o botão do guia de bolso para abrir com o código certo.")
+        return
+    ctx.user_data.clear()
+    ctx.user_data["codigo"] = code
+
+    if code == "OCORRENCIA":
+        ctx.user_data["fluxo"] = "ocorrencia"
+        await update.message.reply_text("Em qual seção aconteceu?", reply_markup=teclado_secoes("osec"))
+        return
+
+    ctx.user_data["fluxo"] = "checkpoint"
+    # T## e RONDA são por seção; G## é único para o local inteiro (pula a pergunta de seção)
+    if code.startswith("T") or code == "RONDA":
+        await update.message.reply_text("Qual seção?", reply_markup=teclado_secoes("sec"))
+    else:
+        ctx.user_data["secao"] = ""
+        ctx.user_data["etapa"] = "nomes"
+        await update.message.reply_text("Quem confirmou? (nomes separados por 'e', nunca por vírgula)")
+
+async def secao_escolhida(update: Update, ctx):
+    query = update.callback_query
+    ctx.user_data["secao"] = query.data.split(":")[1]
+    ctx.user_data["etapa"] = "nomes"
+    await query.answer()
+    await query.edit_message_text(
+        f"Seção {ctx.user_data['secao']} — quem confirmou? (nomes separados por 'e', nunca por vírgula)"
+    )
+
+async def ocorrencia_secao_escolhida(update: Update, ctx):
+    query = update.callback_query
+    ctx.user_data["secao"] = query.data.split(":")[1]
+    await query.answer()
+    await query.edit_message_text(
+        f"Seção {ctx.user_data['secao']} — qual o tipo de ocorrência?", reply_markup=teclado_tipos()
+    )
+
+async def ocorrencia_tipo_escolhido(update: Update, ctx):
+    query = update.callback_query
+    ctx.user_data["tipo"] = query.data.split(":")[1]
+    ctx.user_data["etapa"] = "nome_ocorrencia"
+    await query.answer()
+    await query.edit_message_text("Quem está reportando? (seu nome)")
+
+async def texto_recebido(update: Update, ctx):
+    etapa = ctx.user_data.get("etapa")
+    if not etapa:
+        return
+    texto = update.message.text.strip()
+
+    if etapa == "nomes":
+        nomes = texto.replace(",", " e ")  # rede de segurança contra vírgula (quebraria o CSV)
+        ctx.user_data["nomes"] = nomes
+        ctx.user_data["etapa"] = "observacao"
+        await update.message.reply_text('Alguma observação sobre este item? (até 20 palavras — ou envie "não" para pular)')
+        return
+
+    if etapa == "observacao":
+        observacao = "" if texto.lower() in ("não", "nao", "n", "-") else texto
+        if contar_palavras(observacao) > 20:
+            await update.message.reply_text("Observação muito longa — resuma em até 20 palavras, por favor:")
+            return
+        codigo = ctx.user_data.get("codigo")
+        SHEET_CHECKPOINTS.append_row([
+            codigo, ctx.user_data.get("secao", ""), "", "", "concluido",
+            ctx.user_data.get("nomes", ""), datetime.datetime.now().strftime("%Y-%m-%d %H:%M"), observacao,
+        ])
+        await update.message.reply_text(f"✅ {codigo} confirmado às {datetime.datetime.now():%H:%M}. Obrigado!")
+        ctx.user_data.clear()
+        return
+
+    if etapa == "nome_ocorrencia":
+        ctx.user_data["nome"] = texto
+        ctx.user_data["etapa"] = "descricao_ocorrencia"
+        await update.message.reply_text("Descreva em até 20 palavras o que aconteceu:")
+        return
+
+    if etapa == "descricao_ocorrencia":
+        if contar_palavras(texto) > 20:
+            await update.message.reply_text("Muito longo — resuma em até 20 palavras, por favor:")
+            return
+        SHEET_OCORRENCIAS.append_row([
+            ctx.user_data.get("tipo", "OUTRO"), ctx.user_data.get("secao", ""), texto,
+            ctx.user_data.get("nome", ""), datetime.datetime.now().strftime("%Y-%m-%d %H:%M"), "aberta",
+        ])
+        await update.message.reply_text("📢 Ocorrência registrada — os administradores vão ver no painel. Obrigado!")
+        ctx.user_data.clear()
+        return
+
+with open("token.txt") as _f:
+    BOT_TOKEN = _f.read().strip()  # nunca commitar este arquivo — veja .gitignore
+
+app = Application.builder().token(BOT_TOKEN).build()
+app.add_handler(CommandHandler("start", start))
+app.add_handler(CallbackQueryHandler(secao_escolhida, pattern="^sec:"))
+app.add_handler(CallbackQueryHandler(ocorrencia_secao_escolhida, pattern="^osec:"))
+app.add_handler(CallbackQueryHandler(ocorrencia_tipo_escolhido, pattern="^tipo:"))
+app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, texto_recebido))
+
+print("Bot rodando... deixe este terminal aberto (Ctrl+C para parar).")
+app.run_polling()
