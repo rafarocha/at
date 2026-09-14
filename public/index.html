@@ -84,6 +84,10 @@
   .scenario-chip a { color: var(--accent); text-decoration:none; font-weight:800; font-size:11.5px; }
   .scenario-chip a:hover { text-decoration:underline; }
 
+  .todo-list { display:flex; flex-direction:column; gap:8px; }
+  .todo-item { background: var(--bg-card-2); border:1px solid var(--border); border-radius:10px; padding:10px 13px; font-size:12.5px; color: var(--fg-muted); line-height:1.5; }
+  .todo-check { margin-right:4px; }
+
   footer.page-footer {
     text-align:center; color: var(--fg-sub); font-size:11.5px; font-weight:600; padding: 20px 6px 4px;
   }
@@ -235,6 +239,18 @@
       </div>
     </div>
 
+  </section>
+
+  <section class="block">
+    <h2>📝 A Fazer — Guia Específico dos Mesários</h2>
+    <div class="section-sub">Hoje o Guia de Bolso (passo 1 acima) é feito só para o Administrador de Prédio — falta um equivalente para as atividades próprias do mesário</div>
+    <div class="todo-list">
+      <div class="todo-item"><span class="todo-check">☐</span> Levantar no Manual do Mesário quais atividades são específicas dele (distintas das do administrador) e organizar por horário do dia, igual ao guia atual.</div>
+      <div class="todo-item"><span class="todo-check">☐</span> Definir quais dessas atividades fazem sentido confirmar pelo Telegram (item rápido de checklist) e quais são só consulta/apoio (ex.: como preencher a ata, o que fazer em cada tipo de ocorrência).</div>
+      <div class="todo-item"><span class="todo-check">☐</span> Decidir se o mesário confirma pelo mesmo bot do administrador (com um menu próprio) ou se precisa de um fluxo/bot separado.</div>
+      <div class="todo-item"><span class="todo-check">☐</span> Montar o guia de bolso do mesário no mesmo formato do guia atual (HTML de bolso + versão pra imprimir), com a navegação clara de que é um guia diferente do administrador.</div>
+      <div class="todo-item"><span class="todo-check">☐</span> Testar com um mesário de verdade antes do dia da eleição, pra ver se o fluxo do Telegram funciona sem apoio do administrador por perto.</div>
+    </div>
   </section>
 
   <footer class="page-footer">
