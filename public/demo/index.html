@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🛰️ [Ao Vivo] Visão Geral — 150ª ZE</title>
+<title>🛰️ [Ao Vivo] Visão Geral — 999ª ZE</title>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
 <style>
   :root {
@@ -114,7 +114,7 @@
 
   <header class="hero">
     <div>
-      <h1>🛰️ Visão Geral — 150ª ZE</h1>
+      <h1>🛰️ Visão Geral — 999ª ZE</h1>
       <div class="sub">Mapa do local + indicadores ao vivo · lê a planilha publicada a cada <span id="refreshSecs">30</span>s</div>
       <div class="last-sync" id="lastSync">Carregando dados pela primeira vez…</div>
     </div>
@@ -177,7 +177,7 @@
   </section>
 
   <footer class="page-footer">
-    Visão Geral V1 · Telegram + Google Sheets + CSV publicado · edite <code>CSV_URL_CHECKPOINTS</code>, <code>CSV_URL_OCORRENCIAS</code> e <code>CSV_URL_RONDAS</code> no início do <code>&lt;script&gt;</code> deste arquivo — veja <em>../html-howto/sunday-tracking.html</em>.
+    Desenvolvido por <a href="https://github.com/rafarocha" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;"><svg viewBox="0 0 16 16" width="1em" height="1em" style="vertical-align:-0.15em;margin-right:2px;" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>@rafarocha</a> · <a href="https://x.com/faelcavalcanti" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;"><svg viewBox="0 0 24 24" width="1em" height="1em" style="vertical-align:-0.15em;margin-right:2px;" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>@faelcavalcanti</a>
   </footer>
 </div>
 
@@ -278,8 +278,7 @@
   // --------------------------------------------------------------- estado
   let checkpointsPorSecaoECodigo = {};
   let checkpointsGeral = {};
-  let rondasChecklistPorSecao = {};   // aba checkpoints, linhas RONDA (checklist feito/não feito)
-  let rondasNumericasPorSecao = {};   // aba rondas, linhas com fila/votados por horário
+  let rondasNumericasPorSecao = {};   // aba rondas — fila/votados/checklist/observação por horário (fonte única do checklist de rondas)
   let ocorrencias = [];
   let allCheckpointRows = [];         // guardamos os rows crus pra montar as séries temporais
   let allRondaRows = [];
@@ -288,23 +287,15 @@
   function indexarCheckpoints(registros) {
     checkpointsPorSecaoECodigo = {};
     checkpointsGeral = {};
-    rondasChecklistPorSecao = {};
     allCheckpointRows = registros;
     registros.forEach(r => {
       const codigo = (r.codigo || "").trim();
       const secao = (r.secao || "").trim();
       if (!codigo) return;
+      if (codigo === "RONDA") return; // dado legado — desde a v2 o checklist de rondas vem só da aba "rondas"
       const info = { status: r.status || "concluido", confirmado_por: r.confirmado_por || "", confirmado_em: r.confirmado_em || "", observacao: r.observacao || "" };
-      if (codigo === "RONDA") {
-        if (!secao) return;
-        (rondasChecklistPorSecao[secao] = rondasChecklistPorSecao[secao] || []).push(info);
-        return;
-      }
       if (secao) checkpointsPorSecaoECodigo[secao + "|" + codigo] = info;
       else checkpointsGeral[codigo] = info;
-    });
-    Object.keys(rondasChecklistPorSecao).forEach(sec => {
-      rondasChecklistPorSecao[sec].sort((a, b) => (a.confirmado_em || "").localeCompare(b.confirmado_em || ""));
     });
   }
 
@@ -347,7 +338,7 @@
 
     // 2. Rondas — quantos horários já passados foram cobertos
     const slotsVencidos = RONDA_SLOTS.filter(s => s.hora <= now);
-    const feitasChecklist = rondasChecklistPorSecao[sec] || [];
+    const feitasChecklist = rondasNumericasPorSecao[sec] || [];
     const rStatus = slotsVencidos.map((slot, i) => statusFor(!!feitasChecklist[i], slot.hora, RONDA_TOL, now));
     const rFeitas = rStatus.filter(s => s === "ok").length;
     const aspRondas = {
@@ -400,7 +391,7 @@
   // é a lista prática de "o que falta resolver agora" para o administrador daquela seção.
   function tarefasAtrasadasDaSecao(sec, now) {
     const tAtrasadas = TAREFAS_T.filter(t => t.hora <= now && now > t.hora + t.tol && !checkpointsPorSecaoECodigo[sec + "|" + t.code]).length;
-    const feitasChecklist = rondasChecklistPorSecao[sec] || [];
+    const feitasChecklist = rondasNumericasPorSecao[sec] || [];
     const rAtrasadas = RONDA_SLOTS.filter((slot, i) => slot.hora <= now && now > slot.hora + RONDA_TOL && !feitasChecklist[i]).length;
     return tAtrasadas + rAtrasadas;
   }

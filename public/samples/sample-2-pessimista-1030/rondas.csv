@@ -1,31 +1,31 @@
-secao,horario,fila,votados,bateria_ok,observacao,confirmado_por
-01,08:34,3,37,sim,,Diego Ferreira e Rodrigo Nunes
-01,09:59,8,72,sim,,Debora Farias e Andre Vieira
-02,08:27,1,35,sim,"Urna travou na leitura, tentando de novo.",Thiago Barros e Juliana Ramos
-02,09:59,5,83,sim,"Urna reiniciou sozinha, verificando com o suporte.",Lucas Martins e Tatiane Melo
-03,08:32,4,42,sim,"Oscilação de energia, no-break ativado.",Camila Rocha e Vanessa Teixeira
-03,09:58,3,79,sim,"Luz caiu por alguns segundos, voltou normal.",Paulo Henrique e Larissa Pinto
-04,08:34,7,40,sim,,Simone Cavalcanti e Thiago Barros
-04,09:59,8,75,sim,Fiscal reclamando de propaganda irregular na porta.,Gustavo Moreira e Bruno Costa
-05,08:34,4,45,sim,,Felipe Araujo e Simone Cavalcanti
-05,10:00,7,78,sim,,Joao Pedro Alves e Renata Duarte
-06,08:33,2,43,sim,,Andre Vieira e Rafael Souza
-07,08:27,1,26,sim,Fila anda bem mas ritmo de votação está lento.,Debora Farias e Leandro Batista
-07,09:59,2,46,sim,Fila anda bem mas ritmo de votação está lento.,Carlos Eduardo e Marcelo Dias
-08,08:31,4,32,sim,,Mariana Lima e Marcelo Dias
-08,09:58,6,73,sim,,Aline Correia e Beatriz Cardoso
-09,08:31,6,31,sim,,Renata Duarte e Ana Beatriz
-09,10:04,12,71,sim,,Juliana Ramos e Priscila Nascimento
-10,08:35,1,39,sim,"Urna travou na leitura, tentando de novo.",Beatriz Cardoso e Larissa Pinto
-10,10:01,1,85,sim,"Urna travou na leitura, tentando de novo.",Andre Vieira e Ana Beatriz
-11,08:27,4,37,sim,"Luz caiu por alguns segundos, voltou normal.",Debora Farias e Vanessa Teixeira
-11,10:05,3,76,sim,"Luz caiu por alguns segundos, voltou normal.",Debora Farias e Vanessa Teixeira
-12,08:27,4,39,sim,,Marcelo Dias e Leandro Batista
-12,09:57,1,78,sim,Fiscal reclamando de propaganda irregular na porta.,Joao Pedro Alves e Larissa Pinto
-13,08:30,5,44,sim,,Debora Farias e Marcelo Dias
-13,10:01,2,81,sim,,Camila Rocha e Gustavo Moreira
-14,08:28,1,35,sim,,Rafael Souza e Camila Rocha
-15,08:31,7,27,sim,Fila anda bem mas ritmo de votação está lento.,Larissa Pinto e Thiago Barros
-15,10:04,8,51,sim,Fila anda bem mas ritmo de votação está lento.,Debora Farias e Fernanda Alves
-16,08:29,9,26,sim,Fila anda bem mas ritmo de votação está lento.,Tatiane Melo e Gustavo Moreira
-16,09:57,5,55,sim,Fila anda bem mas ritmo de votação está lento.,Lucas Martins e Bruno Costa
+secao,horario,fila,votados,bateria_ok,tempo_espera_min,atividades,observacao,confirmado_por
+01,08:34,3,37,sim,7,R01 R03 R04 R05,,Diego Ferreira e Rodrigo Nunes
+01,09:59,8,72,sim,16,R01 R02 R03 R04 R05,,Debora Farias e Andre Vieira
+02,08:27,1,35,sim,1,R01 R02 R03 R04 R05,"Urna travou na leitura, tentando de novo.",Thiago Barros e Juliana Ramos
+02,09:59,5,83,sim,9,R01 R02 R03 R04 R05,"Urna reiniciou sozinha, verificando com o suporte.",Lucas Martins e Tatiane Melo
+03,08:32,4,42,sim,4,R01 R02 R03 R04 R05,"Oscilação de energia, no-break ativado.",Camila Rocha e Vanessa Teixeira
+03,09:58,3,79,sim,8,R01 R02 R03 R04 R05,"Luz caiu por alguns segundos, voltou normal.",Paulo Henrique e Larissa Pinto
+04,08:34,7,40,sim,9,R01 R02 R03 R04 R05,,Simone Cavalcanti e Thiago Barros
+04,09:59,8,75,sim,14,R01 R02 R03 R04 R05,Fiscal reclamando de propaganda irregular na porta.,Gustavo Moreira e Bruno Costa
+05,08:34,4,45,sim,10,R01 R02 R03 R04 R05,,Felipe Araujo e Simone Cavalcanti
+05,10:00,7,78,sim,10,R01 R02 R03 R04 R05,,Joao Pedro Alves e Renata Duarte
+06,08:33,2,43,sim,5,R01 R02 R03 R04 R05,,Andre Vieira e Rafael Souza
+07,08:27,1,26,sim,1,R01 R02 R03 R04 R05,Fila anda bem mas ritmo de votação está lento.,Debora Farias e Leandro Batista
+07,09:59,2,46,sim,2,R02 R03 R04 R05,Fila anda bem mas ritmo de votação está lento.,Carlos Eduardo e Marcelo Dias
+08,08:31,4,32,sim,8,R01 R02 R03 R04 R05,,Mariana Lima e Marcelo Dias
+08,09:58,6,73,sim,8,R01 R02 R03 R04 R05,,Aline Correia e Beatriz Cardoso
+09,08:31,6,31,sim,9,R01 R02 R04 R05,,Renata Duarte e Ana Beatriz
+09,10:04,12,71,sim,19,R01 R02 R03 R04 R05,,Juliana Ramos e Priscila Nascimento
+10,08:35,1,39,sim,,R01 R02 R03 R04,"Urna travou na leitura, tentando de novo.",Beatriz Cardoso e Larissa Pinto
+10,10:01,1,85,sim,2,R01 R02 R03 R04 R05,"Urna travou na leitura, tentando de novo.",Andre Vieira e Ana Beatriz
+11,08:27,4,37,sim,10,R01 R02 R03 R04 R05,"Luz caiu por alguns segundos, voltou normal.",Debora Farias e Vanessa Teixeira
+11,10:05,3,76,sim,7,R01 R02 R03 R04 R05,"Luz caiu por alguns segundos, voltou normal.",Debora Farias e Vanessa Teixeira
+12,08:27,4,39,sim,,R01 R02 R03 R04,,Marcelo Dias e Leandro Batista
+12,09:57,1,78,sim,6,R01 R02 R03 R04 R05,Fiscal reclamando de propaganda irregular na porta.,Joao Pedro Alves e Larissa Pinto
+13,08:30,5,44,sim,,R01 R02 R03 R04,,Debora Farias e Marcelo Dias
+13,10:01,2,81,sim,,R01 R02 R03 R04,,Camila Rocha e Gustavo Moreira
+14,08:28,1,35,sim,1,R01 R02 R03 R04 R05,,Rafael Souza e Camila Rocha
+15,08:31,7,27,sim,,R01 R03 R04 R05,Fila anda bem mas ritmo de votação está lento.,Larissa Pinto e Thiago Barros
+15,10:04,8,51,sim,,R01 R02 R03 R04,Fila anda bem mas ritmo de votação está lento.,Debora Farias e Fernanda Alves
+16,08:29,9,26,sim,14,R01 R02 R03 R04 R05,Fila anda bem mas ritmo de votação está lento.,Tatiane Melo e Gustavo Moreira
+16,09:57,5,55,sim,,R01 R02 R03 R04,Fila anda bem mas ritmo de votação está lento.,Lucas Martins e Bruno Costa

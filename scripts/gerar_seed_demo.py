@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 """
 Gera scripts/seed_demo/{checkpoints,ocorrencias,rondas}.csv — um preenchimento BREVE e REAL (não
-fictício-congelado como os samples) para colocar na planilha real (checkpoints-150ze) e poder
+fictício-congelado como os samples) para colocar na planilha real (checkpoints-999ze) e poder
 testar o /start pelo celular vendo o public/demo/ com alguma coisa na tela, em vez de vazio.
 
-Cobre as 16 seções até por volta das 10:30 (T01-T13 e as 2 rondas do período da manhã — tarefas
-T14 em diante são da tarde e ficam de fora de propósito), com uma mistura de situações:
-  - 3 seções "boas"   (01-03): tudo em dia, fila baixa, votação adiantada.
-  - 3 seções "médias"  (04-06): tudo confirmado, mas fila/votação um pouco devagar (fica "atenção").
-  - 10 seções "ruins" (07-16, ~60%): motivos variados — tarefa não confirmada, ronda faltando,
-    ocorrência aberta, fila grande ou votação muito atrasada.
+Cada seção acompanha 27 "atividades" no total (21 tarefas T01-T21 + 6 rondas do dia) — este
+script preenche só uma FATIA BREVE disso, por volta de 30% nas seções boas (e bem menos nas
+ruins, de propósito, pra reforçar que estão atrasadas), em vez do dia inteiro:
+  - 3 seções "boas"   (01-03): ~30% das atividades feitas (T01-T07 + 1 ronda), fila baixa.
+  - 3 seções "médias"  (04-06): ~26% (T01-T06 + 1 ronda), fila começando a incomodar.
+  - 10 seções "ruins" (07-16, ~60%): 4%-22% feito (poucas tarefas, 0 ou 1 ronda), motivos
+    variados — tarefa não confirmada, ronda faltando, ocorrência aberta, fila grande.
 
 Depois de gerar, use scripts/seed_demo_sheet.py para subir isso pra planilha real (soma às linhas
 que já existirem — não apaga nada).
@@ -50,18 +51,21 @@ TAREFAS_G = [("G01", 390), ("G02", 390), ("G03", 420), ("G04", 480), ("G05", 510
 
 SECOES_BOAS = ["01", "02", "03"]
 SECOES_MEDIAS = ["04", "05", "06"]
-# motivo de cada seção "ruim": tasks a pular, se tem ocorrência aberta (tipo), fila e votados da ronda das 10:00
+INCLUIR_BOAS = ["T01", "T02", "T03", "T04", "T05", "T06", "T07"]   # 7 de 21 -> + 1 ronda = 8/27 (~30%)
+INCLUIR_MEDIAS = ["T01", "T02", "T03", "T04", "T05", "T06"]         # 6 de 21 -> + 1 ronda = 7/27 (~26%)
+# cada seção "ruim": quais tarefas confirmar (bem poucas, de propósito), se tem ocorrência aberta
+# (tipo), fila/votados da única ronda feita (ou nenhuma) — resultado fica entre ~4% e ~22%.
 SECOES_RUINS = {
-    "07": {"pular": ["T13"], "ocorrencia": None, "fila": 32, "votados": 95},
-    "08": {"pular": ["T09", "T11"], "ocorrencia": ("FILA", "Fila grande e mesa sem administrador para organizar."), "fila": 22, "votados": 88},
-    "09": {"pular": ["T05", "T08", "T11", "T13"], "ocorrencia": None, "fila": 20, "votados": 70},
-    "10": {"pular": [], "ocorrencia": ("URNA", "Urna travou na leitura, suporte técnico acionado."), "fila": 38, "votados": 60},
-    "11": {"pular": ["T07"], "ocorrencia": None, "fila": 18, "votados": 82, "so_uma_ronda": True},
-    "12": {"pular": ["T13"], "ocorrencia": ("ENERGIA", "Oscilação de energia, no-break ativado."), "fila": 19, "votados": 90},
-    "13": {"pular": [], "ocorrencia": None, "fila": 45, "votados": 30},
-    "14": {"pular": ["T03", "T06"], "ocorrencia": ("SEGURANCA", "Discussão entre eleitores na fila, mesário intervindo."), "fila": 24, "votados": 78},
-    "15": {"pular": ["T04", "T07", "T09", "T12", "T13"], "ocorrencia": None, "fila": 16, "votados": 65},
-    "16": {"pular": [], "ocorrencia": ("FILA", "Fila grande desde a abertura, ritmo muito lento."), "fila": 33, "votados": 55},
+    "07": {"incluir": ["T01", "T02", "T03"], "ocorrencia": None, "fila": 32, "votados": 95, "num_rondas": 1},
+    "08": {"incluir": ["T01", "T02"], "ocorrencia": ("FILA", "Fila grande e mesa sem administrador para organizar."), "fila": 22, "votados": 88, "num_rondas": 1},
+    "09": {"incluir": ["T01", "T02", "T03", "T04"], "ocorrencia": None, "fila": 20, "votados": 70, "num_rondas": 1},
+    "10": {"incluir": ["T01"], "ocorrencia": ("URNA", "Urna travou na leitura, suporte técnico acionado."), "fila": 38, "votados": 60, "num_rondas": 0},
+    "11": {"incluir": ["T01", "T02", "T03", "T04", "T05"], "ocorrencia": None, "fila": 18, "votados": 82, "num_rondas": 1},
+    "12": {"incluir": ["T01", "T02"], "ocorrencia": ("ENERGIA", "Oscilação de energia, no-break ativado."), "fila": 19, "votados": 90, "num_rondas": 1},
+    "13": {"incluir": ["T01"], "ocorrencia": None, "fila": 45, "votados": 30, "num_rondas": 0},
+    "14": {"incluir": ["T01", "T02", "T04", "T05"], "ocorrencia": ("SEGURANCA", "Discussão entre eleitores na fila, mesário intervindo."), "fila": 24, "votados": 78, "num_rondas": 1},
+    "15": {"incluir": ["T01", "T02", "T03"], "ocorrencia": None, "fila": 16, "votados": 65, "num_rondas": 1},
+    "16": {"incluir": ["T01"], "ocorrencia": ("FILA", "Fila grande desde a abertura, ritmo muito lento."), "fila": 33, "votados": 55, "num_rondas": 0},
 }
 
 checkpoints_rows = []
@@ -72,41 +76,46 @@ ocorrencias_rows = []
 for codigo, hora in TAREFAS_G:
     checkpoints_rows.append([codigo, "", "", "", "concluido", par_nomes(), carimbo(hora - 3), ""])
 
-def add_tarefas(secao, pular):
+def add_tarefas(secao, incluir):
     for codigo, hora in TAREFAS_T:
-        if codigo in pular:
+        if codigo not in incluir:
             continue
         obs = "" if random.random() > 0.3 else random.choice(["Tudo certo por aqui.", "Sem novidades.", ""])
         checkpoints_rows.append([codigo, secao, "", "", "concluido", par_nomes(), carimbo(hora - random.randint(1, 6)), obs])
 
-def add_rondas(secao, fila1, votados1, fila2, votados2, obs2="", so_uma=False):
-    # checklist (aba checkpoints, codigo RONDA) — usado pro aspecto "Rondas"
-    checkpoints_rows.append(["RONDA", secao, "", "", "concluido", par_nomes(), carimbo(510 + random.randint(1, 6)), ""])
-    rondas_rows.append([secao, hhmm(510 + random.randint(1, 6)), str(fila1), str(votados1), "sim", "", par_nomes()])
-    if not so_uma:
-        checkpoints_rows.append(["RONDA", secao, "", "", "concluido", par_nomes(), carimbo(600 + random.randint(1, 6)), ""])
-        rondas_rows.append([secao, hhmm(600 + random.randint(1, 6)), str(fila2), str(votados2), "sim", obs2, par_nomes()])
+RONDA_ATIVIDADES_TODAS = "R01 R02 R03 R04 R05"
+
+def tempo_espera_para(fila):
+    # tempo médio de espera relatado (R05) — cresce com o tamanho da fila, com alguma variação
+    return str(max(1, round(fila * 1.5) + random.randint(-2, 3)))
+
+def add_rondas(secao, fila1, votados1, fila2=None, votados2=None, obs2="", num_rondas=2):
+    # ronda mora só na aba "rondas" — checkpoints.csv leva só tarefas T##/G## (nunca RONDA)
+    if num_rondas == 0:
+        return  # seção "ruim" que nem a primeira ronda conseguiu fazer ainda
+    rondas_rows.append([secao, hhmm(510 + random.randint(1, 6)), str(fila1), str(votados1), "sim",
+                         tempo_espera_para(fila1), RONDA_ATIVIDADES_TODAS, "", par_nomes()])
+    if num_rondas >= 2:
+        rondas_rows.append([secao, hhmm(600 + random.randint(1, 6)), str(fila2), str(votados2), "sim",
+                             tempo_espera_para(fila2), RONDA_ATIVIDADES_TODAS, obs2, par_nomes()])
 
 for secao in SECOES_BOAS:
-    add_tarefas(secao, pular=[])
-    add_rondas(secao, fila1=random.randint(4, 9), votados1=random.randint(30, 45),
-               fila2=random.randint(5, 12), votados2=random.randint(145, 165))
+    add_tarefas(secao, incluir=INCLUIR_BOAS)
+    add_rondas(secao, fila1=random.randint(4, 9), votados1=random.randint(30, 45), num_rondas=1)
 
 for secao in SECOES_MEDIAS:
-    add_tarefas(secao, pular=[])
-    add_rondas(secao, fila1=random.randint(6, 10), votados1=random.randint(28, 40),
-               fila2=random.randint(18, 25), votados2=random.randint(95, 125),
-               obs2="Fila aumentou um pouco, acompanhando.")
+    add_tarefas(secao, incluir=INCLUIR_MEDIAS)
+    add_rondas(secao, fila1=random.randint(10, 16), votados1=random.randint(25, 35),
+               obs2="Fila aumentou um pouco, acompanhando.", num_rondas=1)
 
 for secao, cfg in SECOES_RUINS.items():
-    add_tarefas(secao, pular=cfg["pular"])
-    add_rondas(secao, fila1=random.randint(8, 14), votados1=random.randint(25, 40),
-               fila2=cfg["fila"], votados2=cfg["votados"],
+    add_tarefas(secao, incluir=cfg["incluir"])
+    add_rondas(secao, fila1=cfg["fila"], votados1=cfg["votados"],
                obs2="Situação sendo monitorada." if not cfg["ocorrencia"] else "",
-               so_uma=cfg.get("so_uma_ronda", False))
+               num_rondas=cfg["num_rondas"])
     if cfg["ocorrencia"]:
         codigo_oc, desc = cfg["ocorrencia"]
-        ocorrencias_rows.append([codigo_oc, secao, desc, par_nomes(), hhmm(random.randint(520, 600)), "aberta"])
+        ocorrencias_rows.append([codigo_oc, secao, desc, par_nomes(), hhmm(random.randint(420, 480)), "aberta"])
 
 OUT.mkdir(parents=True, exist_ok=True)
 with open(OUT / "checkpoints.csv", "w", newline="", encoding="utf-8") as f:
@@ -116,7 +125,7 @@ with open(OUT / "checkpoints.csv", "w", newline="", encoding="utf-8") as f:
 
 with open(OUT / "rondas.csv", "w", newline="", encoding="utf-8") as f:
     w = csv.writer(f)
-    w.writerow(["secao", "horario", "fila", "votados", "bateria_ok", "observacao", "confirmado_por"])
+    w.writerow(["secao", "horario", "fila", "votados", "bateria_ok", "tempo_espera_min", "atividades", "observacao", "confirmado_por"])
     w.writerows(rondas_rows)
 
 with open(OUT / "ocorrencias.csv", "w", newline="", encoding="utf-8") as f:

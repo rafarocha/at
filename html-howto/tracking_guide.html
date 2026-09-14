@@ -186,7 +186,7 @@
 
   <section id="dados">
     <h2>🗂️ Esquema de dados</h2>
-    <h3>Aba/coleção <code>checkpoints</code> — uma linha por confirmação de tarefa</h3>
+    <h3>Aba/coleção <code>checkpoints</code> — uma linha por confirmação de tarefa (só T##/G## — RONDA nunca aparece aqui, mora só na aba <code>rondas</code> abaixo)</h3>
     <table>
       <tr><th>Campo</th><th>Exemplo</th></tr>
       <tr><td><code>codigo</code></td><td>T07</td></tr>
@@ -198,17 +198,20 @@
       <tr><td><code>confirmado_em</code></td><td>2026-10-04 08:04</td></tr>
       <tr><td><code>observacao</code></td><td>texto livre, opcional <span style="color:var(--fg-sub)">(o bot pergunta isso automaticamente após o nome, em toda confirmação — até 20 palavras)</span></td></tr>
     </table>
-    <h3>Aba/coleção <code>rondas</code> — uma linha por ronda em cada seção (fila &amp; votos)</h3>
+    <h3>Aba/coleção <code>rondas</code> — uma linha por ronda em cada seção (fila, votos &amp; checklist)</h3>
     <table>
       <tr><th>Campo</th><th>Exemplo</th></tr>
       <tr><td><code>secao</code></td><td>14</td></tr>
       <tr><td><code>horario</code></td><td>12:05</td></tr>
       <tr><td><code>fila</code></td><td>6 <span style="color:var(--fg-sub)">(R01 — pessoas na fila)</span></td></tr>
       <tr><td><code>votados</code></td><td>315 <span style="color:var(--fg-sub)">(R02 — já votaram, de 370)</span></td></tr>
-      <tr><td><code>bateria_ok</code></td><td>sim <span style="color:var(--fg-sub)">(R03)</span></td></tr>
-      <tr><td><code>observacao</code></td><td>texto livre <span style="color:var(--fg-sub)">(R04, opcional)</span></td></tr>
+      <tr><td><code>bateria_ok</code></td><td>sim <span style="color:var(--fg-sub)">(R03 — energia/bateria da urna)</span></td></tr>
+      <tr><td><code>tempo_espera_min</code></td><td>12 <span style="color:var(--fg-sub)">(R05 — minutos de espera relatados por quem terminou de votar; vazio se ninguém foi perguntado)</span></td></tr>
+      <tr><td><code>atividades</code></td><td>R01 R02 R03 R04 R05 <span style="color:var(--fg-sub)">(lista, separada por espaço, do que a pessoa marcou no checklist do bot ao confirmar a ronda)</span></td></tr>
+      <tr><td><code>observacao</code></td><td>texto livre, opcional <span style="color:var(--fg-sub)">(o bot pergunta isso após o checklist e os nomes — pode ser digitada ou enviada em áudio, transcrita automaticamente)</span></td></tr>
       <tr><td><code>confirmado_por</code></td><td>Rafael e João</td></tr>
     </table>
+    <div class="callout blue"><strong>R04</strong> ("Auxiliou a seção, se estava lenta") também virou um item do checklist do bot — não fica mais amarrado ao texto livre de <code>observacao</code>. A ordem das colunas acima é exatamente a ordem que o <code>bot.py</code> envia em <code>SHEET_RONDAS.append_row(...)</code>: se você adicionar essas duas colunas na planilha real, garanta que fiquem nessa mesma posição (entre <code>bateria_ok</code> e <code>observacao</code>), porque o Google Sheets grava por posição, não por nome de cabeçalho.</div>
     <div class="callout blue">As duas confirmações de "eleitor convidado" do guia de bolso (Zerésima às 07h e emissão do BU às 17h) não precisam de tabela própria — elas são apenas mais duas linhas em <code>checkpoints</code>, usando o campo <code>observacao</code> para registrar quem foi convidado e como transcorreu o acompanhamento.</div>
 
     <h3>Aba/coleção <code>ocorrencias</code> — uma linha por aviso rápido ao administrador</h3>
@@ -227,7 +230,7 @@
   <section id="bot">
     <h2>🛠️ Montando a V1 — Planilha + Bot + Painel (passo a passo)</h2>
     <p>Este é o roteiro completo para sair do zero até ter a <strong>V1 funcionando</strong>: <code>Telegram + Google Sheets + painel HTML lendo CSV a cada 30s</code>. São 15 passos organizados em 7 fases — cada um termina com um <span class="step-result" style="display:inline;padding:2px 6px;">✅ Resultado esperado</span> para você confirmar que deu certo antes de seguir pro próximo. Reserve umas 2-3h numa tarde tranquila (dá pra fazer em etapas ao longo da semana antes da eleição).</p>
-    <div class="callout green">📦 <strong>Vários arquivos já vêm prontos</strong> junto com este guia — você não precisa criar nada do zero: <code>checkpoints-150ze.xlsx</code> (a planilha com as 3 abas e cabeçalhos certos, usada no passo 1), e <strong>3 páginas de painel</strong>, cada uma com um propósito diferente e todas ligadas por uma barra de navegação no topo: <code>index.html</code> (visão geral com mapa do local, 3 gráficos do dia e a listagem de todas as seções — a "home"), <code>secao.html</code> (detalhe completo de uma seção só, com seletor pra trocar rapidinho) e <code>painel.html</code> (visão gerencial em grid, pensada pro gestor acompanhar o cumprimento de tarefas de forma mais prática). Além disso, dois exemplos preenchidos com dados fictícios — <code>painel-exemplo-fila.html</code> (fila grande em várias seções) e <code>painel-exemplo-urna.html</code> (problema de urna, energia e segurança) — que abrem sozinhos, sem precisar de CSV nenhum, só para você e os supervisores treinarem a leitura do painel antes do dia. Você só edita algumas linhas de configuração em cada painel real (passo 14) — o resto é escrever e testar o <code>bot.py</code>.</div>
+    <div class="callout green">📦 <strong>Vários arquivos já vêm prontos</strong> junto com este guia — você não precisa criar nada do zero: <code>checkpoints-999ze.xlsx</code> (a planilha com as 3 abas e cabeçalhos certos, usada no passo 1), e <strong>3 páginas de painel</strong>, cada uma com um propósito diferente e todas ligadas por uma barra de navegação no topo: <code>index.html</code> (visão geral com mapa do local, 3 gráficos do dia e a listagem de todas as seções — a "home"), <code>secao.html</code> (detalhe completo de uma seção só, com seletor pra trocar rapidinho) e <code>painel.html</code> (visão gerencial em grid, pensada pro gestor acompanhar o cumprimento de tarefas de forma mais prática). Além disso, dois exemplos preenchidos com dados fictícios — <code>painel-exemplo-fila.html</code> (fila grande em várias seções) e <code>painel-exemplo-urna.html</code> (problema de urna, energia e segurança) — que abrem sozinhos, sem precisar de CSV nenhum, só para você e os supervisores treinarem a leitura do painel antes do dia. Você só edita algumas linhas de configuração em cada painel real (passo 14) — o resto é escrever e testar o <code>bot.py</code>.</div>
     <div class="progress-overview">
       <a href="#fase1">1 · Planilha</a>
       <a href="#fase2">2 · Credenciais</a>
@@ -241,14 +244,14 @@
     <div class="phase" id="fase1">
       <div class="phase-head"><span class="phase-n">FASE 1</span><h3>🗂️ Importar a planilha pronta (Google Sheets)</h3></div>
       <div class="tstep" data-n="1">
-        <div class="tstep-title">Baixar e importar checkpoints-150ze.xlsx</div>
-        <p>Você não precisa criar a planilha do zero — o arquivo <code>checkpoints-150ze.xlsx</code> (entregue junto com este guia) já vem exatamente como deve ser: as 3 abas <code>checkpoints</code>, <code>rondas</code> e <code>ocorrencias</code>, cada uma com a linha de cabeçalho certa na linha 1 (veja os campos em 🗂️ Esquema de dados). Para transformá-lo numa Planilha Google editável:</p>
+        <div class="tstep-title">Baixar e importar checkpoints-999ze.xlsx</div>
+        <p>Você não precisa criar a planilha do zero — o arquivo <code>checkpoints-999ze.xlsx</code> (entregue junto com este guia) já vem exatamente como deve ser: as 3 abas <code>checkpoints</code>, <code>rondas</code> e <code>ocorrencias</code>, cada uma com a linha de cabeçalho certa na linha 1 (veja os campos em 🗂️ Esquema de dados). Para transformá-lo numa Planilha Google editável:</p>
         <ol style="margin:6px 0 6px 20px;">
-          <li>Acesse <code>drive.google.com</code> → <strong>Novo → Upload de arquivo</strong> → selecione <code>checkpoints-150ze.xlsx</code>.</li>
+          <li>Acesse <code>drive.google.com</code> → <strong>Novo → Upload de arquivo</strong> → selecione <code>checkpoints-999ze.xlsx</code>.</li>
           <li>Depois do upload, clique com o botão direito no arquivo → <strong>Abrir com → Google Planilhas</strong> (isso cria uma cópia já convertida, com as 3 abas e cabeçalhos preservados).</li>
-          <li>Renomeie essa nova Planilha Google para <code>checkpoints-150ze</code>, se quiser (o arquivo <code>.xlsx</code> original pode ser apagado do Drive depois).</li>
+          <li>Renomeie essa nova Planilha Google para <code>checkpoints-999ze</code>, se quiser (o arquivo <code>.xlsx</code> original pode ser apagado do Drive depois).</li>
         </ol>
-        <div class="step-result"><b>✅ Resultado esperado:</b> você tem uma <strong>Planilha Google</strong> (não mais um arquivo .xlsx) chamada <code>checkpoints-150ze</code>, com 3 abas — <code>checkpoints</code>, <code>rondas</code>, <code>ocorrencias</code> — cada uma já com a linha de cabeçalho pronta e nenhuma outra linha ainda.</div>
+        <div class="step-result"><b>✅ Resultado esperado:</b> você tem uma <strong>Planilha Google</strong> (não mais um arquivo .xlsx) chamada <code>checkpoints-999ze</code>, com 3 abas — <code>checkpoints</code>, <code>rondas</code>, <code>ocorrencias</code> — cada uma já com a linha de cabeçalho pronta e nenhuma outra linha ainda.</div>
       </div>
     </div>
 
@@ -257,14 +260,14 @@
       <p style="margin-top:0;">É assim que o programa Python consegue escrever na sua planilha sem que você precise digitar sua própria senha do Google nele.</p>
       <div class="tstep" data-n="2">
         <div class="tstep-title">Criar um projeto e ativar as APIs do Google Sheets e do Google Drive</div>
-        <p>Acesse <code>console.cloud.google.com</code> com a mesma conta Google da planilha. No topo, crie um projeto novo (ex.: <code>eleicoes-150ze</code>). Com o projeto selecionado, use a busca no topo e digite <code>Google Sheets API</code> → abra o resultado → clique em <strong>Ativar</strong>. Repita o mesmo processo para <code>Google Drive API</code> — <strong>as duas precisam estar ativadas</strong>, mesmo que o bot não vá guardar arquivos no Drive: é a Drive API que permite ao código encontrar a planilha pelo nome (<code>.open("checkpoints-150ze")</code>).</p>
+        <p>Acesse <code>console.cloud.google.com</code> com a mesma conta Google da planilha. No topo, crie um projeto novo (ex.: <code>eleicoes-999ze</code>). Com o projeto selecionado, use a busca no topo e digite <code>Google Sheets API</code> → abra o resultado → clique em <strong>Ativar</strong>. Repita o mesmo processo para <code>Google Drive API</code> — <strong>as duas precisam estar ativadas</strong>, mesmo que o bot não vá guardar arquivos no Drive: é a Drive API que permite ao código encontrar a planilha pelo nome (<code>.open("checkpoints-999ze")</code>).</p>
         <div class="step-result"><b>✅ Resultado esperado:</b> as páginas de <strong>ambas</strong> as APIs passam a mostrar o botão <strong>Gerenciar</strong> (em vez de "Ativar"), confirmando que as duas estão ligadas para esse projeto.</div>
         <div class="step-warn"><b>⚠️ Pulou essa etapa?</b> Rodar o bot sem a Drive API ativada dá o erro <code>APIError: [403]: Google Drive API has not been used in project ... or it is disabled</code>. Se aparecer, acesse o link que o próprio erro mostra, clique em Ativar, espere 1-2 minutos e rode <code>python3 bot.py</code> de novo — não precisa refazer mais nada.</div>
       </div>
       <div class="tstep" data-n="3">
         <div class="tstep-title">Criar a conta de serviço</div>
         <p>No menu (☰) vá em <strong>IAM e administrador → Contas de serviço → + Criar conta de serviço</strong>. Dê um nome (ex.: <code>bot-checkpoints</code>) e clique em Concluir — não precisa marcar nenhum papel/permissão especial.</p>
-        <div class="step-result"><b>✅ Resultado esperado:</b> a conta aparece na lista com um e-mail parecido com <code>bot-checkpoints@eleicoes-150ze.iam.gserviceaccount.com</code>. Copie esse e-mail — vai precisar dele no passo 5.</div>
+        <div class="step-result"><b>✅ Resultado esperado:</b> a conta aparece na lista com um e-mail parecido com <code>bot-checkpoints@eleicoes-999ze.iam.gserviceaccount.com</code>. Copie esse e-mail — vai precisar dele no passo 5.</div>
       </div>
       <div class="tstep" data-n="4">
         <div class="tstep-title">Gerar a chave JSON</div>
@@ -274,7 +277,7 @@
       </div>
       <div class="tstep" data-n="5">
         <div class="tstep-title">Compartilhar a planilha com a conta de serviço</div>
-        <p>Volte na planilha <code>checkpoints-150ze</code> → botão <strong>Compartilhar</strong> (canto superior direito) → cole o e-mail da conta de serviço (do passo 3) → deixe a permissão como <strong>Editor</strong> → Enviar.</p>
+        <p>Volte na planilha <code>checkpoints-999ze</code> → botão <strong>Compartilhar</strong> (canto superior direito) → cole o e-mail da conta de serviço (do passo 3) → deixe a permissão como <strong>Editor</strong> → Enviar.</p>
         <div class="step-result"><b>✅ Resultado esperado:</b> o e-mail da conta de serviço aparece na lista de "Pessoas com acesso" da planilha, como Editor — mesmo sem nunca ter feito login com ela.</div>
       </div>
     </div>
@@ -303,7 +306,7 @@ pip install python-telegram-bot gspread google-auth faster-whisper</pre>
       <div class="phase-head"><span class="phase-n">FASE 4</span><h3>🤖 Criar o bot e o grupo no Telegram</h3></div>
       <div class="tstep" data-n="8">
         <div class="tstep-title">Criar o bot com o BotFather</div>
-        <p>No Telegram, procure e abra a conversa com <code>@BotFather</code>. Envie <code>/newbot</code>, escolha um nome de exibição (ex.: "Bot 150ª ZE") e depois um <em>username</em> terminado em <code>bot</code> (ex.: <code>ze150_admin_bot</code>).</p>
+        <p>No Telegram, procure e abra a conversa com <code>@BotFather</code>. Envie <code>/newbot</code>, escolha um nome de exibição (ex.: "Bot 999ª ZE") e depois um <em>username</em> terminado em <code>bot</code> (ex.: <code>ze999_admin_bot</code>).</p>
         <div class="step-result"><b>✅ Resultado esperado:</b> o BotFather responde com uma mensagem contendo "Use this token to access the HTTP API" seguida de um token (algo como <code>123456789:AAHk...</code>). Copie esse token inteiro — vai usá-lo no passo 9.</div>
       </div>
       <div class="tstep" data-n="9">
@@ -317,26 +320,37 @@ pip install python-telegram-bot gspread google-auth faster-whisper</pre>
       <div class="phase-head"><span class="phase-n">FASE 5</span><h3>📝 Escrever e testar o bot.py</h3></div>
       <div class="tstep" data-n="10">
         <div class="tstep-title">Criar o arquivo bot.py</div>
-        <p>Dentro de <code>~/eleicoes-bot</code>, crie um arquivo chamado <code>bot.py</code> (pode usar o Bloco de Notas, VS Code, ou <code>nano bot.py</code> no terminal) e cole o código abaixo. Troque <code>SEU_TOKEN_AQUI</code> pelo token do passo 8, e confira que o nome <code>"checkpoints-150ze"</code> é exatamente igual ao nome da sua planilha. Esta versão já faz <strong>cinco coisas</strong>: (1) confirma T##/G##/RONDA como antes, mas agora pergunta também uma <strong>observação opcional</strong> (até 20 palavras) depois do nome; (2) atende ao botão "📢 Reportar Ocorrência", com um fluxo separado (seção → tipo → nome → texto de até 20 palavras) que grava na aba <code>ocorrencias</code>; (3) valida o limite de 20 palavras, pedindo pra resumir se passar disso; (4) quando o código é <code>RONDA</code>, pergunta também <strong>quantas pessoas estão na fila</strong> e <strong>quantos eleitores já votaram</strong>, gravando essa leitura numérica na aba <code>rondas</code> — é esse número que alimenta os gráficos de fila/votação do <code>index.html</code> e do <code>secao.html</code>; (5) tanto a observação quanto a descrição da ocorrência aceitam um <strong>áudio curto</strong> no lugar do texto — o bot transcreve sozinho (rodando local, sem depender de outra API) e segue o fluxo normal com o texto obtido.</p>
-        <pre>from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
+        <p>Dentro de <code>~/eleicoes-bot</code>, crie um arquivo chamado <code>bot.py</code> (pode usar o Bloco de Notas, VS Code, ou <code>nano bot.py</code> no terminal) e cole o código abaixo. Troque <code>SEU_TOKEN_AQUI</code> pelo token do passo 8, e confira que o nome <code>"checkpoints-999ze"</code> é exatamente igual ao nome da sua planilha. Esta versão já faz <strong>seis coisas</strong>: (1) confirma T##/G## como antes (grava na aba <code>checkpoints</code>) e agora pergunta também uma <strong>observação opcional</strong> (até 20 palavras) depois do nome; (2) atende ao botão "📢 Reportar Ocorrência", com um fluxo separado (seção → tipo → nome → texto de até 20 palavras) que grava na aba <code>ocorrencias</code>; (3) valida o limite de 20 palavras, pedindo pra resumir se passar disso; (4) quando o código é <code>RONDA</code>, primeiro mostra um <strong>checklist R01-R05</strong> (botões, pode marcar vários de uma vez ou "Marcar todas") pra pessoa indicar o que conseguiu conferir naquela passada, e só depois disso pergunta quem confirmou; (5) ainda na RONDA, pergunta também <strong>quantas pessoas estão na fila</strong> e <strong>quantos eleitores já votaram</strong> — e, se R05 foi marcado, mais uma pergunta: <strong>o tempo médio de espera</strong> que quem terminou de votar relatou. Tudo isso grava na aba <code>rondas</code> (fila/votados alimentam os gráficos de fila/votação do <code>index.html</code> e do <code>secao.html</code>; o checklist marcado e o tempo de espera vão em duas colunas novas, <code>atividades</code> e <code>tempo_espera_min</code>); (6) tanto a observação quanto a descrição da ocorrência aceitam um <strong>áudio curto</strong> no lugar do texto — o bot transcreve sozinho (rodando local, sem depender de outra API) e segue o fluxo normal com o texto obtido.</p>
+<pre>from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters
 import gspread, datetime, asyncio, os, tempfile
 from faster_whisper import WhisperModel
 
 # --- conecta nas abas da planilha, usando a chave do passo 4 ---
-PLANILHA = gspread.service_account(filename="creds.json").open("checkpoints-150ze")
+PLANILHA = gspread.service_account(filename="creds.json").open("checkpoints-999ze")
 SHEET_CHECKPOINTS = PLANILHA.worksheet("checkpoints")
 SHEET_OCORRENCIAS = PLANILHA.worksheet("ocorrencias")
 SHEET_RONDAS = PLANILHA.worksheet("rondas")
 
 # Tipos de ocorrência disponíveis no fluxo rápido de reporte (1 toque + nome + texto curto).
-# São categorias operacionais simples — não confundir com os códigos A01-A28 oficiais da ata.
 TIPOS_OCORRENCIA = [
     ("FILA", "🚶 Fila grande"),
     ("URNA", "🗳️ Problema na urna"),
     ("ENERGIA", "⚡ Energia/bateria"),
     ("SEGURANCA", "🚨 Segurança/ordem"),
     ("OUTRO", "⚠️ Outro"),
+]
+
+# Checklist rápido da Ronda (R01-R05 do guia de bolso) — a pessoa marca no Telegram o que
+# conseguiu conferir nesta passada, em vez de digitar/descrever (R06-R08 do guia continuam só
+# como lembrete impresso, não são marcados aqui). R05 é o mais novo: pergunta o tempo de espera
+# que quem terminou de votar relatou, então dispara uma pergunta numérica extra se for marcado.
+RONDA_CHECKLIST = [
+    ("R01", "Contou a fila da seção"),
+    ("R02", "Perguntou ao Presidente quantos já votaram"),
+    ("R03", "Checou energia/bateria da urna"),
+    ("R04", "Auxiliou a seção, se estava lenta"),
+    ("R05", "Perguntou a quem votou quanto tempo esperou"),
 ]
 
 # Transcrição de observações por áudio — roda local (sem custo, sem depender de outra API além
@@ -351,6 +365,15 @@ def teclado_secoes(prefixo):
 
 def teclado_tipos():
     return InlineKeyboardMarkup([[InlineKeyboardButton(label, callback_data=f"tipo:{cod}")] for cod, label in TIPOS_OCORRENCIA])
+
+def teclado_ronda_checklist(marcadas):
+    linhas = [
+        [InlineKeyboardButton(f"{'✅' if cod in marcadas else '⬜'} {cod} · {label}", callback_data=f"rchk:{cod}")]
+        for cod, label in RONDA_CHECKLIST
+    ]
+    linhas.append([InlineKeyboardButton("✔️ Marcar todas", callback_data="rchk:todas")])
+    linhas.append([InlineKeyboardButton("➡️ Continuar", callback_data="rchk:ok")])
+    return InlineKeyboardMarkup(linhas)
 
 def contar_palavras(texto):
     return len([p for p in texto.strip().split() if p])
@@ -389,11 +412,46 @@ async def start(update: Update, ctx):
 async def secao_escolhida(update: Update, ctx):
     query = update.callback_query
     ctx.user_data["secao"] = query.data.split(":")[1]
-    ctx.user_data["etapa"] = "nomes"
     await query.answer()
+
+    if ctx.user_data.get("codigo") == "RONDA":
+        # RONDA passa primeiro pelo checklist R01-R05 (veja teclado_ronda_checklist) — só depois
+        # de "Continuar" é que pergunta quem confirmou, igual às outras confirmações
+        ctx.user_data["ronda_marcadas"] = set()
+        await query.edit_message_text(
+            f"Seção {ctx.user_data['secao']} — o que você conseguiu conferir nesta ronda? "
+            "Toque em cada item feito (pode marcar vários) e depois em Continuar.",
+            reply_markup=teclado_ronda_checklist(set()),
+        )
+        return
+
+    ctx.user_data["etapa"] = "nomes"
     await query.edit_message_text(
         f"Seção {ctx.user_data['secao']} — quem confirmou? (nomes separados por 'e', nunca por vírgula)"
     )
+
+async def ronda_checklist_toggle(update: Update, ctx):
+    query = update.callback_query
+    acao = query.data.split(":")[1]
+    marcadas = ctx.user_data.setdefault("ronda_marcadas", set())
+
+    if acao == "ok":
+        await query.answer()
+        ctx.user_data["etapa"] = "nomes"
+        feitas = ", ".join(cod for cod, _ in RONDA_CHECKLIST if cod in marcadas) or "nenhuma"
+        await query.edit_message_text(
+            f"Seção {ctx.user_data['secao']} — marcado: {feitas}.\n"
+            "Quem confirmou? (nomes separados por 'e', nunca por vírgula)"
+        )
+        return
+
+    if acao == "todas":
+        marcadas.update(cod for cod, _ in RONDA_CHECKLIST)
+    else:
+        marcadas.symmetric_difference_update({acao})  # toca: marca se não tinha, desmarca se já tinha
+
+    await query.answer()
+    await query.edit_message_reply_markup(reply_markup=teclado_ronda_checklist(marcadas))
 
 async def ocorrencia_secao_escolhida(update: Update, ctx):
     query = update.callback_query
@@ -411,19 +469,25 @@ async def ocorrencia_tipo_escolhido(update: Update, ctx):
     await query.edit_message_text("Quem está reportando? (seu nome)")
 
 async def gravar_checkpoint_e_responder(update: Update, ctx):
-    # ponto único de gravação — chamado tanto pelas confirmações normais quanto
-    # pela RONDA, depois das 2 perguntas extras de fila/votados.
     codigo = ctx.user_data.get("codigo")
     agora = datetime.datetime.now()
-    SHEET_CHECKPOINTS.append_row([
-        codigo, ctx.user_data.get("secao", ""), "", "", "concluido",
-        ctx.user_data.get("nomes", ""), agora.strftime("%Y-%m-%d %H:%M"), ctx.user_data.get("observacao", ""),
-    ])
     if codigo == "RONDA":
+        # RONDA nunca vai pra aba "checkpoints" — mora só na aba "rondas", junto com os números
+        # (fila/votados/tempo de espera) e o checklist R01-R05 marcado. Assim cada aba guarda
+        # exatamente um tipo de coisa (checkpoints = tarefas T##/G##, rondas = rondas).
+        marcadas = ctx.user_data.get("ronda_marcadas", set())
+        atividades = " ".join(cod for cod, _ in RONDA_CHECKLIST if cod in marcadas)
         SHEET_RONDAS.append_row([
             ctx.user_data.get("secao", ""), agora.strftime("%H:%M"),
-            ctx.user_data.get("fila", ""), ctx.user_data.get("votados", ""), "",
+            ctx.user_data.get("fila", ""), ctx.user_data.get("votados", ""),
+            "sim" if "R03" in marcadas else "",
+            ctx.user_data.get("tempo_espera", ""), atividades,
             ctx.user_data.get("observacao", ""), ctx.user_data.get("nomes", ""),
+        ])
+    else:
+        SHEET_CHECKPOINTS.append_row([
+            codigo, ctx.user_data.get("secao", ""), "", "", "concluido",
+            ctx.user_data.get("nomes", ""), agora.strftime("%Y-%m-%d %H:%M"), ctx.user_data.get("observacao", ""),
         ])
     await update.message.reply_text(f"✅ {codigo} confirmado às {agora:%H:%M}. Obrigado!")
     ctx.user_data.clear()
@@ -435,8 +499,8 @@ async def processar_observacao(update: Update, ctx, texto):
         await update.message.reply_text("Observação muito longa — resuma em até 20 palavras, por favor (pode ser um novo áudio curto):")
         return
     ctx.user_data["observacao"] = observacao
-    # RONDA tem 2 perguntas numéricas a mais (fila e votados) antes de gravar
     if ctx.user_data.get("codigo") == "RONDA":
+        # Ronda também pede os dois números usados no mapa/gráficos da home
         ctx.user_data["etapa"] = "fila"
         await update.message.reply_text("Quantas pessoas estão na fila da seção agora? (só o número, ex.: 8)")
         return
@@ -485,6 +549,24 @@ async def texto_recebido(update: Update, ctx):
             await update.message.reply_text("Envie só o número de eleitores que já votaram (ex.: 180):")
             return
         ctx.user_data["votados"] = texto
+        if "R05" in ctx.user_data.get("ronda_marcadas", set()):
+            ctx.user_data["etapa"] = "tempo_espera"
+            await update.message.reply_text(
+                'Qual foi o tempo médio de espera que quem estava terminando de votar relatou? '
+                '(em minutos, ex.: 12 — ou "não" se não perguntou a ninguém)'
+            )
+            return
+        await gravar_checkpoint_e_responder(update, ctx)
+        return
+
+    if etapa == "tempo_espera":
+        if texto.lower() in ("não", "nao", "n", "-"):
+            ctx.user_data["tempo_espera"] = ""
+        elif texto.isdigit():
+            ctx.user_data["tempo_espera"] = texto
+        else:
+            await update.message.reply_text('Envie só o número de minutos (ex.: 12) ou "não":')
+            return
         await gravar_checkpoint_e_responder(update, ctx)
         return
 
@@ -528,13 +610,15 @@ async def audio_recebido(update: Update, ctx):
 app = Application.builder().token("SEU_TOKEN_AQUI").build()
 app.add_handler(CommandHandler("start", start))
 app.add_handler(CallbackQueryHandler(secao_escolhida, pattern="^sec:"))
+app.add_handler(CallbackQueryHandler(ronda_checklist_toggle, pattern="^rchk:"))
 app.add_handler(CallbackQueryHandler(ocorrencia_secao_escolhida, pattern="^osec:"))
 app.add_handler(CallbackQueryHandler(ocorrencia_tipo_escolhido, pattern="^tipo:"))
 app.add_handler(MessageHandler(filters.VOICE, audio_recebido))
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, texto_recebido))
 
 print("Bot rodando... deixe este terminal aberto (Ctrl+C para parar).")
-app.run_polling()</pre>
+app.run_polling()
+</pre>
         <div class="step-result"><b>✅ Resultado esperado:</b> o arquivo <code>bot.py</code> está salvo dentro de <code>~/eleicoes-bot</code>, na mesma pasta onde já estão <code>creds.json</code> e a pasta <code>venv</code>.</div>
       </div>
       <div class="tstep" data-n="11">
@@ -542,7 +626,7 @@ app.run_polling()</pre>
         <p>Com o ambiente virtual ativo (prompt começando com <code>(venv)</code> — se não estiver, repita <code>source venv/bin/activate</code>), rode:</p>
         <pre>python3 bot.py</pre>
         <p>O terminal deve imprimir <code>Bot rodando...</code> e ficar "parado" — isso é normal, é o <code>run_polling()</code> escutando mensagens. Agora, no celular, abra o Telegram, procure seu bot pelo username e envie <code>/start T07</code>. Toque numa seção de teste (ex.: Seção 01), digite um nome de teste (ex.: <code>Teste</code>) e, quando ele perguntar a observação, teste das duas formas: uma vez digitando algo curto (ex.: <code>tudo certo</code>) e, num segundo teste, gravando e enviando um áudio curto no lugar do texto (o bot deve responder com "🎤 Ouvindo o áudio…" e depois mostrar o texto que entendeu antes de seguir) — ou envie <code>não</code> para pular. Depois teste também <code>/start RONDA</code> — desta vez, depois da observação, o bot pergunta a fila (responda só o número, ex.: <code>8</code>) e depois os votados (ex.: <code>180</code>). Por fim teste <code>/start OCORRENCIA</code> — escolha uma seção, um tipo, um nome e um texto de teste.</p>
-        <div class="step-result"><b>✅ Resultado esperado:</b> o bot responde "✅ T07 confirmado às HH:MM. Obrigado!" no Telegram, e ao abrir a planilha (aba <code>checkpoints</code>) aparece uma <strong>nova linha</strong> com <code>T07</code>, a seção, o nome digitado, o horário e a observação (ou vazio, se você pulou). O teste de <code>/start RONDA</code> deve gerar uma linha em <code>checkpoints</code> (igual às demais) <strong>e</strong> uma segunda linha nova na aba <code>rondas</code>, com a seção, o horário, a fila e os votados que você digitou. O teste de <code>/start OCORRENCIA</code> deve gerar uma nova linha na aba <code>ocorrencias</code>, com o tipo escolhido, a seção, o texto (ou a transcrição do áudio, se foi esse o teste) e o nome. Na primeira vez que <code>python3 bot.py</code> rodar, o próprio Whisper baixa um arquivo de modelo (≈150MB) antes de começar a escutar mensagens — isso pode levar um minuto e precisa de internet só nessa hora. Se <code>python3 bot.py</code> já der erro antes mesmo de mandar mensagem no Telegram, confira: (a) as duas APIs (Sheets <strong>e</strong> Drive) estão ativadas no passo 2 — erro <code>Google Drive API has not been used...</code> significa que só a Sheets foi ativada, (b) o nome da planilha no código bate exatamente com o real, (c) o e-mail da conta de serviço foi mesmo compartilhado como Editor (passo 5), (d) a aba <code>rondas</code> existe na planilha com esse nome exato — ela já vem pronta no <code>checkpoints-150ze.xlsx</code> do passo 1.</div>
+        <div class="step-result"><b>✅ Resultado esperado:</b> o bot responde "✅ T07 confirmado às HH:MM. Obrigado!" no Telegram, e ao abrir a planilha (aba <code>checkpoints</code>) aparece uma <strong>nova linha</strong> com <code>T07</code>, a seção, o nome digitado, o horário e a observação (ou vazio, se você pulou). O teste de <code>/start RONDA</code> deve gerar uma linha nova só na aba <code>rondas</code> (não em <code>checkpoints</code> — RONDA nunca vai pra lá), com a seção, o horário, a fila, os votados e o checklist R01-R05 que você marcou. O teste de <code>/start OCORRENCIA</code> deve gerar uma nova linha na aba <code>ocorrencias</code>, com o tipo escolhido, a seção, o texto (ou a transcrição do áudio, se foi esse o teste) e o nome. Na primeira vez que <code>python3 bot.py</code> rodar, o próprio Whisper baixa um arquivo de modelo (≈150MB) antes de começar a escutar mensagens — isso pode levar um minuto e precisa de internet só nessa hora. Se <code>python3 bot.py</code> já der erro antes mesmo de mandar mensagem no Telegram, confira: (a) as duas APIs (Sheets <strong>e</strong> Drive) estão ativadas no passo 2 — erro <code>Google Drive API has not been used...</code> significa que só a Sheets foi ativada, (b) o nome da planilha no código bate exatamente com o real, (c) o e-mail da conta de serviço foi mesmo compartilhado como Editor (passo 5), (d) a aba <code>rondas</code> existe na planilha com esse nome exato — ela já vem pronta no <code>checkpoints-999ze.xlsx</code> do passo 1.</div>
         <div class="step-warn"><b>⚠️ Pitfall comum:</b> nunca deixe o mesário/administrador digitar nomes separados por <strong>vírgula</strong> (ex.: "Rafael, João") — o código de exemplo já troca vírgula por " e " automaticamente, mas se for adaptar o bot, lembre-se que o CSV do passo 14 usa vírgula como separador de colunas, e um nome com vírgula "quebra" a linha ao ser lida pelo painel.</div>
       </div>
     </div>
@@ -551,7 +635,7 @@ app.run_polling()</pre>
       <div class="phase-head"><span class="phase-n">FASE 6</span><h3>🔗 Conectar ao guia de bolso</h3></div>
       <div class="tstep" data-n="12">
         <div class="tstep-title">Colocar o username do bot no sunday.html</div>
-        <p>O <code>sunday.html</code> (guia de bolso) é <strong>gerado</strong> por dois scripts Python (<code>build_sunday.py</code> e <code>build_sunday_html.py</code>) — os links dos botões já saem prontos no HTML final, sem JavaScript nenhum (isso é proposital: o WhatsApp e outros navegadores embutidos nem sempre executam <code>&lt;script&gt;</code>, então o link precisa já vir pronto no <code>href</code>). Para trocar o bot, edite a constante <code>BOT_USERNAME = "..."</code> perto do topo de <strong>ambos</strong> os scripts (sem <code>@</code> e sem <code>t.me/</code>, ex.: <code>"ze150_admin_bot"</code>) e rode <code>python3 build_sunday.py</code> seguido de <code>python3 build_sunday_html.py</code> para regerar o <code>sunday.html</code>. Se você recebeu o <code>sunday.html</code> já pronto junto com este guia, o bot já está configurado — só confirme se o username bate com o seu.</p>
+        <p>O <code>sunday.html</code> (guia de bolso) é <strong>gerado</strong> por dois scripts Python (<code>build_sunday.py</code> e <code>build_sunday_html.py</code>) — os links dos botões já saem prontos no HTML final, sem JavaScript nenhum (isso é proposital: o WhatsApp e outros navegadores embutidos nem sempre executam <code>&lt;script&gt;</code>, então o link precisa já vir pronto no <code>href</code>). Para trocar o bot, edite a constante <code>BOT_USERNAME = "..."</code> perto do topo de <strong>ambos</strong> os scripts (sem <code>@</code> e sem <code>t.me/</code>, ex.: <code>"ze999_admin_bot"</code>) e rode <code>python3 build_sunday.py</code> seguido de <code>python3 build_sunday_html.py</code> para regerar o <code>sunday.html</code>. Se você recebeu o <code>sunday.html</code> já pronto junto com este guia, o bot já está configurado — só confirme se o username bate com o seu.</p>
         <div class="step-result"><b>✅ Resultado esperado:</b> ao abrir o guia de bolso no celular e tocar em qualquer botão "📲 Confirmar T##", "📲 Registrar Ronda" ou "📢 Reportar Ocorrência", o Telegram abre direto na conversa com o seu bot, já com o comando certo preenchido (<code>/start T07</code>, <code>/start RONDA</code>, <code>/start OCORRENCIA</code>...) — sem precisar digitar nada, mesmo dentro do navegador do WhatsApp.</div>
       </div>
     </div>
@@ -656,7 +740,7 @@ const REFRESH_MS = 30000;       // 30s, conforme o roadmap V1 — pode ajustar d
     </ol>
   </section>
 
-  <footer class="page-footer">Companion do Guia de Bolso de Domingo · 150ª ZE · TRE-PE</footer>
+  <footer class="page-footer">Companion do Guia de Bolso de Domingo · 999ª ZE · TRE-ZZ</footer>
 </div>
 
 <script>

@@ -1,7 +1,7 @@
 # Sample 1 · "Otimista" — exercício de leitura de painel
 
 Este é um pacote de **dados de demonstração**, totalmente fictícios e aleatórios, para treinar
-administradores e supervisores a lerem os painéis da 150ª ZE antes do dia da eleição de verdade.
+administradores e supervisores a lerem os painéis da 999ª ZE antes do dia da eleição de verdade.
 Nenhum dos nomes, horários ou números aqui é real.
 
 ## Como usar com o grupo

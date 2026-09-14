@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Sobe scripts/seed_demo/{checkpoints,ocorrencias,rondas}.csv pra planilha REAL (checkpoints-150ze)
+Sobe scripts/seed_demo/{checkpoints,ocorrencias,rondas}.csv pra planilha REAL (checkpoints-999ze)
 — um preenchimento breve (até por volta das 10:30, todas as 16 seções, mistura de boas/médias/
 ruins) só para você conseguir testar o /start pelo celular e ver o public/demo/ com alguma coisa
 na tela, em vez de tudo vazio.
@@ -29,7 +29,7 @@ except ImportError:
 
 REPO = pathlib.Path(__file__).resolve().parent.parent
 SEED_DIR = REPO / "scripts" / "seed_demo"
-PLANILHA_NOME = "checkpoints-150ze"
+PLANILHA_NOME = "checkpoints-999ze"
 CREDS = REPO / "eleicoes-bot" / "creds.json"
 
 ABAS = [("checkpoints", "checkpoints.csv"), ("ocorrencias", "ocorrencias.csv"), ("rondas", "rondas.csv")]

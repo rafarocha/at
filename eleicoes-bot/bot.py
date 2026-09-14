@@ -4,7 +4,7 @@ import gspread, datetime, asyncio, os, tempfile
 from faster_whisper import WhisperModel
 
 # --- conecta nas abas da planilha, usando a chave do passo 4 ---
-PLANILHA = gspread.service_account(filename="creds.json").open("checkpoints-150ze")
+PLANILHA = gspread.service_account(filename="creds.json").open("checkpoints-999ze")
 SHEET_CHECKPOINTS = PLANILHA.worksheet("checkpoints")
 SHEET_OCORRENCIAS = PLANILHA.worksheet("ocorrencias")
 SHEET_RONDAS = PLANILHA.worksheet("rondas")
@@ -16,6 +16,18 @@ TIPOS_OCORRENCIA = [
     ("ENERGIA", "⚡ Energia/bateria"),
     ("SEGURANCA", "🚨 Segurança/ordem"),
     ("OUTRO", "⚠️ Outro"),
+]
+
+# Checklist rápido da Ronda (R01-R05 do guia de bolso) — a pessoa marca no Telegram o que
+# conseguiu conferir nesta passada, em vez de digitar/descrever (R06-R08 do guia continuam só
+# como lembrete impresso, não são marcados aqui). R05 é o mais novo: pergunta o tempo de espera
+# que quem terminou de votar relatou, então dispara uma pergunta numérica extra se for marcado.
+RONDA_CHECKLIST = [
+    ("R01", "Contou a fila da seção"),
+    ("R02", "Perguntou ao Presidente quantos já votaram"),
+    ("R03", "Checou energia/bateria da urna"),
+    ("R04", "Auxiliou a seção, se estava lenta"),
+    ("R05", "Perguntou a quem votou quanto tempo esperou"),
 ]
 
 # Transcrição de observações por áudio — roda local (sem custo, sem depender de outra API além
@@ -30,6 +42,15 @@ def teclado_secoes(prefixo):
 
 def teclado_tipos():
     return InlineKeyboardMarkup([[InlineKeyboardButton(label, callback_data=f"tipo:{cod}")] for cod, label in TIPOS_OCORRENCIA])
+
+def teclado_ronda_checklist(marcadas):
+    linhas = [
+        [InlineKeyboardButton(f"{'✅' if cod in marcadas else '⬜'} {cod} · {label}", callback_data=f"rchk:{cod}")]
+        for cod, label in RONDA_CHECKLIST
+    ]
+    linhas.append([InlineKeyboardButton("✔️ Marcar todas", callback_data="rchk:todas")])
+    linhas.append([InlineKeyboardButton("➡️ Continuar", callback_data="rchk:ok")])
+    return InlineKeyboardMarkup(linhas)
 
 def contar_palavras(texto):
     return len([p for p in texto.strip().split() if p])
@@ -68,11 +89,46 @@ async def start(update: Update, ctx):
 async def secao_escolhida(update: Update, ctx):
     query = update.callback_query
     ctx.user_data["secao"] = query.data.split(":")[1]
-    ctx.user_data["etapa"] = "nomes"
     await query.answer()
+
+    if ctx.user_data.get("codigo") == "RONDA":
+        # RONDA passa primeiro pelo checklist R01-R05 (veja teclado_ronda_checklist) — só depois
+        # de "Continuar" é que pergunta quem confirmou, igual às outras confirmações
+        ctx.user_data["ronda_marcadas"] = set()
+        await query.edit_message_text(
+            f"Seção {ctx.user_data['secao']} — o que você conseguiu conferir nesta ronda? "
+            "Toque em cada item feito (pode marcar vários) e depois em Continuar.",
+            reply_markup=teclado_ronda_checklist(set()),
+        )
+        return
+
+    ctx.user_data["etapa"] = "nomes"
     await query.edit_message_text(
         f"Seção {ctx.user_data['secao']} — quem confirmou? (nomes separados por 'e', nunca por vírgula)"
     )
+
+async def ronda_checklist_toggle(update: Update, ctx):
+    query = update.callback_query
+    acao = query.data.split(":")[1]
+    marcadas = ctx.user_data.setdefault("ronda_marcadas", set())
+
+    if acao == "ok":
+        await query.answer()
+        ctx.user_data["etapa"] = "nomes"
+        feitas = ", ".join(cod for cod, _ in RONDA_CHECKLIST if cod in marcadas) or "nenhuma"
+        await query.edit_message_text(
+            f"Seção {ctx.user_data['secao']} — marcado: {feitas}.\n"
+            "Quem confirmou? (nomes separados por 'e', nunca por vírgula)"
+        )
+        return
+
+    if acao == "todas":
+        marcadas.update(cod for cod, _ in RONDA_CHECKLIST)
+    else:
+        marcadas.symmetric_difference_update({acao})  # toca: marca se não tinha, desmarca se já tinha
+
+    await query.answer()
+    await query.edit_message_reply_markup(reply_markup=teclado_ronda_checklist(marcadas))
 
 async def ocorrencia_secao_escolhida(update: Update, ctx):
     query = update.callback_query
@@ -92,16 +148,23 @@ async def ocorrencia_tipo_escolhido(update: Update, ctx):
 async def gravar_checkpoint_e_responder(update: Update, ctx):
     codigo = ctx.user_data.get("codigo")
     agora = datetime.datetime.now()
-    SHEET_CHECKPOINTS.append_row([
-        codigo, ctx.user_data.get("secao", ""), "", "", "concluido",
-        ctx.user_data.get("nomes", ""), agora.strftime("%Y-%m-%d %H:%M"), ctx.user_data.get("observacao", ""),
-    ])
-    # RONDA também alimenta a aba "rondas" com os números (fila/votados) usados no mapa e nos gráficos
     if codigo == "RONDA":
+        # RONDA nunca vai pra aba "checkpoints" — mora só na aba "rondas", junto com os números
+        # (fila/votados/tempo de espera) e o checklist R01-R05 marcado. Assim cada aba guarda
+        # exatamente um tipo de coisa (checkpoints = tarefas T##/G##, rondas = rondas).
+        marcadas = ctx.user_data.get("ronda_marcadas", set())
+        atividades = " ".join(cod for cod, _ in RONDA_CHECKLIST if cod in marcadas)
         SHEET_RONDAS.append_row([
             ctx.user_data.get("secao", ""), agora.strftime("%H:%M"),
-            ctx.user_data.get("fila", ""), ctx.user_data.get("votados", ""), "",
+            ctx.user_data.get("fila", ""), ctx.user_data.get("votados", ""),
+            "sim" if "R03" in marcadas else "",
+            ctx.user_data.get("tempo_espera", ""), atividades,
             ctx.user_data.get("observacao", ""), ctx.user_data.get("nomes", ""),
+        ])
+    else:
+        SHEET_CHECKPOINTS.append_row([
+            codigo, ctx.user_data.get("secao", ""), "", "", "concluido",
+            ctx.user_data.get("nomes", ""), agora.strftime("%Y-%m-%d %H:%M"), ctx.user_data.get("observacao", ""),
         ])
     await update.message.reply_text(f"✅ {codigo} confirmado às {agora:%H:%M}. Obrigado!")
     ctx.user_data.clear()
@@ -163,6 +226,24 @@ async def texto_recebido(update: Update, ctx):
             await update.message.reply_text("Envie só o número de eleitores que já votaram (ex.: 180):")
             return
         ctx.user_data["votados"] = texto
+        if "R05" in ctx.user_data.get("ronda_marcadas", set()):
+            ctx.user_data["etapa"] = "tempo_espera"
+            await update.message.reply_text(
+                'Qual foi o tempo médio de espera que quem estava terminando de votar relatou? '
+                '(em minutos, ex.: 12 — ou "não" se não perguntou a ninguém)'
+            )
+            return
+        await gravar_checkpoint_e_responder(update, ctx)
+        return
+
+    if etapa == "tempo_espera":
+        if texto.lower() in ("não", "nao", "n", "-"):
+            ctx.user_data["tempo_espera"] = ""
+        elif texto.isdigit():
+            ctx.user_data["tempo_espera"] = texto
+        else:
+            await update.message.reply_text('Envie só o número de minutos (ex.: 12) ou "não":')
+            return
         await gravar_checkpoint_e_responder(update, ctx)
         return
 
@@ -209,6 +290,7 @@ with open("token.txt") as _f:
 app = Application.builder().token(BOT_TOKEN).build()
 app.add_handler(CommandHandler("start", start))
 app.add_handler(CallbackQueryHandler(secao_escolhida, pattern="^sec:"))
+app.add_handler(CallbackQueryHandler(ronda_checklist_toggle, pattern="^rchk:"))
 app.add_handler(CallbackQueryHandler(ocorrencia_secao_escolhida, pattern="^osec:"))
 app.add_handler(CallbackQueryHandler(ocorrencia_tipo_escolhido, pattern="^tipo:"))
 app.add_handler(MessageHandler(filters.VOICE, audio_recebido))

@@ -227,7 +227,7 @@
   <section id="bot">
     <h2>🛠️ Montando a V1 — Planilha + Bot + Painel (passo a passo)</h2>
     <p>Este é o roteiro completo para sair do zero até ter a <strong>V1 funcionando</strong>: <code>Telegram + Google Sheets + painel HTML lendo CSV a cada 30s</code>. São 15 passos organizados em 7 fases — cada um termina com um <span class="step-result" style="display:inline;padding:2px 6px;">✅ Resultado esperado</span> para você confirmar que deu certo antes de seguir pro próximo. Reserve umas 2-3h numa tarde tranquila (dá pra fazer em etapas ao longo da semana antes da eleição).</p>
-    <div class="callout green">📦 <strong>Vários arquivos já vêm prontos</strong> junto com este guia — você não precisa criar nada do zero: <code>checkpoints-150ze.xlsx</code> (a planilha com as 3 abas e cabeçalhos certos, usada no passo 1), <code>painel.html</code> (o painel completo, já com o cronograma real deste guia embutido, usado no passo 14) e dois exemplos preenchidos com dados fictícios — <code>painel-exemplo-fila.html</code> (fila grande em várias seções) e <code>painel-exemplo-urna.html</code> (problema de urna, energia e segurança) — que abrem sozinhos, sem precisar de CSV nenhum, só para você e os supervisores treinarem a leitura do painel antes do dia. Você só edita algumas linhas de configuração no <code>painel.html</code> real — o resto é escrever e testar o <code>bot.py</code>.</div>
+    <div class="callout green">📦 <strong>Vários arquivos já vêm prontos</strong> junto com este guia — você não precisa criar nada do zero: <code>checkpoints-999ze.xlsx</code> (a planilha com as 3 abas e cabeçalhos certos, usada no passo 1), <code>painel.html</code> (o painel completo, já com o cronograma real deste guia embutido, usado no passo 14) e dois exemplos preenchidos com dados fictícios — <code>painel-exemplo-fila.html</code> (fila grande em várias seções) e <code>painel-exemplo-urna.html</code> (problema de urna, energia e segurança) — que abrem sozinhos, sem precisar de CSV nenhum, só para você e os supervisores treinarem a leitura do painel antes do dia. Você só edita algumas linhas de configuração no <code>painel.html</code> real — o resto é escrever e testar o <code>bot.py</code>.</div>
     <div class="progress-overview">
       <a href="#fase1">1 · Planilha</a>
       <a href="#fase2">2 · Credenciais</a>
@@ -241,14 +241,14 @@
     <div class="phase" id="fase1">
       <div class="phase-head"><span class="phase-n">FASE 1</span><h3>🗂️ Importar a planilha pronta (Google Sheets)</h3></div>
       <div class="tstep" data-n="1">
-        <div class="tstep-title">Baixar e importar checkpoints-150ze.xlsx</div>
-        <p>Você não precisa criar a planilha do zero — o arquivo <code>checkpoints-150ze.xlsx</code> (entregue junto com este guia) já vem exatamente como deve ser: as 3 abas <code>checkpoints</code>, <code>rondas</code> e <code>ocorrencias</code>, cada uma com a linha de cabeçalho certa na linha 1 (veja os campos em 🗂️ Esquema de dados). Para transformá-lo numa Planilha Google editável:</p>
+        <div class="tstep-title">Baixar e importar checkpoints-999ze.xlsx</div>
+        <p>Você não precisa criar a planilha do zero — o arquivo <code>checkpoints-999ze.xlsx</code> (entregue junto com este guia) já vem exatamente como deve ser: as 3 abas <code>checkpoints</code>, <code>rondas</code> e <code>ocorrencias</code>, cada uma com a linha de cabeçalho certa na linha 1 (veja os campos em 🗂️ Esquema de dados). Para transformá-lo numa Planilha Google editável:</p>
         <ol style="margin:6px 0 6px 20px;">
-          <li>Acesse <code>drive.google.com</code> → <strong>Novo → Upload de arquivo</strong> → selecione <code>checkpoints-150ze.xlsx</code>.</li>
+          <li>Acesse <code>drive.google.com</code> → <strong>Novo → Upload de arquivo</strong> → selecione <code>checkpoints-999ze.xlsx</code>.</li>
           <li>Depois do upload, clique com o botão direito no arquivo → <strong>Abrir com → Google Planilhas</strong> (isso cria uma cópia já convertida, com as 3 abas e cabeçalhos preservados).</li>
-          <li>Renomeie essa nova Planilha Google para <code>checkpoints-150ze</code>, se quiser (o arquivo <code>.xlsx</code> original pode ser apagado do Drive depois).</li>
+          <li>Renomeie essa nova Planilha Google para <code>checkpoints-999ze</code>, se quiser (o arquivo <code>.xlsx</code> original pode ser apagado do Drive depois).</li>
         </ol>
-        <div class="step-result"><b>✅ Resultado esperado:</b> você tem uma <strong>Planilha Google</strong> (não mais um arquivo .xlsx) chamada <code>checkpoints-150ze</code>, com 3 abas — <code>checkpoints</code>, <code>rondas</code>, <code>ocorrencias</code> — cada uma já com a linha de cabeçalho pronta e nenhuma outra linha ainda.</div>
+        <div class="step-result"><b>✅ Resultado esperado:</b> você tem uma <strong>Planilha Google</strong> (não mais um arquivo .xlsx) chamada <code>checkpoints-999ze</code>, com 3 abas — <code>checkpoints</code>, <code>rondas</code>, <code>ocorrencias</code> — cada uma já com a linha de cabeçalho pronta e nenhuma outra linha ainda.</div>
       </div>
     </div>
 
@@ -257,14 +257,14 @@
       <p style="margin-top:0;">É assim que o programa Python consegue escrever na sua planilha sem que você precise digitar sua própria senha do Google nele.</p>
       <div class="tstep" data-n="2">
         <div class="tstep-title">Criar um projeto e ativar as APIs do Google Sheets e do Google Drive</div>
-        <p>Acesse <code>console.cloud.google.com</code> com a mesma conta Google da planilha. No topo, crie um projeto novo (ex.: <code>eleicoes-150ze</code>). Com o projeto selecionado, use a busca no topo e digite <code>Google Sheets API</code> → abra o resultado → clique em <strong>Ativar</strong>. Repita o mesmo processo para <code>Google Drive API</code> — <strong>as duas precisam estar ativadas</strong>, mesmo que o bot não vá guardar arquivos no Drive: é a Drive API que permite ao código encontrar a planilha pelo nome (<code>.open("checkpoints-150ze")</code>).</p>
+        <p>Acesse <code>console.cloud.google.com</code> com a mesma conta Google da planilha. No topo, crie um projeto novo (ex.: <code>eleicoes-999ze</code>). Com o projeto selecionado, use a busca no topo e digite <code>Google Sheets API</code> → abra o resultado → clique em <strong>Ativar</strong>. Repita o mesmo processo para <code>Google Drive API</code> — <strong>as duas precisam estar ativadas</strong>, mesmo que o bot não vá guardar arquivos no Drive: é a Drive API que permite ao código encontrar a planilha pelo nome (<code>.open("checkpoints-999ze")</code>).</p>
         <div class="step-result"><b>✅ Resultado esperado:</b> as páginas de <strong>ambas</strong> as APIs passam a mostrar o botão <strong>Gerenciar</strong> (em vez de "Ativar"), confirmando que as duas estão ligadas para esse projeto.</div>
         <div class="step-warn"><b>⚠️ Pulou essa etapa?</b> Rodar o bot sem a Drive API ativada dá o erro <code>APIError: [403]: Google Drive API has not been used in project ... or it is disabled</code>. Se aparecer, acesse o link que o próprio erro mostra, clique em Ativar, espere 1-2 minutos e rode <code>python3 bot.py</code> de novo — não precisa refazer mais nada.</div>
       </div>
       <div class="tstep" data-n="3">
         <div class="tstep-title">Criar a conta de serviço</div>
         <p>No menu (☰) vá em <strong>IAM e administrador → Contas de serviço → + Criar conta de serviço</strong>. Dê um nome (ex.: <code>bot-checkpoints</code>) e clique em Concluir — não precisa marcar nenhum papel/permissão especial.</p>
-        <div class="step-result"><b>✅ Resultado esperado:</b> a conta aparece na lista com um e-mail parecido com <code>bot-checkpoints@eleicoes-150ze.iam.gserviceaccount.com</code>. Copie esse e-mail — vai precisar dele no passo 5.</div>
+        <div class="step-result"><b>✅ Resultado esperado:</b> a conta aparece na lista com um e-mail parecido com <code>bot-checkpoints@eleicoes-999ze.iam.gserviceaccount.com</code>. Copie esse e-mail — vai precisar dele no passo 5.</div>
       </div>
       <div class="tstep" data-n="4">
         <div class="tstep-title">Gerar a chave JSON</div>
@@ -274,7 +274,7 @@
       </div>
       <div class="tstep" data-n="5">
         <div class="tstep-title">Compartilhar a planilha com a conta de serviço</div>
-        <p>Volte na planilha <code>checkpoints-150ze</code> → botão <strong>Compartilhar</strong> (canto superior direito) → cole o e-mail da conta de serviço (do passo 3) → deixe a permissão como <strong>Editor</strong> → Enviar.</p>
+        <p>Volte na planilha <code>checkpoints-999ze</code> → botão <strong>Compartilhar</strong> (canto superior direito) → cole o e-mail da conta de serviço (do passo 3) → deixe a permissão como <strong>Editor</strong> → Enviar.</p>
         <div class="step-result"><b>✅ Resultado esperado:</b> o e-mail da conta de serviço aparece na lista de "Pessoas com acesso" da planilha, como Editor — mesmo sem nunca ter feito login com ela.</div>
       </div>
     </div>
@@ -303,7 +303,7 @@ pip install python-telegram-bot gspread google-auth</pre>
       <div class="phase-head"><span class="phase-n">FASE 4</span><h3>🤖 Criar o bot e o grupo no Telegram</h3></div>
       <div class="tstep" data-n="8">
         <div class="tstep-title">Criar o bot com o BotFather</div>
-        <p>No Telegram, procure e abra a conversa com <code>@BotFather</code>. Envie <code>/newbot</code>, escolha um nome de exibição (ex.: "Bot 150ª ZE") e depois um <em>username</em> terminado em <code>bot</code> (ex.: <code>ze150_admin_bot</code>).</p>
+        <p>No Telegram, procure e abra a conversa com <code>@BotFather</code>. Envie <code>/newbot</code>, escolha um nome de exibição (ex.: "Bot 999ª ZE") e depois um <em>username</em> terminado em <code>bot</code> (ex.: <code>ze999_admin_bot</code>).</p>
         <div class="step-result"><b>✅ Resultado esperado:</b> o BotFather responde com uma mensagem contendo "Use this token to access the HTTP API" seguida de um token (algo como <code>123456789:AAHk...</code>). Copie esse token inteiro — vai usá-lo no passo 9.</div>
       </div>
       <div class="tstep" data-n="9">
@@ -317,13 +317,13 @@ pip install python-telegram-bot gspread google-auth</pre>
       <div class="phase-head"><span class="phase-n">FASE 5</span><h3>📝 Escrever e testar o bot.py</h3></div>
       <div class="tstep" data-n="10">
         <div class="tstep-title">Criar o arquivo bot.py</div>
-        <p>Dentro de <code>~/eleicoes-bot</code>, crie um arquivo chamado <code>bot.py</code> (pode usar o Bloco de Notas, VS Code, ou <code>nano bot.py</code> no terminal) e cole o código abaixo. Troque <code>SEU_TOKEN_AQUI</code> pelo token do passo 8, e confira que o nome <code>"checkpoints-150ze"</code> é exatamente igual ao nome da sua planilha. Esta versão já faz <strong>três coisas</strong>: (1) confirma T##/G##/RONDA como antes, mas agora pergunta também uma <strong>observação opcional</strong> (até 20 palavras) depois do nome; (2) atende ao botão "📢 Reportar Ocorrência", com um fluxo separado (seção → tipo → nome → texto de até 20 palavras) que grava na aba <code>ocorrencias</code>; (3) valida o limite de 20 palavras, pedindo pra resumir se passar disso.</p>
+        <p>Dentro de <code>~/eleicoes-bot</code>, crie um arquivo chamado <code>bot.py</code> (pode usar o Bloco de Notas, VS Code, ou <code>nano bot.py</code> no terminal) e cole o código abaixo. Troque <code>SEU_TOKEN_AQUI</code> pelo token do passo 8, e confira que o nome <code>"checkpoints-999ze"</code> é exatamente igual ao nome da sua planilha. Esta versão já faz <strong>três coisas</strong>: (1) confirma T##/G##/RONDA como antes, mas agora pergunta também uma <strong>observação opcional</strong> (até 20 palavras) depois do nome; (2) atende ao botão "📢 Reportar Ocorrência", com um fluxo separado (seção → tipo → nome → texto de até 20 palavras) que grava na aba <code>ocorrencias</code>; (3) valida o limite de 20 palavras, pedindo pra resumir se passar disso.</p>
         <pre>from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters
 import gspread, datetime
 
 # --- conecta nas abas da planilha, usando a chave do passo 4 ---
-PLANILHA = gspread.service_account(filename="creds.json").open("checkpoints-150ze")
+PLANILHA = gspread.service_account(filename="creds.json").open("checkpoints-999ze")
 SHEET_CHECKPOINTS = PLANILHA.worksheet("checkpoints")
 SHEET_OCORRENCIAS = PLANILHA.worksheet("ocorrencias")
 
@@ -465,7 +465,7 @@ app.run_polling()</pre>
       <div class="phase-head"><span class="phase-n">FASE 6</span><h3>🔗 Conectar ao guia de bolso</h3></div>
       <div class="tstep" data-n="12">
         <div class="tstep-title">Colocar o username do bot no sunday.html</div>
-        <p>O <code>sunday.html</code> (guia de bolso) é <strong>gerado</strong> por dois scripts Python (<code>build_sunday.py</code> e <code>build_sunday_html.py</code>) — os links dos botões já saem prontos no HTML final, sem JavaScript nenhum (isso é proposital: o WhatsApp e outros navegadores embutidos nem sempre executam <code>&lt;script&gt;</code>, então o link precisa já vir pronto no <code>href</code>). Para trocar o bot, edite a constante <code>BOT_USERNAME = "..."</code> perto do topo de <strong>ambos</strong> os scripts (sem <code>@</code> e sem <code>t.me/</code>, ex.: <code>"ze150_admin_bot"</code>) e rode <code>python3 build_sunday.py</code> seguido de <code>python3 build_sunday_html.py</code> para regerar o <code>sunday.html</code>. Se você recebeu o <code>sunday.html</code> já pronto junto com este guia, o bot já está configurado — só confirme se o username bate com o seu.</p>
+        <p>O <code>sunday.html</code> (guia de bolso) é <strong>gerado</strong> por dois scripts Python (<code>build_sunday.py</code> e <code>build_sunday_html.py</code>) — os links dos botões já saem prontos no HTML final, sem JavaScript nenhum (isso é proposital: o WhatsApp e outros navegadores embutidos nem sempre executam <code>&lt;script&gt;</code>, então o link precisa já vir pronto no <code>href</code>). Para trocar o bot, edite a constante <code>BOT_USERNAME = "..."</code> perto do topo de <strong>ambos</strong> os scripts (sem <code>@</code> e sem <code>t.me/</code>, ex.: <code>"ze999_admin_bot"</code>) e rode <code>python3 build_sunday.py</code> seguido de <code>python3 build_sunday_html.py</code> para regerar o <code>sunday.html</code>. Se você recebeu o <code>sunday.html</code> já pronto junto com este guia, o bot já está configurado — só confirme se o username bate com o seu.</p>
         <div class="step-result"><b>✅ Resultado esperado:</b> ao abrir o guia de bolso no celular e tocar em qualquer botão "📲 Confirmar T##", "📲 Registrar Ronda" ou "📢 Reportar Ocorrência", o Telegram abre direto na conversa com o seu bot, já com o comando certo preenchido (<code>/start T07</code>, <code>/start RONDA</code>, <code>/start OCORRENCIA</code>...) — sem precisar digitar nada, mesmo dentro do navegador do WhatsApp.</div>
       </div>
     </div>
@@ -563,7 +563,7 @@ const REFRESH_MS = 30000;       // 30s, conforme o roadmap V1 — pode ajustar d
     </ol>
   </section>
 
-  <footer class="page-footer">Companion do Guia de Bolso de Domingo · 150ª ZE · TRE-PE</footer>
+  <footer class="page-footer">Companion do Guia de Bolso de Domingo · 999ª ZE · TRE-ZZ</footer>
 </div>
 
 <script>

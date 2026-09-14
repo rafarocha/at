@@ -112,7 +112,7 @@
 
   <header class="hero">
     <div>
-      <h1>🛰️ Mapa de Atividades — 150ª ZE</h1>
+      <h1>🛰️ Mapa de Atividades — 999ª ZE</h1>
       <div class="sub">Painel ao vivo · lê a planilha publicada a cada <span id="refreshSecs">30</span>s · 💡 passe o mouse num item verde para ver quem confirmou e a observação</div>
       <div class="last-sync" id="lastSync">Carregando dados pela primeira vez…</div>
     </div>
@@ -159,7 +159,7 @@
   </section>
 
   <footer class="page-footer">
-    Painel V1 · Telegram + Google Sheets + CSV publicado · edite <code>CSV_URL_CHECKPOINTS</code> no início do <code>&lt;script&gt;</code> deste arquivo para ligar aos seus dados reais — veja <em>../html-howto/sunday-tracking.html</em>, passo 14.
+    Desenvolvido por <a href="https://github.com/rafarocha" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;"><svg viewBox="0 0 16 16" width="1em" height="1em" style="vertical-align:-0.15em;margin-right:2px;" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>@rafarocha</a> · <a href="https://x.com/faelcavalcanti" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;"><svg viewBox="0 0 24 24" width="1em" height="1em" style="vertical-align:-0.15em;margin-right:2px;" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>@faelcavalcanti</a>
   </footer>
 </div>
 
@@ -170,6 +170,7 @@
   // =====================================================================
   const CSV_URL_CHECKPOINTS = "checkpoints.csv"; // obrigatório — passo 13 do guia
   const CSV_URL_OCORRENCIAS = "ocorrencias.csv"; // opcional — deixe como está para ocultar o feed
+  const CSV_URL_RONDAS = "rondas.csv"; // publique também a aba "rondas" — é de lá que vem o checklist de rondas do grid
   const NUM_SECOES = 16;          // quantidade de seções eleitorais do seu local
   const REFRESH_MS = 30000;       // intervalo de atualização (ms) — 30000 = 30s, conforme roadmap V1
   // =====================================================================
@@ -242,6 +243,12 @@
     const d = new Date();
     return d.getHours() * 60 + d.getMinutes();
   }
+  function toMinutes(hhmmish) {
+    if (!hhmmish) return null;
+    const m = hhmmish.trim().match(/(\d{1,2}):(\d{2})(?::\d{2})?\s*$/);
+    if (!m) return null;
+    return parseInt(m[1], 10) * 60 + parseInt(m[2], 10);
+  }
 
   // Parser de CSV simples com suporte a campos entre aspas (o formato que o
   // Google Sheets usa quando publica "Arquivo > Compartilhar > Publicar na Web > CSV").
@@ -281,30 +288,37 @@
   // --------------------------------------------------------------- estado
   let checkpointsPorSecaoECodigo = {}; // "secao|codigo" -> {status, confirmado_por, confirmado_em}
   let checkpointsGeral = {};           // "codigo" -> {status, confirmado_por, confirmado_em}  (secao vazia = G##)
-  let rondasPorSecao = {};             // "secao" -> [ {status, confirmado_por, confirmado_em}, ... ] (pode haver até 6/dia)
+  let rondasNumericasPorSecao = {};    // aba rondas — "secao" -> [ {horario, minuto, confirmado_por, observacao, ...}, ... ] (até 6/dia)
   let ocorrencias = [];
   let ocorrenciasHabilitadas = !!(CSV_URL_OCORRENCIAS && !CSV_URL_OCORRENCIAS.startsWith("COLE_AQUI"));
 
   function indexarCheckpoints(registros) {
     checkpointsPorSecaoECodigo = {};
     checkpointsGeral = {};
-    rondasPorSecao = {};
     registros.forEach(r => {
       const codigo = (r.codigo || "").trim();
       const secao = (r.secao || "").trim();
       if (!codigo) return;
+      if (codigo === "RONDA") return; // dado legado — desde a v2 o checklist de rondas vem só da aba "rondas"
       const info = { status: r.status || "concluido", confirmado_por: r.confirmado_por || "", confirmado_em: r.confirmado_em || "", observacao: r.observacao || "" };
-      if (codigo === "RONDA") {
-        if (!secao) return; // ronda sem seção registrada (dado legado) — não é possível localizar no grid
-        (rondasPorSecao[secao] = rondasPorSecao[secao] || []).push(info);
-        return;
-      }
       if (secao) checkpointsPorSecaoECodigo[secao + "|" + codigo] = info;
       else checkpointsGeral[codigo] = info;
     });
+  }
+
+  function indexarRondasNumericas(registros) {
+    rondasNumericasPorSecao = {};
+    registros.forEach(r => {
+      const secao = (r.secao || "").trim();
+      if (!secao) return;
+      (rondasNumericasPorSecao[secao] = rondasNumericasPorSecao[secao] || []).push({
+        horario: r.horario || "", minuto: toMinutes(r.horario),
+        observacao: r.observacao || "", confirmado_por: r.confirmado_por || "",
+      });
+    });
     // ordena cronologicamente para casar a Nª ronda confirmada com o Nº horário esperado
-    Object.keys(rondasPorSecao).forEach(sec => {
-      rondasPorSecao[sec].sort((a, b) => (a.confirmado_em || "").localeCompare(b.confirmado_em || ""));
+    Object.keys(rondasNumericasPorSecao).forEach(sec => {
+      rondasNumericasPorSecao[sec].sort((a, b) => (a.minuto ?? 0) - (b.minuto ?? 0));
     });
   }
 
@@ -379,18 +393,18 @@
       </div>`;
     });
 
-    // ---- grid de rondas por seção (R01-R07, várias vezes ao dia)
+    // ---- grid de rondas por seção (checklist R01-R08, repetido várias vezes ao dia)
     const gridR = document.getElementById("gridRondas");
     gridR.innerHTML = "";
     let rCounts = { ok: 0, warn: 0, late: 0, wait: 0 };
     SECOES.forEach(sec => {
-      const feitas = rondasPorSecao[sec] || [];
+      const feitas = rondasNumericasPorSecao[sec] || [];
       const status = RONDA_SLOTS.map((slot, i) => statusFor(!!feitas[i], slot.hora, RONDA_TOL, now));
       const pips = RONDA_SLOTS.map((slot, i) => {
         const conf = feitas[i]; // a i-ésima ronda confirmada (em ordem cronológica) cobre o i-ésimo horário esperado
         const st = status[i];
         rCounts[st]++;
-        const title = "Ronda " + slot.label + (conf ? (" — ✓ " + (conf.confirmado_por || "confirmada") + (conf.confirmado_em ? " (" + conf.confirmado_em + ")" : "")) : " — prevista");
+        const title = "Ronda " + slot.label + (conf ? (" — ✓ " + (conf.confirmado_por || "confirmada") + (conf.horario ? " (" + conf.horario + ")" : "")) : " — prevista");
         const tip = conf ? tipBubble(conf.confirmado_por, conf.observacao) : "";
         return `<span class="pip ${st}${tip ? ' tip-target' : ''}" title="${title.replace(/"/g, '&quot;')}">${slot.short}${tip}</span>`;
       }).join("");
@@ -448,6 +462,9 @@
 
       const occRows = await fetchCSV(CSV_URL_OCORRENCIAS);
       ocorrencias = occRows || [];
+
+      const rondaRows = await fetchCSV(CSV_URL_RONDAS);
+      indexarRondasNumericas(rondaRows || []);
 
       errorBanner.style.display = "none";
       document.getElementById("lastSync").textContent =

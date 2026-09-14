@@ -1,4 +1,4 @@
-# at — Real-Time Election-Day Tracking for the 150th Electoral Zone
+# at — Real-Time Election-Day Tracking for an Electoral Zone
 
 **`at` → reversed, `ta` → short for _Timeline for Admins_.** A small, static-site system that
 turns phone calls and paper checklists into a live map, charts and dashboards for election day —
@@ -33,7 +33,7 @@ spreadsheet for this election; the scenario pages are fictional training data, c
 
 | Folder | Contents |
 |---|---|
-| `html-mockups/` | The real source of the 3 pages (`index.html`, `secao.html`, `painel.html`). Each needs `CSV_URL_CHECKPOINTS` etc. set at the top of the `<script>` to work against a real spreadsheet. **This is where you edit.** Also holds a few older/reference files (`sunday.html`, `painel-exemplo-*.html`, `days.html`, `checkpoints-150ze.xlsx`). |
+| `html-mockups/` | The real source of the 3 pages (`index.html`, `secao.html`, `painel.html`). Each needs `CSV_URL_CHECKPOINTS` etc. set at the top of the `<script>` to work against a real spreadsheet. **This is where you edit.** Also holds a few older/reference files (`sunday.html`, `painel-exemplo-*.html`, `days.html`, `checkpoints-999ze.xlsx`). |
 | `html-howto/` | HTML guides: `publicar.html` (deploying to Pages), `sunday-tracking.html` and `tracking_guide.html` (spreadsheet/CSV setup), `acoes-seguranca.html` (security/secrets). |
 | `scripts/dados/` | The 3 fictional CSVs (`checkpoints`/`rondas`/`ocorrencias`) for each training scenario — raw material for `public/samples/`. |
 | `scripts/build_public.py` | Generates `public/` and `teste-local/` from `html-mockups/` + `scripts/dados/`. This is the "release" step — see `html-howto/publicar.html`. |
