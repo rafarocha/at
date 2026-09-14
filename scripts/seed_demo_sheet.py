@@ -53,7 +53,7 @@ def main():
         existentes = ws.get_all_values()
         if not existentes:
             ws.append_row(cabecalho)
-        ws.append_rows(linhas, value_input_option="USER_ENTERED")
+        ws.append_rows(linhas, value_input_option="RAW")
         print(f"  {aba}: +{len(linhas)} linhas (total agora: {len(existentes) + len(linhas) + (0 if existentes else 1)})")
 
     print("Pronto — confira a planilha e depois public/demo/ (pode levar até 30s pra aparecer).")

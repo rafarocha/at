@@ -127,6 +127,11 @@ def build_demo():
     for fname in ("index.html", "secao.html", "painel.html"):
         escrever_pagina(fname, saida, url_checkpoints, url_ocorrencias, url_rondas, novos_titulos[fname])
 
+    # sunday.html é estático (guia de bolso pra imprimir, sem fetch/CSV_URL) — só copia como está,
+    # pra ficar acessível junto do resto em public/demo/.
+    shutil.copyfile(TEMPLATES / "sunday.html", saida / "sunday.html")
+    print("  copiado:", (saida / "sunday.html").relative_to(REPO))
+
     if url_checkpoints.startswith("COLE_AQUI"):
         print("  aviso: variáveis CSV_URL_* não configuradas nos secrets/variables do repositório — "
               "public/demo/ ficou com o placeholder de sempre (a página vai pedir configuração).")
