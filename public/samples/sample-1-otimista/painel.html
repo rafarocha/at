@@ -65,6 +65,8 @@
   .sec-card .dot.warn { background: var(--amber); }
   .sec-card .dot.late { background: var(--red); }
   .sec-card .dot.wait { background: var(--gray); }
+  .sec-card .sec-name a { color: inherit; text-decoration: none; }
+  .sec-card .sec-name a:hover, .sec-card .sec-name a:active { text-decoration: underline; }
   .sec-meta { font-size:11px; color:var(--fg-sub); font-weight:700; margin-bottom:5px; }
   .task-pips { display:flex; gap:3px; flex-wrap:wrap; }
   .pip { width:17px; height:17px; border-radius:4px; font-size:8.5px; display:flex; align-items:center; justify-content:center; font-weight:800; font-family: var(--mono); cursor:default; }
@@ -81,6 +83,10 @@
   .occ-text { color: var(--fg-muted); }
   .occ-foot { font-size:10.5px; color:var(--fg-sub); font-style:italic; }
   .occ-empty { color: var(--fg-sub); font-size:12.5px; font-style:italic; }
+  .occ-count { font-family: var(--mono); font-size:26px; font-weight:800; text-align:center; padding:8px 0 6px; border-radius:8px; margin-bottom:5px; }
+  .occ-count.ok { background: var(--green-dim); color: var(--green); }
+  .occ-count.warn { background: var(--amber-dim); color: var(--amber); }
+  .occ-count.late { background: var(--red-dim); color: var(--red); }
 
   /* tooltip discreto (nome de quem confirmou + observação) — usado em pips e itens confirmados */
   .tip-target { position: relative; cursor: help; }
@@ -154,8 +160,9 @@
   </section>
 
   <section class="block">
-    <h2>📋 Feed de Alertas / Ocorrências</h2>
-    <div class="occ-feed" id="occFeed"><div class="occ-empty">Carregando…</div></div>
+    <h2>📋 Ocorrências em Ata por Seção</h2>
+    <div class="section-sub">Quantidade de ocorrências registradas em cada seção — abra o Detalhe da Seção pra ver a descrição de cada uma</div>
+    <div class="grid-checklist" id="gridOcorrencias"></div>
   </section>
 
   <footer class="page-footer">
@@ -384,7 +391,7 @@
       const overall = worst.includes("late") ? "late" : worst.includes("warn") ? "warn" : worst.every(s => s === "ok") ? "ok" : "wait";
       const feitos = worst.filter(s => s === "ok").length;
       grid.innerHTML += `<div class="sec-card">
-        <div class="sec-name">Seção ${sec} <span class="dot ${overall}"></span></div>
+        <div class="sec-name"><a href="secao.html?secao=${sec}">Seção ${sec}</a> <span class="dot ${overall}"></span></div>
         <div class="sec-meta">${feitos}/${TAREFAS_T.length} tarefas confirmadas</div>
         <div class="task-pips">${pips}</div>
       </div>`;
@@ -407,7 +414,7 @@
       }).join("");
       const overall = status.includes("late") ? "late" : status.includes("warn") ? "warn" : status.every(s => s === "ok") ? "ok" : "wait";
       gridR.innerHTML += `<div class="sec-card">
-        <div class="sec-name">Seção ${sec} <span class="dot ${overall}"></span></div>
+        <div class="sec-name"><a href="secao.html?secao=${sec}">Seção ${sec}</a> <span class="dot ${overall}"></span></div>
         <div class="sec-meta">${feitas.length}/${RONDA_SLOTS.length} rondas confirmadas</div>
         <div class="task-pips">${pips}</div>
       </div>`;
@@ -426,19 +433,20 @@
       <div class="summary-chip wait"><span class="n">${totalCounts.wait}</span>a caminho</div>
     `;
 
-    // ---- ocorrências
-    const feed = document.getElementById("occFeed");
+    // ---- ocorrências em ata por seção — contagem em destaque, sem o texto de cada uma
+    // (o detalhe de cada ocorrência mora só no Detalhe da Seção, pra não duplicar informação aqui)
+    const gridOcc = document.getElementById("gridOcorrencias");
     if (!ocorrenciasHabilitadas) {
-      feed.innerHTML = `<div class="occ-empty">Feed de ocorrências não configurado — preencha CSV_URL_OCORRENCIAS no início do &lt;script&gt; para ativar.</div>`;
-    } else if (!ocorrencias.length) {
-      feed.innerHTML = `<div class="occ-empty">Nenhuma ocorrência registrada até agora.</div>`;
+      gridOcc.innerHTML = `<div class="occ-empty">Feed de ocorrências não configurado — preencha CSV_URL_OCORRENCIAS no início do &lt;script&gt; para ativar.</div>`;
     } else {
-      feed.innerHTML = ocorrencias.slice().reverse().map(o => {
-        const tipo = TIPO_OCORRENCIA_LABEL[(o.codigo || "").toUpperCase()] || (o.codigo ? esc(o.codigo) : "⚠️ Ocorrência");
-        return `<div class="occ-item">
-          <div class="occ-head"><b>${tipo}</b><span class="occ-sec">Seção ${esc(o.secao || "-")}</span><span class="occ-time">${esc(o.horario || "")}</span></div>
-          <div class="occ-text">${esc(o.descricao || "")}</div>
-          <div class="occ-foot">relatado por ${esc(o.reportado_por || "—")}${o.status ? " · " + esc(o.status) : ""}</div>
+      gridOcc.innerHTML = SECOES.map(sec => {
+        const n = ocorrencias.filter(o => (o.secao || "").trim() === sec).length;
+        const nivel = n === 0 ? "ok" : n <= 2 ? "warn" : "late";
+        const emoji = n === 0 ? "✅" : "⚠️";
+        return `<div class="sec-card">
+          <div class="sec-name"><a href="secao.html?secao=${sec}">Seção ${sec}</a></div>
+          <div class="occ-count ${nivel}">${n} ${emoji}</div>
+          <div class="sec-meta">${n === 1 ? "ocorrência em ata" : "ocorrências em ata"}</div>
         </div>`;
       }).join("");
     }

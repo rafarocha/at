@@ -110,6 +110,7 @@
     <a href="index.html" class="nav-item active">🏠 Visão Geral</a>
     <a href="secao.html" class="nav-item">🔍 Detalhe por Seção</a>
     <a href="painel.html" class="nav-item">📊 Painel Gestor</a>
+    <a href="sunday.html" class="nav-item">📖 Guia de Bolso</a>
   </nav>
 
   <header class="hero">
@@ -163,7 +164,7 @@
     <div class="section-sub">Passe o mouse (ou toque) no gráfico de pizza pra ver os 5 principais aspectos de cumprimento de cada seção</div>
     <div style="overflow-x:auto;">
       <table class="sec-table">
-        <thead><tr><th>#</th><th>Seção</th><th>Cumprimento</th><th>🚶 Fila</th><th>🗳️ Votantes</th><th>⏱️ Espera (est.)</th><th>⚠️ Atrasadas</th><th>Status</th></tr></thead>
+        <thead><tr><th>#</th><th>Seção</th><th>Cumprimento</th><th>🚶 Fila</th><th>🗳️ Votantes</th><th>⏱️ Espera (est.)</th><th>⚠️ Atrasadas</th><th>📋 Ocorrências</th><th>Status</th></tr></thead>
         <tbody id="secTableBody"></tbody>
       </table>
     </div>
@@ -461,6 +462,10 @@
   }
   function hidePieTooltip() { document.getElementById("pieTooltip").style.display = "none"; }
 
+  function ocorrenciasDaSecao(sec) {
+    return ocorrencias.filter(o => (o.secao || "").trim() === sec).length;
+  }
+
   function renderListagem(now) {
     const tbody = document.getElementById("secTableBody");
     tbody.innerHTML = "";
@@ -472,6 +477,7 @@
       const votacao = votacaoMatch ? `${votacaoMatch[1]}/${votacaoMatch[2]} (${votacaoMatch[3]}%)` : null;
       const espera = esperaEstimadaMin(sec);
       const atrasadas = tarefasAtrasadasDaSecao(sec, now);
+      const ocorrenciasSec = ocorrenciasDaSecao(sec);
       const tr = document.createElement("tr");
       tr.className = "sec-row";
       tr.innerHTML = `
@@ -482,6 +488,7 @@
         <td class="num-cell">${votacao ? votacao : "—"}</td>
         <td class="num-cell">${espera === null ? "—" : espera === 0 ? "sem fila" : "~" + espera + " min"}</td>
         <td class="num-cell">${atrasadas > 0 ? `<span class="status-pill late">${atrasadas}</span>` : `<span class="status-pill ok">0</span>`}</td>
+        <td class="num-cell">${ocorrenciasSec > 0 ? `<span class="status-pill late">${ocorrenciasSec}</span>` : `<span class="status-pill ok">0</span>`}</td>
         <td><span class="status-pill ${overall}">${overall === "ok" ? "Em dia" : overall === "warn" ? "Atenção" : overall === "late" ? "Crítico" : "Sem dados"}</span></td>
       `;
       tr.addEventListener("click", (ev) => {

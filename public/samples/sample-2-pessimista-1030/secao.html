@@ -228,7 +228,12 @@
 
   <section class="block">
     <h2>📋 Ocorrências desta Seção</h2>
-    <div class="occ-feed" id="occFeed"><div class="occ-empty">Carregando…</div></div>
+    <div style="overflow-x:auto;">
+      <table class="ronda-table">
+        <thead><tr><th>Horário</th><th>Tipo</th><th>Descrição</th><th>Reportado por</th><th>Status</th></tr></thead>
+        <tbody id="occTableBody"><tr><td colspan="5" class="occ-empty">Carregando…</td></tr></tbody>
+      </table>
+    </div>
   </section>
 
   <footer class="page-footer">
@@ -602,21 +607,23 @@
       `).join("");
     }
 
-    // ocorrências desta seção
-    const feed = document.getElementById("occFeed");
+    // ocorrências desta seção — tabela (mais fácil de escanear que o feed de cards)
+    const occBody = document.getElementById("occTableBody");
     const daSecao = ocorrencias.filter(o => (o.secao || "").trim() === secaoAtual);
     if (!ocorrenciasHabilitadas) {
-      feed.innerHTML = `<div class="occ-empty">Feed de ocorrências não configurado — preencha CSV_URL_OCORRENCIAS no início do &lt;script&gt; para ativar.</div>`;
+      occBody.innerHTML = `<tr><td colspan="5" class="occ-empty">Feed de ocorrências não configurado — preencha CSV_URL_OCORRENCIAS no início do &lt;script&gt; para ativar.</td></tr>`;
     } else if (!daSecao.length) {
-      feed.innerHTML = `<div class="occ-empty">Nenhuma ocorrência registrada para esta seção até agora.</div>`;
+      occBody.innerHTML = `<tr><td colspan="5" class="occ-empty">Nenhuma ocorrência registrada para esta seção até agora.</td></tr>`;
     } else {
-      feed.innerHTML = daSecao.slice().reverse().map(o => {
+      occBody.innerHTML = daSecao.slice().reverse().map(o => {
         const tipo = TIPO_OCORRENCIA_LABEL[(o.codigo || "").toUpperCase()] || (o.codigo ? esc(o.codigo) : "⚠️ Ocorrência");
-        return `<div class="occ-item">
-          <div class="occ-head"><b>${tipo}</b><span class="occ-time">${esc(o.horario || "")}</span></div>
-          <div class="occ-text">${esc(o.descricao || "")}</div>
-          <div class="occ-foot">relatado por ${esc(o.reportado_por || "—")}${o.status ? " · " + esc(o.status) : ""}</div>
-        </div>`;
+        return `<tr>
+          <td class="mono">${esc(o.horario || "—")}</td>
+          <td>${tipo}</td>
+          <td>${esc(o.descricao || "—")}</td>
+          <td>${esc(o.reportado_por || "—")}</td>
+          <td>${esc(o.status || "—")}</td>
+        </tr>`;
       }).join("");
     }
   }
