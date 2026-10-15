@@ -34,6 +34,8 @@ REPO = Path(__file__).resolve().parent.parent
 TEMPLATES = REPO / "html-mockups"
 DADOS = REPO / "scripts" / "dados"
 PUBLIC = REPO / "public"
+# tudo que é "durante a eleição" (bot + dados ao vivo + cenários de treino) fica aqui:
+DURANTE = PUBLIC / "durante"
 TESTE_LOCAL = REPO / "teste-local"
 
 # título original (como está em html-mockups/*.html) de cada página — usado para localizar
@@ -47,13 +49,13 @@ TITULOS_ORIGINAIS = {
 # cada cenário fictício: pasta de dados (em scripts/dados/), pasta de saída (em public/samples/),
 # horário congelado (minutos desde 00:00) e título mostrado na aba do navegador
 CENARIOS = [
-    {"dados": "sample-1-otimista", "saida": PUBLIC / "samples" / "sample-1-otimista",
+    {"dados": "sample-1-otimista", "saida": DURANTE / "samples" / "sample-1-otimista",
      "now_min": 972, "titulo": "Sample 1 · Otimista 16:12"},
-    {"dados": "sample-2-pessimista-1030", "saida": PUBLIC / "samples" / "sample-2-pessimista-1030",
+    {"dados": "sample-2-pessimista-1030", "saida": DURANTE / "samples" / "sample-2-pessimista-1030",
      "now_min": 630, "titulo": "Sample 2 · Pessimista 10:30"},
-    {"dados": "sample-3-pessimista-1330", "saida": PUBLIC / "samples" / "sample-3-pessimista-1330",
+    {"dados": "sample-3-pessimista-1330", "saida": DURANTE / "samples" / "sample-3-pessimista-1330",
      "now_min": 810, "titulo": "Sample 3 · Pessimista 13:30"},
-    {"dados": "sample-4-pessimista-1630", "saida": PUBLIC / "samples" / "sample-4-pessimista-1630",
+    {"dados": "sample-4-pessimista-1630", "saida": DURANTE / "samples" / "sample-4-pessimista-1630",
      "now_min": 990, "titulo": "Sample 4 · Pessimista 16:30"},
 ]
 
@@ -114,7 +116,7 @@ def build_demo():
     injeta a partir de Settings → Secrets and variables → Actions → Variables do repositório
     (veja html-howto/publicar.html). Sem essas variáveis configuradas, sai com o placeholder de
     sempre (a própria página avisa que falta configurar)."""
-    saida = PUBLIC / "demo"
+    saida = DURANTE / "demo"
     url_checkpoints = os.environ.get("CSV_URL_CHECKPOINTS", "").strip() or "COLE_AQUI_O_LINK_CSV_DA_ABA_CHECKPOINTS"
     url_ocorrencias = os.environ.get("CSV_URL_OCORRENCIAS", "").strip() or "COLE_AQUI_O_LINK_CSV_DA_ABA_OCORRENCIAS"
     url_rondas = os.environ.get("CSV_URL_RONDAS", "").strip() or "COLE_AQUI_O_LINK_CSV_DA_ABA_RONDAS"

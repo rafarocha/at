@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔎 Como abrir o RDV e o Log de Urna (.dat)</title>
+<style>
+  :root {
+    --bg: #0a0e14; --bg-card: #141a24; --bg-card-2: #1a2230; --bg-chip: #19212c;
+    --border: #2a3342; --fg: #eef2f7; --fg-muted: #a8b3c2; --fg-sub: #7c8798;
+    --accent: #5eaaff; --accent-dim: rgba(94,170,255,0.14);
+    --green: #3ecf82; --green-dim: rgba(62,207,130,0.14);
+    --amber: #e3ab3f; --amber-dim: rgba(227,171,63,0.14);
+    --red: #ff6b6b; --red-dim: rgba(255,107,107,0.14);
+    --purple: #c792ea; --purple-dim: rgba(199,146,234,0.14);
+    --mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; margin:0; padding:0; }
+  body { background: var(--bg); color: var(--fg); font-family: var(--sans); font-size: 15px; line-height: 1.6; font-weight: 500; padding: 20px 16px 60px; }
+  .wrap { max-width: 820px; margin: 0 auto; }
+
+  header { background: linear-gradient(160deg, var(--bg-card) 0%, var(--bg-card-2) 100%); border:1px solid var(--border); border-radius:16px; padding:20px 22px; margin-bottom:18px; }
+  header h1 { font-size: 21px; font-weight: 800; margin-bottom: 6px; }
+  header .sub { color: var(--fg-muted); font-size: 13px; font-weight: 600; max-width:680px; }
+
+  .callout { border-radius: 10px; padding: 12px 15px; font-size: 13px; margin: 14px 0; border: 1px solid var(--border); background: var(--bg-chip); color: var(--fg-muted); line-height:1.55; }
+  .callout.green { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+  .callout.red { background: var(--red-dim); border-color: var(--red); color: var(--red); }
+  .callout.amber { background: var(--amber-dim); border-color: var(--amber); color: var(--amber); }
+  .callout.blue { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+  .callout b { color: inherit; } .callout code { background: rgba(0,0,0,0.25); }
+
+  section.block { background: var(--bg-card); border:1px solid var(--border); border-radius:14px; padding:18px 20px; margin-bottom: 18px; }
+  section.block h2 { font-size: 16px; font-weight: 800; margin-bottom: 4px; display:flex; align-items:center; gap:8px; }
+  section.block .section-sub { color: var(--fg-sub); font-size: 12px; font-weight: 700; margin-bottom: 14px; }
+  section.block h3 { font-size: 13.5px; font-weight: 800; margin: 16px 0 6px; color:var(--fg); }
+
+  pre { background: var(--bg-chip); border: 1px solid var(--border); border-radius: 8px; padding: 11px 13px; font-family: var(--mono); font-size: 12px; overflow-x: auto; margin: 8px 0; color: var(--fg); line-height:1.5; }
+  pre .cmt { color: var(--fg-sub); }
+  code { font-family: var(--mono); font-size: 12.5px; background: var(--bg-chip); padding: 1px 5px; border-radius: 4px; }
+
+  ol, ul { padding-left: 20px; margin: 8px 0; }
+  li { margin-bottom: 6px; font-size: 13.5px; color: var(--fg-muted); }
+  li b { color: var(--fg); }
+
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 12.5px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { color: var(--fg-sub); font-size: 11px; text-transform: uppercase; letter-spacing: .3px; }
+  td { color: var(--fg-muted); } td code { font-size:11.5px; }
+  .fname { font-family:var(--mono); color:var(--accent); }
+
+  .step { display:flex; gap:14px; margin-bottom:16px; }
+  .step-num { flex-shrink:0; width:28px; height:28px; border-radius:50%; background: var(--accent-dim); color: var(--accent); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px; }
+  .step-body { flex:1; min-width:0; }
+
+  footer { text-align:center; color: var(--fg-sub); font-size:11px; font-weight:600; padding: 16px 6px; line-height:1.7; }
+  footer a { color: var(--accent); }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>🔎 Como abrir o RDV e o Log de Urna (<code>.dat</code>)</h1>
+    <div class="sub">
+      Esses dois arquivos vêm no pacote de arquivos de uma urna (baixados do portal do TSE
+      ou copiados da mídia de resultado). Têm a mesma extensão <code>.dat</code>, mas são
+      <b>formatos completamente diferentes</b> — e é por isso que um abre no bloco de notas
+      e o outro vira "lixo" na tela. Abaixo, o que cada um é e o comando certo para abrir.
+    </div>
+  </header>
+
+  <!-- POR QUE FALHOU -->
+  <section class="block">
+    <h2>❓ Por que o arquivo não abriu</h2>
+    <div class="section-sub">O erro mais comum — e por que aconteceu</div>
+    <p style="color:var(--fg-muted); font-size:13.5px; margin-bottom:10px;">
+      Você tentou abrir <code>RDV_o03220pe2531301500328_1791484080073.dat</code> como se fosse texto.
+      O RDV <b>não é texto</b>: ele é um arquivo <b>binário no formato ASN.1 DER</b> (o mesmo tipo de
+      codificação usada em certificados digitais). Abrir binário num editor de texto mostra símbolos
+      embaralhados, porque o editor tenta interpretar bytes de controle como letras.
+    </p>
+    <div class="callout amber">
+      Como confirmar o tipo de qualquer arquivo <code>.dat</code> no Linux/macOS:
+      <pre><span class="cmt"># diz o que o arquivo realmente é</span>
+file RDV_o03220pe2531301500328_1791484080073.dat
+<span class="cmt"># RDV  -> "data"        (binário — não é pra abrir como texto)</span>
+<span class="cmt"># logd -> "ISO-8859 text" (texto — pode abrir no editor)</span></pre>
+    </div>
+    <table>
+      <thead><tr><th>Arquivo</th><th>O que é</th><th>Formato</th><th>Abre como texto?</th></tr></thead>
+      <tbody>
+        <tr><td class="fname">logd.dat</td><td>Log de Urna — diário de eventos do dia</td><td>Texto (ISO-8859-1), separado por TAB</td><td style="color:var(--green)">✅ Sim</td></tr>
+        <tr><td class="fname">rdv.dat / RDV_…dat</td><td>Registro Digital do Voto — a lista de votos embaralhada</td><td>Binário ASN.1 DER</td><td style="color:var(--red)">❌ Não</td></tr>
+        <tr><td class="fname">bu.dat</td><td>Boletim de Urna — totais por candidato</td><td>Binário ASN.1 DER</td><td style="color:var(--red)">❌ Não</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- O QUE É O RDV -->
+  <section class="block">
+    <h2>🗳️ O que é o RDV (Registro Digital do Voto)</h2>
+    <div class="section-sub">E o que ele NÃO é</div>
+    <ul>
+      <li>É a lista de <b>todos os votos</b> daquela urna, cargo por cargo, <b>em ordem embaralhada</b> —
+        propositalmente, para que seja impossível descobrir em quem a 1ª, a 2ª ou qualquer pessoa votou
+        (garante o <b>sigilo do voto</b>).</li>
+      <li><b>Não tem nome, título nem qualquer dado do eleitor.</b> Só os números digitados.</li>
+      <li>Serve para <b>recontagem/auditoria</b>: somando o RDV você tem que chegar exatamente nos
+        totais do Boletim de Urna (<code>bu.dat</code>).</li>
+    </ul>
+    <div class="callout blue">
+      No seu arquivo, cada voto confirmado vira um registro. Dá para contar quantos existem — e esse número
+      bate com o total de <code>Voto confirmado para [...]</code> que aparece no Log de Urna da mesma seção.
+    </div>
+  </section>
+
+  <!-- COMO ABRIR O RDV -->
+  <section class="block">
+    <h2>🧰 Como abrir e conferir o RDV</h2>
+    <div class="section-sub">Do mais simples ao mais completo</div>
+
+    <h3>Opção A — Jeito oficial (recomendado): visualizador do TSE</h3>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        Baixe o <b>RDV — Leitor de arquivos</b> na página de dados abertos do TSE
+        (<a href="https://www.tse.jus.br/eleicoes/eleicoes-anteriores/eleicoes-2022/dados-de-urna" target="_blank" rel="noopener">dados de urna</a>).
+        É um programa gráfico oficial que lê o <code>rdv.dat</code> e mostra os votos por cargo, já organizados.
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">Abra o programa, aponte para o seu <code>RDV_…dat</code> e ele exibe a tabela de votos. Nenhum comando necessário.</div>
+    </div>
+    <div class="callout green">
+      Para quem só quer <b>ver o conteúdo</b> sem instalar nada técnico, essa é a via. As opções abaixo são
+      para quem quer inspecionar o arquivo "na unha".
+    </div>
+
+    <h3>Opção B — Linha de comando: provar que é ASN.1 DER e lê-lo</h3>
+    <p style="color:var(--fg-muted); font-size:13px; margin-bottom:6px;">
+      O <code>openssl</code> (já vem no Linux/macOS) decodifica a estrutura inteira:
+    </p>
+    <pre><span class="cmt"># mostra a árvore ASN.1 (SEQUENCE, INTEGER, ENUMERATED, strings...)</span>
+openssl asn1parse -inform DER -in RDV_o03220pe2531301500328_1791484080073.dat | less
+
+<span class="cmt"># só o cabeçalho legível (versão do app, município, seção)</span>
+openssl asn1parse -inform DER -in RDV_...dat | grep GENERALSTRING
+
+<span class="cmt"># conta os registros de voto (aproxima o total de votos da urna)</span>
+openssl asn1parse -inform DER -in RDV_...dat | grep -c ENUMERATED</pre>
+    <div class="callout">
+      Se o <code>openssl</code> listar <code>SEQUENCE</code>, <code>INTEGER</code>, <code>ENUMERATED</code>
+      e <code>GENERALSTRING</code> sem erro, está confirmado: o arquivo é um <b>ASN.1 DER íntegro</b>.
+      Se desse erro de parsing, o arquivo estaria corrompido.
+    </div>
+
+    <h3>Opção C — Espiar os trechos legíveis (sem decodificar tudo)</h3>
+    <pre><span class="cmt"># extrai só as "ilhas" de texto embutidas no binário</span>
+strings -n 3 RDV_...dat | head
+
+<span class="cmt"># exemplo de saída: data/hora de encerramento, versão do app e seção:</span>
+<span class="cmt">#   20261004T185800</span>
+<span class="cmt">#   10.23.0.0 - Praia da Barra do Cahy</span>
+<span class="cmt">#   ZPE150WKS03</span></pre>
+
+    <h3>Opção D — Verificar a assinatura/integridade</h3>
+    <p style="color:var(--fg-muted); font-size:13px;">
+      O pacote da urna traz arquivos de hash/assinatura (<code>hash.dat</code>, <code>*.vsc</code>). A conferência
+      oficial de integridade é feita pelas ferramentas do TSE; o <code>openssl asn1parse</code> acima já serve
+      para provar que o RDV está <b>estruturalmente válido</b>.
+    </p>
+  </section>
+
+  <!-- LOG DE URNA -->
+  <section class="block">
+    <h2>📜 O Log de Urna (<code>logd.dat</code>) — esse abre fácil</h2>
+    <div class="section-sub">É texto puro — a matéria-prima do painel de Desempenho</div>
+    <p style="color:var(--fg-muted); font-size:13.5px; margin-bottom:8px;">
+      Diferente do RDV, o <code>logd.dat</code> é <b>texto</b>. Cada linha é um evento do dia, com 6 campos
+      separados por TAB:
+    </p>
+    <pre>data e hora        <span class="cmt">│</span> severidade <span class="cmt">│</span> nº urna <span class="cmt">│</span> subsistema <span class="cmt">│</span> mensagem <span class="cmt">│</span> hash
+
+04/10/2026 08:03:31  INFO   02318954   VOTA   O voto do eleitor foi computado   78B0CE1A...</pre>
+    <div class="callout amber">
+      O arquivo está em <b>ISO-8859-1 (Latin-1)</b>, não em UTF-8. Se os acentos aparecerem errados, converta:
+      <pre>iconv -f ISO-8859-1 -t UTF-8 logd.dat &gt; logd-utf8.txt</pre>
+    </div>
+    <h3>Eventos úteis para medir desempenho</h3>
+    <table>
+      <thead><tr><th>Mensagem no log</th><th>O que marca</th></tr></thead>
+      <tbody>
+        <tr><td><code>Urna pronta para receber votos</code></td><td>abertura da seção</td></tr>
+        <tr><td><code>Identificador do eleitor digitado pelo mesário</code></td><td>início da identificação de um eleitor</td></tr>
+        <tr><td><code>Solicita / Capturada a digital. Tentativa [n] de [4]</code></td><td>tentativas de biometria</td></tr>
+        <tr><td><code>Eleitor foi habilitado</code></td><td>liberado para votar</td></tr>
+        <tr><td><code>Voto confirmado para [cargo]</code></td><td>cada cargo votado</td></tr>
+        <tr><td><code>O voto do eleitor foi computado</code></td><td>fim do voto (conta +1 eleitor)</td></tr>
+        <tr><td><code>ALERTA</code> (coluna de severidade)</td><td>alertas do dia</td></tr>
+      </tbody>
+    </table>
+    <div class="callout green">
+      No projeto, o script <code>scripts/parse_logd.py</code> lê exatamente esses eventos e gera
+      <code>dados-desempenho.json</code>, que alimenta a página <a href="desempenho.html">📈 Desempenho</a>.
+      O <code>scripts/parse_rdv.py</code> faz o mesmo com o RDV (contagem de votos por cargo) e o
+      <code>build_desempenho.py</code> embute os dois no HTML:
+      <pre>python3 scripts/parse_logd.py logs/zone/150/logd.dat   <span class="cmt"># log -> indicadores</span>
+python3 scripts/parse_rdv.py RDV_...dat                <span class="cmt"># RDV -> mapa de votos (opcional)</span>
+python3 scripts/build_desempenho.py                    <span class="cmt"># embute tudo no HTML</span></pre>
+    </div>
+  </section>
+
+  <!-- RESUMO -->
+  <section class="block">
+    <h2>✅ Resumo rápido</h2>
+    <ul>
+      <li><b>logd.dat</b> → texto. Abre no editor; converta de Latin-1 se precisar.</li>
+      <li><b>RDV / bu.dat</b> → binário ASN.1 DER. Use o <b>leitor oficial do TSE</b> (Opção A) ou
+        <code>openssl asn1parse</code> (Opção B). <b>Nunca</b> abre direito num editor de texto.</li>
+      <li>Na dúvida sobre qualquer <code>.dat</code>, rode <code>file nome.dat</code> primeiro.</li>
+    </ul>
+    <div class="callout red">
+      <b>Sigilo:</b> o RDV é embaralhado de propósito e não contém dados pessoais. Mesmo assim, trate os
+      arquivos de urna com cuidado e só os publique de fontes/portais oficiais.
+    </div>
+  </section>
+
+  <footer>
+    Guia do projeto <a href="https://github.com/rafarocha/at" target="_blank" rel="noopener">at — Timeline for Admins</a> · GNU GPLv3<br>
+    Comandos testados em Linux com <code>openssl</code>, <code>file</code>, <code>strings</code> e <code>iconv</code>.
+  </footer>
+</div>
+</body>
+</html>

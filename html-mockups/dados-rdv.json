@@ -1,0 +1,1009 @@
+{
+ "fonte": "RDV_o03220pe2531301500328_1791484080073.dat",
+ "cargos": [
+  {
+   "codigo": null,
+   "idx": 0,
+   "total": 304,
+   "num_len": 2,
+   "tipos": {
+    "nominal": 280,
+    "branco": 5,
+    "nulo": 19
+   },
+   "nominais": [
+    {
+     "numero": "13",
+     "votos": 163
+    },
+    {
+     "numero": "22",
+     "votos": 94
+    },
+    {
+     "numero": "55",
+     "votos": 8
+    },
+    {
+     "numero": "14",
+     "votos": 7
+    },
+    {
+     "numero": "70",
+     "votos": 6
+    },
+    {
+     "numero": "16",
+     "votos": 1
+    },
+    {
+     "numero": "30",
+     "votos": 1
+    }
+   ],
+   "nulos_numeros": [
+    {
+     "numero": "00",
+     "votos": 8
+    },
+    {
+     "numero": "40",
+     "votos": 7
+    },
+    {
+     "numero": "12",
+     "votos": 2
+    },
+    {
+     "numero": "10",
+     "votos": 1
+    },
+    {
+     "numero": "23",
+     "votos": 1
+    }
+   ],
+   "cargo": "Presidente"
+  },
+  {
+   "codigo": null,
+   "idx": 1,
+   "total": 304,
+   "num_len": 4,
+   "tipos": {
+    "nominal": 270,
+    "branco": 18,
+    "nulo": 16
+   },
+   "nominais": [
+    {
+     "numero": "4040",
+     "votos": 18
+    },
+    {
+     "numero": "3030",
+     "votos": 16
+    },
+    {
+     "numero": "5050",
+     "votos": 16
+    },
+    {
+     "numero": "7011",
+     "votos": 14
+    },
+    {
+     "numero": "4004",
+     "votos": 13
+    },
+    {
+     "numero": "4010",
+     "votos": 13
+    },
+    {
+     "numero": "1310",
+     "votos": 11
+    },
+    {
+     "numero": "1331",
+     "votos": 11
+    },
+    {
+     "numero": "2222",
+     "votos": 11
+    },
+    {
+     "numero": "1122",
+     "votos": 9
+    },
+    {
+     "numero": "2022",
+     "votos": 8
+    },
+    {
+     "numero": "5599",
+     "votos": 8
+    },
+    {
+     "numero": "7017",
+     "votos": 8
+    },
+    {
+     "numero": "3000",
+     "votos": 5
+    },
+    {
+     "numero": "5552",
+     "votos": 5
+    },
+    {
+     "numero": "1100",
+     "votos": 4
+    },
+    {
+     "numero": "1314",
+     "votos": 4
+    },
+    {
+     "numero": "4020",
+     "votos": 4
+    },
+    {
+     "numero": "5555",
+     "votos": 4
+    },
+    {
+     "numero": "6513",
+     "votos": 4
+    },
+    {
+     "numero": "1000",
+     "votos": 3
+    },
+    {
+     "numero": "1010",
+     "votos": 3
+    },
+    {
+     "numero": "1161",
+     "votos": 3
+    },
+    {
+     "numero": "1303",
+     "votos": 3
+    },
+    {
+     "numero": "2288",
+     "votos": 3
+    },
+    {
+     "numero": "4333",
+     "votos": 3
+    },
+    {
+     "numero": "13",
+     "votos": 2
+    },
+    {
+     "numero": "1111",
+     "votos": 2
+    },
+    {
+     "numero": "1120",
+     "votos": 2
+    },
+    {
+     "numero": "1130",
+     "votos": 2
+    },
+    {
+     "numero": "1313",
+     "votos": 2
+    },
+    {
+     "numero": "2065",
+     "votos": 2
+    },
+    {
+     "numero": "4400",
+     "votos": 2
+    },
+    {
+     "numero": "5500",
+     "votos": 2
+    },
+    {
+     "numero": "5514",
+     "votos": 2
+    },
+    {
+     "numero": "6500",
+     "votos": 2
+    },
+    {
+     "numero": "7089",
+     "votos": 2
+    },
+    {
+     "numero": "1015",
+     "votos": 1
+    },
+    {
+     "numero": "130",
+     "votos": 1
+    },
+    {
+     "numero": "131",
+     "votos": 1
+    },
+    {
+     "numero": "1325",
+     "votos": 1
+    },
+    {
+     "numero": "2270",
+     "votos": 1
+    },
+    {
+     "numero": "40",
+     "votos": 1
+    },
+    {
+     "numero": "4014",
+     "votos": 1
+    },
+    {
+     "numero": "1012",
+     "votos": 1
+    },
+    {
+     "numero": "1040",
+     "votos": 1
+    },
+    {
+     "numero": "1077",
+     "votos": 1
+    },
+    {
+     "numero": "1088",
+     "votos": 1
+    },
+    {
+     "numero": "1090",
+     "votos": 1
+    },
+    {
+     "numero": "1234",
+     "votos": 1
+    },
+    {
+     "numero": "1311",
+     "votos": 1
+    },
+    {
+     "numero": "1414",
+     "votos": 1
+    },
+    {
+     "numero": "1433",
+     "votos": 1
+    },
+    {
+     "numero": "1500",
+     "votos": 1
+    },
+    {
+     "numero": "1505",
+     "votos": 1
+    },
+    {
+     "numero": "1515",
+     "votos": 1
+    },
+    {
+     "numero": "2017",
+     "votos": 1
+    },
+    {
+     "numero": "2055",
+     "votos": 1
+    },
+    {
+     "numero": "2201",
+     "votos": 1
+    },
+    {
+     "numero": "2220",
+     "votos": 1
+    },
+    {
+     "numero": "2274",
+     "votos": 1
+    },
+    {
+     "numero": "3022",
+     "votos": 1
+    },
+    {
+     "numero": "3033",
+     "votos": 1
+    },
+    {
+     "numero": "3055",
+     "votos": 1
+    },
+    {
+     "numero": "3090",
+     "votos": 1
+    },
+    {
+     "numero": "4013",
+     "votos": 1
+    },
+    {
+     "numero": "4030",
+     "votos": 1
+    },
+    {
+     "numero": "4065",
+     "votos": 1
+    },
+    {
+     "numero": "4088",
+     "votos": 1
+    },
+    {
+     "numero": "4444",
+     "votos": 1
+    },
+    {
+     "numero": "4512",
+     "votos": 1
+    },
+    {
+     "numero": "4522",
+     "votos": 1
+    },
+    {
+     "numero": "4533",
+     "votos": 1
+    },
+    {
+     "numero": "5511",
+     "votos": 1
+    },
+    {
+     "numero": "5525",
+     "votos": 1
+    },
+    {
+     "numero": "7009",
+     "votos": 1
+    },
+    {
+     "numero": "7010",
+     "votos": 1
+    },
+    {
+     "numero": "7020",
+     "votos": 1
+    },
+    {
+     "numero": "7044",
+     "votos": 1
+    },
+    {
+     "numero": "7070",
+     "votos": 1
+    },
+    {
+     "numero": "7088",
+     "votos": 1
+    }
+   ],
+   "nulos_numeros": [
+    {
+     "numero": "0000",
+     "votos": 10
+    },
+    {
+     "numero": "000",
+     "votos": 2
+    },
+    {
+     "numero": "0001",
+     "votos": 1
+    },
+    {
+     "numero": "4132",
+     "votos": 1
+    },
+    {
+     "numero": "7888",
+     "votos": 1
+    },
+    {
+     "numero": "789",
+     "votos": 1
+    }
+   ],
+   "cargo": "Deputado Federal"
+  },
+  {
+   "codigo": null,
+   "idx": 2,
+   "total": 304,
+   "num_len": 5,
+   "tipos": {
+    "nominal": 272,
+    "branco": 18,
+    "nulo": 14
+   },
+   "nominais": [
+    {
+     "numero": "13613",
+     "votos": 14
+    },
+    {
+     "numero": "13000",
+     "votos": 12
+    },
+    {
+     "numero": "40444",
+     "votos": 12
+    },
+    {
+     "numero": "13113",
+     "votos": 10
+    },
+    {
+     "numero": "15000",
+     "votos": 10
+    },
+    {
+     "numero": "40654",
+     "votos": 10
+    },
+    {
+     "numero": "40888",
+     "votos": 10
+    },
+    {
+     "numero": "11222",
+     "votos": 7
+    },
+    {
+     "numero": "15001",
+     "votos": 7
+    },
+    {
+     "numero": "20222",
+     "votos": 7
+    },
+    {
+     "numero": "43333",
+     "votos": 7
+    },
+    {
+     "numero": "55444",
+     "votos": 7
+    },
+    {
+     "numero": "55555",
+     "votos": 7
+    },
+    {
+     "numero": "55789",
+     "votos": 7
+    },
+    {
+     "numero": "22222",
+     "votos": 6
+    },
+    {
+     "numero": "30000",
+     "votos": 6
+    },
+    {
+     "numero": "11111",
+     "votos": 5
+    },
+    {
+     "numero": "40000",
+     "votos": 5
+    },
+    {
+     "numero": "40123",
+     "votos": 5
+    },
+    {
+     "numero": "11000",
+     "votos": 4
+    },
+    {
+     "numero": "11611",
+     "votos": 4
+    },
+    {
+     "numero": "20555",
+     "votos": 4
+    },
+    {
+     "numero": "30630",
+     "votos": 4
+    },
+    {
+     "numero": "43643",
+     "votos": 4
+    },
+    {
+     "numero": "40",
+     "votos": 3
+    },
+    {
+     "numero": "20620",
+     "votos": 3
+    },
+    {
+     "numero": "22022",
+     "votos": 3
+    },
+    {
+     "numero": "30100",
+     "votos": 3
+    },
+    {
+     "numero": "40140",
+     "votos": 3
+    },
+    {
+     "numero": "40640",
+     "votos": 3
+    },
+    {
+     "numero": "50999",
+     "votos": 3
+    },
+    {
+     "numero": "55333",
+     "votos": 3
+    },
+    {
+     "numero": "55655",
+     "votos": 3
+    },
+    {
+     "numero": "70000",
+     "votos": 3
+    },
+    {
+     "numero": "70111",
+     "votos": 3
+    },
+    {
+     "numero": "130",
+     "votos": 2
+    },
+    {
+     "numero": "55",
+     "votos": 2
+    },
+    {
+     "numero": "11011",
+     "votos": 2
+    },
+    {
+     "numero": "11300",
+     "votos": 2
+    },
+    {
+     "numero": "22700",
+     "votos": 2
+    },
+    {
+     "numero": "30874",
+     "votos": 2
+    },
+    {
+     "numero": "40180",
+     "votos": 2
+    },
+    {
+     "numero": "40190",
+     "votos": 2
+    },
+    {
+     "numero": "40400",
+     "votos": 2
+    },
+    {
+     "numero": "40555",
+     "votos": 2
+    },
+    {
+     "numero": "50000",
+     "votos": 2
+    },
+    {
+     "numero": "55155",
+     "votos": 2
+    },
+    {
+     "numero": "70444",
+     "votos": 2
+    },
+    {
+     "numero": "70500",
+     "votos": 2
+    },
+    {
+     "numero": "12130",
+     "votos": 1
+    },
+    {
+     "numero": "123",
+     "votos": 1
+    },
+    {
+     "numero": "131",
+     "votos": 1
+    },
+    {
+     "numero": "13111",
+     "votos": 1
+    },
+    {
+     "numero": "22467",
+     "votos": 1
+    },
+    {
+     "numero": "2274",
+     "votos": 1
+    },
+    {
+     "numero": "555",
+     "votos": 1
+    },
+    {
+     "numero": "5599",
+     "votos": 1
+    },
+    {
+     "numero": "7070",
+     "votos": 1
+    },
+    {
+     "numero": "10000",
+     "votos": 1
+    },
+    {
+     "numero": "11234",
+     "votos": 1
+    },
+    {
+     "numero": "11789",
+     "votos": 1
+    },
+    {
+     "numero": "12345",
+     "votos": 1
+    },
+    {
+     "numero": "13444",
+     "votos": 1
+    },
+    {
+     "numero": "13456",
+     "votos": 1
+    },
+    {
+     "numero": "14123",
+     "votos": 1
+    },
+    {
+     "numero": "15013",
+     "votos": 1
+    },
+    {
+     "numero": "15015",
+     "votos": 1
+    },
+    {
+     "numero": "18000",
+     "votos": 1
+    },
+    {
+     "numero": "18180",
+     "votos": 1
+    },
+    {
+     "numero": "20190",
+     "votos": 1
+    },
+    {
+     "numero": "20777",
+     "votos": 1
+    },
+    {
+     "numero": "22555",
+     "votos": 1
+    },
+    {
+     "numero": "22622",
+     "votos": 1
+    },
+    {
+     "numero": "30123",
+     "votos": 1
+    },
+    {
+     "numero": "30222",
+     "votos": 1
+    },
+    {
+     "numero": "33333",
+     "votos": 1
+    },
+    {
+     "numero": "40040",
+     "votos": 1
+    },
+    {
+     "numero": "40500",
+     "votos": 1
+    },
+    {
+     "numero": "40777",
+     "votos": 1
+    },
+    {
+     "numero": "50123",
+     "votos": 1
+    },
+    {
+     "numero": "55700",
+     "votos": 1
+    },
+    {
+     "numero": "70123",
+     "votos": 1
+    },
+    {
+     "numero": "70177",
+     "votos": 1
+    },
+    {
+     "numero": "70192",
+     "votos": 1
+    },
+    {
+     "numero": "70234",
+     "votos": 1
+    },
+    {
+     "numero": "70700",
+     "votos": 1
+    }
+   ],
+   "nulos_numeros": [
+    {
+     "numero": "00000",
+     "votos": 10
+    },
+    {
+     "numero": "0000",
+     "votos": 2
+    },
+    {
+     "numero": "00001",
+     "votos": 1
+    },
+    {
+     "numero": "4100",
+     "votos": 1
+    }
+   ],
+   "cargo": "Deputado Estadual"
+  },
+  {
+   "codigo": null,
+   "idx": 3,
+   "total": 608,
+   "num_len": 3,
+   "tipos": {
+    "nominal": 480,
+    "branco": 50,
+    "nulo": 78
+   },
+   "nominais": [
+    {
+     "numero": "123",
+     "votos": 140
+    },
+    {
+     "numero": "130",
+     "votos": 121
+    },
+    {
+     "numero": "222",
+     "votos": 89
+    },
+    {
+     "numero": "111",
+     "votos": 65
+    },
+    {
+     "numero": "300",
+     "votos": 34
+    },
+    {
+     "numero": "555",
+     "votos": 27
+    },
+    {
+     "numero": "355",
+     "votos": 2
+    },
+    {
+     "numero": "290",
+     "votos": 1
+    },
+    {
+     "numero": "800",
+     "votos": 1
+    }
+   ],
+   "nulos_numeros": [
+    {
+     "numero": "000",
+     "votos": 45
+    },
+    {
+     "numero": "401",
+     "votos": 6
+    },
+    {
+     "numero": "131",
+     "votos": 4
+    },
+    {
+     "numero": "001",
+     "votos": 2
+    },
+    {
+     "numero": "120",
+     "votos": 2
+    },
+    {
+     "numero": "132",
+     "votos": 2
+    },
+    {
+     "numero": "134",
+     "votos": 2
+    },
+    {
+     "numero": "116",
+     "votos": 1
+    },
+    {
+     "numero": "133",
+     "votos": 1
+    },
+    {
+     "numero": "220",
+     "votos": 1
+    },
+    {
+     "numero": "233",
+     "votos": 1
+    },
+    {
+     "numero": "250",
+     "votos": 1
+    },
+    {
+     "numero": "328",
+     "votos": 1
+    },
+    {
+     "numero": "403",
+     "votos": 1
+    },
+    {
+     "numero": "430",
+     "votos": 1
+    },
+    {
+     "numero": "440",
+     "votos": 1
+    },
+    {
+     "numero": "538",
+     "votos": 1
+    },
+    {
+     "numero": "551",
+     "votos": 1
+    },
+    {
+     "numero": "552",
+     "votos": 1
+    },
+    {
+     "numero": "559",
+     "votos": 1
+    },
+    {
+     "numero": "711",
+     "votos": 1
+    },
+    {
+     "numero": "741",
+     "votos": 1
+    }
+   ],
+   "cargo": "Senador"
+  },
+  {
+   "codigo": null,
+   "idx": 4,
+   "total": 304,
+   "num_len": 2,
+   "tipos": {
+    "nominal": 268,
+    "branco": 5,
+    "nulo": 31
+   },
+   "nominais": [
+    {
+     "numero": "40",
+     "votos": 149
+    },
+    {
+     "numero": "55",
+     "votos": 116
+    },
+    {
+     "numero": "50",
+     "votos": 3
+    }
+   ],
+   "nulos_numeros": [
+    {
+     "numero": "13",
+     "votos": 10
+    },
+    {
+     "numero": "00",
+     "votos": 6
+    },
+    {
+     "numero": "22",
+     "votos": 6
+    },
+    {
+     "numero": "12",
+     "votos": 5
+    },
+    {
+     "numero": "01",
+     "votos": 1
+    },
+    {
+     "numero": "20",
+     "votos": 1
+    },
+    {
+     "numero": "44",
+     "votos": 1
+    },
+    {
+     "numero": "56",
+     "votos": 1
+    }
+   ],
+   "cargo": "Governador"
+  }
+ ]
+}

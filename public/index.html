@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🗳️ Acompanhamento — 999ª Zona Eleitoral</title>
+<title>🗳️ at — Acompanhamento & Desempenho da Zona Eleitoral</title>
 <style>
   :root {
     --bg: #0a0e14; --bg-card: #141a24; --bg-card-2: #1a2230; --bg-chip: #19212c;
@@ -12,6 +12,7 @@
     --green: #3ecf82; --green-dim: rgba(62,207,130,0.14);
     --amber: #e3ab3f; --amber-dim: rgba(227,171,63,0.14);
     --red: #ff6b6b; --red-dim: rgba(255,107,107,0.14);
+    --purple: #c792ea; --purple-dim: rgba(199,146,234,0.14);
     --gray: #6b7686; --gray-dim: rgba(107,118,134,0.18);
     --mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
     --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -21,24 +22,18 @@
     background: var(--bg); color: var(--fg); font-family: var(--sans); font-size: 15px;
     line-height: 1.6; font-weight: 500; margin:0; padding: 20px 16px 60px;
   }
-  .wrap { max-width: 880px; margin: 0 auto; }
+  .wrap { max-width: 920px; margin: 0 auto; }
 
   header.hero {
     background: linear-gradient(160deg, var(--bg-card) 0%, var(--bg-card-2) 100%);
     border:1px solid var(--border); border-radius:16px; padding:24px 22px; margin-bottom:18px;
   }
   header.hero h1 { margin:0 0 8px; font-size: 24px; }
-  header.hero .sub { color:var(--fg-muted); font-size:14px; font-weight:600; max-width:620px; }
-
+  header.hero .sub { color:var(--fg-muted); font-size:14px; font-weight:600; max-width:680px; }
   .badge-aviso {
     display:inline-flex; align-items:center; gap:7px; background: var(--amber-dim); color: var(--amber);
     border:1px solid rgba(227,171,63,0.35); border-radius:9px; padding:8px 12px; font-size:12.5px;
     font-weight:800; margin-top:14px;
-  }
-  .badge-live {
-    display:inline-flex; align-items:center; gap:7px; background: var(--red-dim); color: var(--red);
-    border:1px solid rgba(255,107,107,0.35); border-radius:10px; padding:9px 13px; font-size:12.5px; font-weight:700;
-    margin-top:10px;
   }
 
   section.block {
@@ -50,46 +45,48 @@
   section.block p { color: var(--fg-muted); font-size:13.5px; margin: 0 0 10px; }
   section.block p:last-child { margin-bottom:0; }
 
-  .roles-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap:12px; }
-  .role-card { background: var(--bg-card-2); border:1px solid var(--border); border-radius:12px; padding:14px 14px; }
-  .role-card .r-title { font-weight:800; font-size:13.5px; margin-bottom:5px; display:flex; align-items:center; gap:7px; }
-  .role-card .r-detail { color: var(--fg-muted); font-size:12.5px; }
-
-  .step { display:flex; gap:14px; margin-bottom:18px; }
-  .step:last-child { margin-bottom:0; }
-  .step-num {
-    flex-shrink:0; width:30px; height:30px; border-radius:50%; background: var(--accent-dim); color: var(--accent);
-    display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13.5px;
+  /* duas portas */
+  .doors { display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+  @media (max-width: 720px) { .doors { grid-template-columns: 1fr; } }
+  .door {
+    display:block; text-decoration:none; color:var(--fg); background: var(--bg-card);
+    border:1px solid var(--border); border-radius:16px; padding:22px 20px; transition: border-color .15s, transform .1s;
   }
-  .step-body { flex:1; min-width:0; }
-  .step-body .s-title { font-weight:800; font-size:14px; margin-bottom:4px; }
-  .step-body .s-detail { color: var(--fg-muted); font-size:12.5px; margin-bottom:10px; }
+  .door:hover { transform: translateY(-2px); }
+  .door.live { border-color: rgba(255,107,107,0.35); }
+  .door.live:hover { border-color: var(--red); }
+  .door.after { border-color: rgba(94,170,255,0.35); }
+  .door.after:hover { border-color: var(--accent); }
+  .door .d-ico { font-size:30px; }
+  .door .d-kicker { font-size:11px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; margin-top:10px; }
+  .door.live .d-kicker { color: var(--red); } .door.after .d-kicker { color: var(--accent); }
+  .door .d-title { font-size:19px; font-weight:800; margin:3px 0 8px; }
+  .door .d-desc { color: var(--fg-muted); font-size:13px; line-height:1.55; }
+  .door .d-list { margin:12px 0 0; padding:0; list-style:none; display:flex; flex-direction:column; gap:6px; }
+  .door .d-list li { font-size:12px; color:var(--fg-sub); font-weight:700; display:flex; align-items:center; gap:7px; }
+  .door .d-cta { margin-top:16px; display:inline-flex; align-items:center; gap:7px; font-size:13px; font-weight:800; }
+  .door.live .d-cta { color: var(--red); } .door.after .d-cta { color: var(--accent); }
 
-  .link-row { display:flex; flex-wrap:wrap; gap:8px; }
-  .link-btn {
+  .quick { display:flex; flex-wrap:wrap; gap:8px; margin-top:4px; }
+  .quick a {
     display:inline-flex; align-items:center; gap:6px; background: var(--bg-chip); border:1px solid var(--border);
-    border-radius:9px; padding:9px 13px; font-size:12.5px; font-weight:800; color:var(--fg); text-decoration:none;
-    transition: border-color .15s, color .15s;
+    border-radius:9px; padding:8px 12px; font-size:12px; font-weight:800; color:var(--fg); text-decoration:none;
   }
-  .link-btn:hover { border-color: var(--accent); color: var(--accent); }
-  .link-btn.primary { background: var(--accent-dim); color: var(--accent); border-color: var(--accent); }
+  .quick a:hover { border-color: var(--accent); color: var(--accent); }
 
-  .scenario-row { display:flex; flex-wrap:wrap; gap:8px; margin-top:4px; }
-  .scenario-chip {
-    background: var(--bg-chip); border:1px solid var(--border); border-radius:9px; padding:8px 12px;
-    font-size:12px; color: var(--fg-muted); flex:1; min-width:190px;
+  .how { display:flex; flex-direction:column; gap:12px; }
+  .how .step { display:flex; gap:13px; }
+  .how .step-num {
+    flex-shrink:0; width:28px; height:28px; border-radius:50%; background: var(--accent-dim); color: var(--accent);
+    display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px;
   }
-  .scenario-chip b { color: var(--fg); display:block; font-size:12.5px; margin-bottom:2px; }
-  .scenario-chip .links { margin-top:7px; display:flex; gap:6px; flex-wrap:wrap; }
-  .scenario-chip a { color: var(--accent); text-decoration:none; font-weight:800; font-size:11.5px; }
-  .scenario-chip a:hover { text-decoration:underline; }
-
-  .todo-list { display:flex; flex-direction:column; gap:8px; }
-  .todo-item { background: var(--bg-card-2); border:1px solid var(--border); border-radius:10px; padding:10px 13px; font-size:12.5px; color: var(--fg-muted); line-height:1.5; }
-  .todo-check { margin-right:4px; }
+  .how .step-body { flex:1; min-width:0; }
+  .how .s-title { font-weight:800; font-size:14px; margin-bottom:3px; }
+  .how .s-detail { color: var(--fg-muted); font-size:12.5px; }
+  .how .s-detail code { font-family: var(--mono); background: var(--bg-chip); border:1px solid var(--border); border-radius:5px; padding:1px 5px; font-size:11.5px; }
 
   footer.page-footer {
-    text-align:center; color: var(--fg-sub); font-size:11.5px; font-weight:600; padding: 20px 6px 4px;
+    text-align:center; color: var(--fg-sub); font-size:11.5px; font-weight:600; padding: 20px 6px 4px; line-height:1.7;
   }
   footer.page-footer a { color: var(--fg-sub); }
   footer.page-footer code {
@@ -102,163 +99,121 @@
 <div class="wrap">
 
   <header class="hero">
-    <h1>🗳️ Acompanhamento em Tempo Real — 999ª Zona Eleitoral</h1>
+    <h1>🗳️ at — Zona Eleitoral: acompanhar &amp; aprender</h1>
     <div class="sub">
-      Um sistema simples para administradores de prédio e mesários confirmarem tarefas, rondas e
-      ocorrências pelo Telegram — e para gestores, administradores e a Justiça Eleitoral acompanharem
-      tudo isso ao vivo, em um mapa e em painéis, sem precisar ligar seção por seção.
+      Um sistema estático (HTML + JS puro) em duas partes: o <b>durante</b> — acompanhar a eleição ao vivo
+      pelo bot do Telegram e pelos painéis — e o <b>após</b> — estudar o desempenho da própria urna a partir
+      do Log de Urna. Escolha por onde entrar.
     </div>
-    <div class="badge-aviso">⚠️ Os cenários de simulação abaixo usam dados fictícios — a Visão Geral/Detalhe/Painel "ao vivo" já lê a planilha real.</div>
   </header>
 
+  <!-- DUAS PORTAS -->
   <section class="block">
-    <h2>💡 A ideia em poucas palavras</h2>
-    <p>
-      No dia da eleição, cada seção tem uma lista de tarefas do administrador (T##), rondas periódicas dos
-      mesários e possíveis ocorrências (fila grande, problema na urna, energia, segurança). Hoje isso é
-      acompanhado por telefone e planilha manual — lento e fácil de perder o controle quando várias seções
-      têm problema ao mesmo tempo.
-    </p>
-    <p>
-      Aqui, cada confirmação é feita em segundos pelo Telegram (um botão, escolher a seção, dizer quem
-      confirmou e uma observação opcional). Isso alimenta automaticamente uma planilha, que por sua vez
-      alimenta três páginas — sem trabalho manual de digitação para quem está acompanhando.
-    </p>
-    <p>
-      Como fica tudo registrado com horário, seção e responsável, esse mesmo histórico pode virar depois
-      um relatório complementar para o juiz eleitoral e para os gestores — com estatísticas (tempo médio de
-      fila, seções com mais atraso, ocorrências mais frequentes por tipo) e informações práticas que ajudam
-      a planejar melhor o pleito seguinte, sem precisar reconstruir esse retrato a partir de anotações
-      soltas e ligações.
-    </p>
-  </section>
+    <h2>🚪 Escolha a parte</h2>
+    <div class="section-sub">Cada porta leva a um conjunto de páginas independente</div>
+    <div class="doors">
 
-  <section class="block">
-    <h2>🧑‍🤝‍🧑 Quem usa o quê</h2>
-    <div class="section-sub">Cada papel usa uma parte diferente do sistema</div>
-    <div class="roles-grid">
-      <div class="role-card">
-        <div class="r-title">📲 Mesário / Administrador da seção</div>
-        <div class="r-detail">Confirma tarefas (T##), rondas e reporta ocorrências pelo bot do Telegram — sem precisar acessar nenhuma página, só o celular.</div>
-      </div>
-      <div class="role-card">
-        <div class="r-title">📊 Gestor de administradores</div>
-        <div class="r-detail">Acompanha o <b>Painel Gestor</b> — uma grade com todas as seções lado a lado, pra ver rápido quem está atrasado ou precisa de ajuda.</div>
-      </div>
-      <div class="role-card">
-        <div class="r-title">🛰️ Juiz eleitoral / autoridades</div>
-        <div class="r-detail">Acompanha a <b>Visão Geral</b> (mapa do prédio + indicadores) e o <b>Detalhe por Seção</b> quando precisa entender uma seção específica.</div>
-      </div>
+      <a class="door live" href="durante/demo/index.html">
+        <div class="d-ico">🔴</div>
+        <div class="d-kicker">Parte 1 · Durante a eleição</div>
+        <div class="d-title">Acompanhamento ao vivo</div>
+        <div class="d-desc">
+          O bot do Telegram recebe as confirmações de tarefas, rondas e ocorrências e alimenta três painéis
+          que se atualizam sozinhos. Para mesários, administradores, gestores e a Justiça Eleitoral.
+        </div>
+        <ul class="d-list">
+          <li>🛰️ Visão Geral — mapa do prédio + indicadores</li>
+          <li>🔍 Detalhe por Seção · 📊 Painel Gestor</li>
+          <li>📖 Guia de Bolso (quem confirma pelo Telegram)</li>
+          <li>🧪 4 cenários fictícios de treino</li>
+        </ul>
+        <span class="d-cta">Entrar no acompanhamento ao vivo →</span>
+      </a>
+
+      <a class="door after" href="apos/desempenho.html">
+        <div class="d-ico">📈</div>
+        <div class="d-kicker">Parte 2 · Após a eleição</div>
+        <div class="d-title">Desempenho &amp; aprendizado</div>
+        <div class="d-desc">
+          A partir do Log de Urna (<code>logd.dat</code>), um painel interativo reconstrói produtividade,
+          tempo de execução, biometria, espera na fila e alertas — para o presidente de seção estudar e
+          melhorar na próxima eleição.
+        </div>
+        <ul class="d-list">
+          <li>📊 Gráficos D3 clicáveis, com explicações</li>
+          <li>🇧🇷 Contexto de biometria do TSE</li>
+          <li>🔎 Guia: como abrir o RDV e o Log de Urna</li>
+        </ul>
+        <span class="d-cta">Entrar no painel de desempenho →</span>
+      </a>
+
+    </div>
+
+    <div class="section-sub" style="margin:16px 0 6px;">Atalhos diretos</div>
+    <div class="quick">
+      <a href="durante/demo/index.html">🛰️ Visão Geral</a>
+      <a href="durante/demo/secao.html">🔍 Detalhe por Seção</a>
+      <a href="durante/demo/painel.html">📊 Painel Gestor</a>
+      <a href="durante/demo/sunday.html">📖 Guia de Bolso</a>
+      <a href="apos/desempenho.html">📈 Desempenho</a>
+      <a href="apos/rdv-e-log-de-urna.html">🔎 RDV &amp; Log de Urna</a>
     </div>
   </section>
 
+  <!-- CENÁRIOS -->
   <section class="block">
-    <h2>🚀 Explore agora</h2>
-    <div class="section-sub">O passo 1 é o guia de quem confirma pelo Telegram; o passo 2 são os painéis de quem acompanha; o passo 3 é treino com dados fictícios</div>
-
-    <div class="step">
-      <div class="step-num">1</div>
-      <div class="step-body">
-        <div class="s-title">Guia de Bolso — ao vivo</div>
-        <div class="s-detail">
-          O guia que o administrador de prédio usa no dia da eleição: todas as tarefas T##, rondas e
-          contatos, com um botão pra confirmar cada uma direto pelo Telegram — é essa confirmação que
-          alimenta as três páginas do passo 2 abaixo.
-        </div>
-        <div class="link-row" style="margin-top:10px;">
-          <a class="link-btn primary" href="demo/sunday.html">📖 Abrir Guia de Bolso</a>
-        </div>
-      </div>
+    <h2>🧪 Treinar com cenários fictícios (parte 1)</h2>
+    <div class="section-sub">Fotografias congeladas de um dia — para treinar decisões: "o que você faria agora?"</div>
+    <div class="quick">
+      <a href="durante/samples/sample-1-otimista/index.html">✅ Otimista</a>
+      <a href="durante/samples/sample-2-pessimista-1030/index.html">🌅 Pessimista 10:30</a>
+      <a href="durante/samples/sample-3-pessimista-1330/index.html">🌤️ Pessimista 13:30</a>
+      <a href="durante/samples/sample-4-pessimista-1630/index.html">🌆 Pessimista 16:30</a>
     </div>
-
-    <div class="step">
-      <div class="step-num">2</div>
-      <div class="step-body">
-        <div class="s-title">Visão Geral, Detalhe e Painel — ao vivo</div>
-        <div class="s-detail">
-          Estas três páginas <strong>não são demonstração</strong>: leem a planilha real do dia da eleição
-          (publicada pelo Google Sheets como CSV, a cada 30s) e mostram o que está acontecendo agora — fila,
-          votos, ocorrências e quem confirmou cada item.
-        </div>
-        <div class="badge-live">🔴 Ao vivo — os dados aqui são reais e ficam visíveis a qualquer pessoa com este link, inclusive buscadores.</div>
-        <div class="link-row" style="margin-top:10px;">
-          <a class="link-btn primary" href="demo/index.html">🛰️ Visão Geral</a>
-          <a class="link-btn primary" href="demo/secao.html">🔍 Detalhe por Seção</a>
-          <a class="link-btn primary" href="demo/painel.html">📊 Painel Gestor</a>
-        </div>
-      </div>
-    </div>
-
-    <div class="step">
-      <div class="step-num">3</div>
-      <div class="step-body">
-        <div class="s-title">Treine decisões com os cenários de simulação (dados fictícios)</div>
-        <div class="s-detail">
-          Quatro fotografias fictícias do dia — uma tranquila e três de um mesmo dia difícil em horários
-          diferentes (10:30, 13:30 e 16:30). Bom para treinar equipe: "o que você faria agora, com o que
-          você sabe nesse momento?"
-        </div>
-        <div class="scenario-row">
-          <div class="scenario-chip">
-            <b>✅ Otimista</b>
-            Dia tranquilo, quase tudo em dia.
-            <div class="links">
-              <a href="samples/sample-1-otimista/index.html">Visão Geral</a>
-              <a href="samples/sample-1-otimista/secao.html">Detalhe</a>
-              <a href="samples/sample-1-otimista/painel.html">Painel</a>
-            </div>
-          </div>
-          <div class="scenario-chip">
-            <b>🌅 Pessimista — 10:30</b>
-            Manhã já em crise, oito ocorrências abertas.
-            <div class="links">
-              <a href="samples/sample-2-pessimista-1030/index.html">Visão Geral</a>
-              <a href="samples/sample-2-pessimista-1030/secao.html">Detalhe</a>
-              <a href="samples/sample-2-pessimista-1030/painel.html">Painel</a>
-            </div>
-          </div>
-          <div class="scenario-chip">
-            <b>🌤️ Pessimista — 13:30</b>
-            Mesmos problemas, agora piores.
-            <div class="links">
-              <a href="samples/sample-3-pessimista-1330/index.html">Visão Geral</a>
-              <a href="samples/sample-3-pessimista-1330/secao.html">Detalhe</a>
-              <a href="samples/sample-3-pessimista-1330/painel.html">Painel</a>
-            </div>
-          </div>
-          <div class="scenario-chip">
-            <b>🌆 Pessimista — 16:30</b>
-            Faltando meia hora pro fechamento, crítico em todas as seções.
-            <div class="links">
-              <a href="samples/sample-4-pessimista-1630/index.html">Visão Geral</a>
-              <a href="samples/sample-4-pessimista-1630/secao.html">Detalhe</a>
-              <a href="samples/sample-4-pessimista-1630/painel.html">Painel</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
+    <div class="badge-aviso">⚠️ Os cenários usam dados fictícios; a Visão Geral/Detalhe/Painel "ao vivo" leem a planilha real.</div>
   </section>
 
+  <!-- COMO USAR -->
   <section class="block">
-    <h2>📝 A Fazer — Guia Específico dos Mesários</h2>
-    <div class="section-sub">Hoje o Guia de Bolso (passo 1 acima) é feito só para o Administrador de Prédio — falta um equivalente para as atividades próprias do mesário</div>
-    <div class="todo-list">
-      <div class="todo-item"><span class="todo-check">☐</span> Levantar no Manual do Mesário quais atividades são específicas dele (distintas das do administrador) e organizar por horário do dia, igual ao guia atual.</div>
-      <div class="todo-item"><span class="todo-check">☐</span> Definir quais dessas atividades fazem sentido confirmar pelo Telegram (item rápido de checklist) e quais são só consulta/apoio (ex.: como preencher a ata, o que fazer em cada tipo de ocorrência).</div>
-      <div class="todo-item"><span class="todo-check">☐</span> Decidir se o mesário confirma pelo mesmo bot do administrador (com um menu próprio) ou se precisa de um fluxo/bot separado.</div>
-      <div class="todo-item"><span class="todo-check">☐</span> Montar o guia de bolso do mesário no mesmo formato do guia atual (HTML de bolso + versão pra imprimir), com a navegação clara de que é um guia diferente do administrador.</div>
-      <div class="todo-item"><span class="todo-check">☐</span> Testar com um mesário de verdade antes do dia da eleição, pra ver se o fluxo do Telegram funciona sem apoio do administrador por perto.</div>
+    <h2>❓ Como usar</h2>
+    <div class="section-sub">Do dia da eleição ao relatório de depois</div>
+    <div class="how">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="s-title">Durante o dia — confirme pelo Telegram</div>
+          <div class="s-detail">O administrador/mesário abre o link do bot (do Guia de Bolso) e confirma cada tarefa, ronda ou ocorrência em alguns toques. Isso escreve numa planilha do Google.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="s-title">Acompanhe nos painéis ao vivo</div>
+          <div class="s-detail">A <b>Visão Geral</b>, o <b>Detalhe por Seção</b> e o <b>Painel Gestor</b> leem essa planilha (publicada como CSV) e se atualizam a cada 30s — tudo na porta <b>Durante a eleição</b>.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="s-title">Depois da eleição — baixe o Log de Urna</div>
+          <div class="s-detail">Pegue o <code>logd.dat</code> da seção e rode <code>python3 scripts/parse_logd.py logs/zone/150/logd.dat</code> seguido de <code>python3 scripts/build_desempenho.py</code>. Isso regenera o painel de desempenho com os dados daquela urna.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="s-title">Estude o desempenho e aprenda</div>
+          <div class="s-detail">Abra a porta <b>Após a eleição</b>. Cada indicador e cada ponto do gráfico é clicável e explica como ler o número. O guia <b>RDV &amp; Log de Urna</b> ensina a abrir os arquivos <code>.dat</code> da urna.</div>
+        </div>
+      </div>
     </div>
   </section>
 
   <footer class="page-footer">
     Projeto independente de apoio operacional para o dia da eleição · código aberto em
-    <a href="https://github.com/rafarocha/at">github.com/rafarocha/at</a><br>
-    Todas as páginas acima são <code>100% estáticas</code> (HTML+JS puro, sem servidor) e só fazem uma
-    requisição de <code>fetch()</code> para ler um CSV — a Visão Geral/Detalhe/Painel "ao vivo" lê a planilha
-    real; os cenários de simulação leem um CSV fixo publicado ao lado da própria página.
+    <a href="https://github.com/rafarocha/at">github.com/rafarocha/at</a> · GNU GPLv3<br>
+    Páginas <code>100% estáticas</code>. Estrutura: <code>durante/</code> (bot + dados ao vivo) e
+    <code>apos/</code> (desempenho). Gere com <code>scripts/build_public.py</code> + <code>scripts/build_desempenho.py</code>.
   </footer>
 
 </div>

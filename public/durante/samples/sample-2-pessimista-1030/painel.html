@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>📊 [Exemplo] Painel Gestor — Sample 3 · Pessimista 13:30</title>
+<title>📊 [Exemplo] Painel Gestor — Sample 2 · Pessimista 10:30</title>
 <style>
   :root {
     --bg: #0a0e14; --bg-card: #141a24; --bg-card-2: #1a2230; --bg-chip: #19212c;
@@ -111,10 +111,12 @@
 <div class="wrap">
 
   <nav class="top-nav">
-    <a href="index.html" class="nav-item">🏠 Visão Geral</a>
+    <a href="../../index.html" class="nav-item">🏠 Início</a>
+    <a href="index.html" class="nav-item">🛰️ Visão Geral</a>
     <a href="secao.html" class="nav-item">🔍 Detalhe por Seção</a>
     <a href="painel.html" class="nav-item active">📊 Painel Gestor</a>
     <a href="sunday.html" class="nav-item">📖 Guia de Bolso</a>
+    <a href="../../apos/desempenho.html" class="nav-item">📈 Desempenho</a>
   </nav>
 
   <header class="hero">
@@ -247,7 +249,7 @@
     return h + ":" + m;
   }
 
-  function nowMinutes() { return 810; }
+  function nowMinutes() { return 630; }
   function toMinutes(hhmmish) {
     if (!hhmmish) return null;
     const m = hhmmish.trim().match(/(\d{1,2}):(\d{2})(?::\d{2})?\s*$/);

@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📈 Desempenho da Seção — Aprendizado a partir do Log de Urna</title>
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<style>
+  :root {
+    --bg: #0a0e14; --bg-card: #141a24; --bg-card-2: #1a2230; --bg-chip: #19212c;
+    --border: #2a3342; --fg: #eef2f7; --fg-muted: #a8b3c2; --fg-sub: #7c8798;
+    --accent: #5eaaff; --accent-dim: rgba(94,170,255,0.14);
+    --green: #3ecf82; --green-dim: rgba(62,207,130,0.14);
+    --amber: #e3ab3f; --amber-dim: rgba(227,171,63,0.14);
+    --red: #ff6b6b; --red-dim: rgba(255,107,107,0.14);
+    --purple: #c792ea; --purple-dim: rgba(199,146,234,0.14);
+    --gray: #6b7686; --gray-dim: rgba(107,118,134,0.18);
+    --mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; margin:0; padding:0; }
+  body { background: var(--bg); color: var(--fg); font-family: var(--sans); font-size: 15px; line-height: 1.55; font-weight: 500; padding: 16px 14px 60px; }
+  .wrap { max-width: 1180px; margin: 0 auto; }
+
+  .top-nav { display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
+  .nav-item { flex:1; min-width:120px; text-align:center; background:var(--bg-card); border:1px solid var(--border); border-radius:10px; padding:9px 10px; font-size:12.5px; font-weight:800; color:var(--fg-muted); text-decoration:none; }
+  .nav-item.active { background:var(--accent-dim); color:var(--accent); border-color:var(--accent); }
+
+  header.hero { background: linear-gradient(160deg, var(--bg-card) 0%, var(--bg-card-2) 100%); border:1px solid var(--border); border-radius:16px; padding:16px 18px; margin-bottom:16px; display:flex; flex-wrap:wrap; gap:14px; align-items:center; justify-content:space-between; }
+  header.hero h1 { font-size:20px; font-weight:800; letter-spacing:-0.2px; }
+  header.hero .sub { color:var(--fg-muted); font-size:12.5px; font-weight:600; margin-top:4px; max-width:640px; }
+  .meta-chips { display:flex; flex-wrap:wrap; gap:7px; margin-top:10px; }
+  .meta-chip { background:var(--bg-chip); border:1px solid var(--border); border-radius:8px; padding:5px 10px; font-size:11px; font-weight:700; color:var(--fg-muted); }
+  .meta-chip b { color:var(--fg); font-family:var(--mono); }
+
+  .badge-aviso { display:inline-flex; align-items:center; gap:7px; background: var(--amber-dim); color: var(--amber); border:1px solid rgba(227,171,63,0.35); border-radius:9px; padding:7px 11px; font-size:11.5px; font-weight:800; }
+
+  section.block { background: var(--bg-card); border:1px solid var(--border); border-radius:14px; padding:16px 16px 14px; margin-bottom:16px; }
+  section.block h2 { font-size:15px; font-weight:800; margin-bottom:4px; display:flex; align-items:center; gap:7px; }
+  section.block .section-sub { color: var(--fg-sub); font-size: 12px; font-weight:700; margin-bottom: 14px; max-width:760px; line-height:1.5; }
+
+  /* KPI cards */
+  .kpi-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap:12px; }
+  .kpi { background: var(--bg-card-2); border:1px solid var(--border); border-radius:12px; padding:13px 14px; cursor:pointer; transition:border-color .15s, transform .1s; position:relative; }
+  .kpi:hover { border-color: var(--accent); transform: translateY(-1px); }
+  .kpi .k-label { font-size:11px; font-weight:800; color:var(--fg-sub); text-transform:uppercase; letter-spacing:.3px; display:flex; align-items:center; gap:6px; }
+  .kpi .k-value { font-family: var(--mono); font-size:26px; font-weight:800; margin-top:7px; line-height:1.1; }
+  .kpi .k-unit { font-size:12px; color:var(--fg-muted); font-weight:700; }
+  .kpi .k-foot { font-size:10.5px; color:var(--fg-sub); font-weight:700; margin-top:5px; }
+  .kpi .info-i { margin-left:auto; width:15px; height:15px; border-radius:50%; background:var(--bg-chip); border:1px solid var(--border); color:var(--fg-sub); font-size:9.5px; display:flex; align-items:center; justify-content:center; font-weight:800; }
+  .kpi.accent .k-value { color:var(--accent); } .kpi.green .k-value { color:var(--green); }
+  .kpi.amber .k-value { color:var(--amber); } .kpi.red .k-value { color:var(--red); }
+  .kpi.purple .k-value { color:var(--purple); }
+
+  /* Plano de melhoria (box horizontal) */
+  .plano-box { display:grid; grid-template-columns: 300px 1fr; gap:20px; align-items:center; }
+  @media (max-width: 820px) { .plano-box { grid-template-columns: 1fr; } }
+  .plano-radial { display:flex; flex-direction:column; align-items:center; }
+  .plano-radial svg { width:100%; max-width:300px; height:auto; overflow:visible; }
+  .plano-radial-cap { font-size:10.5px; color:var(--fg-sub); font-weight:700; margin-top:4px; text-align:center; }
+  .plano-lista { display:flex; flex-direction:column; gap:8px; }
+  .plano-item { display:flex; gap:12px; align-items:flex-start; background:var(--bg-card-2); border:1px solid var(--border); border-radius:11px; padding:11px 13px; cursor:pointer; transition:border-color .15s; }
+  .plano-item:hover, .plano-item.active { border-color:var(--accent); }
+  .plano-rank { flex-shrink:0; width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12px; background:var(--accent-dim); color:var(--accent); }
+  .plano-body { flex:1; min-width:0; }
+  .plano-acao { font-size:12.5px; font-weight:800; line-height:1.4; }
+  .plano-acao .pa-ico { margin-right:5px; }
+  .plano-meta { font-size:10.5px; color:var(--fg-sub); font-weight:700; margin-top:3px; }
+  .plano-meta .pm-para { color:var(--accent); }
+  .plano-ev { font-size:11px; color:var(--fg-muted); margin-top:4px; line-height:1.45; }
+  .plano-bar { flex-shrink:0; display:flex; flex-direction:column; align-items:center; gap:3px; width:46px; }
+  .plano-bar .pb-score { font-family:var(--mono); font-size:15px; font-weight:800; }
+  .plano-bar .pb-track { width:100%; height:5px; background:var(--bg-chip); border-radius:3px; overflow:hidden; }
+  .plano-bar .pb-fill { height:100%; border-radius:3px; }
+
+  /* Boletim de Urna — guia de contexto no cabeçalho */
+  .bu-card { background: var(--bg-card); border:1px solid var(--border); border-radius:14px; padding:0; margin-bottom:16px; overflow:hidden; }
+  .bu-locbar { display:flex; align-items:center; gap:14px; flex-wrap:wrap; padding:13px 18px; background: linear-gradient(160deg, var(--bg-card-2), var(--bg-card)); border-bottom:1px solid var(--border); }
+  .bu-locbar .bu-pin { font-size:20px; }
+  .bu-locbar .bu-loc { font-weight:800; font-size:14px; }
+  .bu-locbar .bu-loc small { display:block; color:var(--fg-muted); font-weight:700; font-size:12px; }
+  .bu-locbar .bu-turno { margin-left:auto; display:flex; align-items:center; gap:8px; font-size:12px; font-weight:800; color:var(--fg-sub); }
+  .bu-locbar .bu-turno b { background: var(--amber-dim); color: var(--amber); border:1px solid rgba(227,171,63,.4); border-radius:7px; padding:3px 10px; }
+  .bu-status { display:flex; flex-wrap:wrap; gap:18px; padding:11px 18px; border-bottom:1px solid var(--border); font-size:11.5px; }
+  .bu-status .bs-i { color:var(--fg-sub); font-weight:800; } .bu-status .bs-i b { color:var(--green); display:block; font-size:13px; }
+  .bu-grid { display:grid; grid-template-columns: repeat(4, 1fr); gap:1px; background: var(--border); }
+  @media (max-width:720px){ .bu-grid { grid-template-columns: repeat(2,1fr); } }
+  .bu-cell { background: var(--bg-card); padding:11px 15px; cursor:default; }
+  .bu-cell .bc-label { font-size:10.5px; color:var(--fg-sub); font-weight:800; text-transform:none; display:flex; align-items:center; gap:5px; }
+  .bu-cell .bc-value { font-family: var(--mono); font-size:19px; font-weight:800; margin-top:3px; }
+  .bu-cell.hl .bc-value { color: var(--accent); }
+  .bu-foot { padding:9px 18px; font-size:10.5px; color:var(--fg-sub); font-weight:700; border-top:1px solid var(--border); display:flex; flex-wrap:wrap; gap:6px 16px; }
+  .bu-foot b { color:var(--fg-muted); }
+  .bu-src { padding:8px 18px 12px; font-size:10px; color:var(--fg-sub); line-height:1.5; }
+  .bu-src a { color: var(--accent); }
+
+  /* aviso de dados públicos */
+  .pub-note { background: var(--green-dim); border:1px solid rgba(62,207,130,.4); border-radius:11px; padding:10px 15px; margin-bottom:14px; font-size:12px; color:var(--fg-muted); line-height:1.5; }
+  .pub-note b { color: var(--fg); } .pub-note a { color: var(--green); font-weight:800; }
+
+  /* lista compacta (tipos de evento indesejável) */
+  .mini-list { display:flex; flex-direction:column; gap:3px; max-height:230px; overflow-y:auto; }
+  .mini-row { display:flex; align-items:center; gap:8px; font-size:10.5px; padding:3px 7px; border-radius:6px; background:var(--bg-card); border:1px solid var(--border); }
+  .mini-row .ml-n { font-family:var(--mono); font-weight:800; color:var(--red); min-width:22px; text-align:right; }
+  .mini-row .ml-t { flex:1; color:var(--fg-muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+  /* chamada para o simulador do TSE */
+  .sim-cta { display:flex; align-items:center; gap:14px; flex-wrap:wrap; background: var(--purple-dim); border:1px solid rgba(199,146,234,.4); border-radius:12px; padding:13px 16px; margin-top:14px; }
+  .sim-cta .sim-ico { font-size:24px; }
+  .sim-cta .sim-txt { flex:1; min-width:220px; font-size:12.5px; color:var(--fg-muted); line-height:1.5; }
+  .sim-cta .sim-txt b { color:var(--fg); }
+  .sim-cta a.sim-btn { display:inline-flex; align-items:center; gap:7px; background: var(--purple); color:#0a0e14; border-radius:9px; padding:10px 15px; font-size:12.5px; font-weight:800; text-decoration:none; white-space:nowrap; }
+  .sim-cta a.sim-btn:hover { filter:brightness(1.08); }
+
+  /* bloco de comando (terminal) */
+  .cmd-block { margin-top:14px; }
+  .cmd-block .cmd-title { font-size:12px; font-weight:800; margin-bottom:6px; display:flex; align-items:center; gap:7px; }
+  .cmd-block pre { background:#05080d; border:1px solid var(--border); border-radius:9px; padding:11px 13px; font-family:var(--mono); font-size:11.5px; color:var(--green); overflow-x:auto; margin:0; line-height:1.5; }
+  .cmd-block pre .cmt { color:var(--fg-sub); }
+  .cmd-block .cmd-foot { font-size:10.5px; color:var(--fg-sub); font-weight:700; margin-top:6px; }
+  .cmd-block .cmd-foot a { color:var(--accent); }
+
+  .chart-grid { display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+  @media (max-width: 860px) { .chart-grid { grid-template-columns: 1fr; } }
+  .chart-card { background: var(--bg-card-2); border:1px solid var(--border); border-radius:12px; padding:13px 14px 8px; }
+  .chart-card .chart-title { font-size:13px; font-weight:800; margin-bottom:2px; display:flex; align-items:center; gap:7px; }
+  .chart-card .chart-sub { font-size:11px; color:var(--fg-sub); font-weight:700; margin-bottom:10px; }
+  .chart-svg-wrap { position:relative; }
+  .chart-svg-wrap svg { display:block; width:100%; height:auto; overflow:visible; }
+  .chart-axis path, .chart-axis line { stroke: var(--border); }
+  .chart-axis text { fill: var(--fg-sub); font-size:9.5px; font-family: var(--sans); }
+  .grid-line { stroke: var(--border); stroke-opacity:.4; }
+  .hover-tip { position:absolute; pointer-events:none; background:var(--bg-chip); border:1px solid var(--accent); border-radius:7px; padding:5px 9px; font-size:10.5px; font-weight:700; color:var(--fg); white-space:nowrap; transform:translate(-50%,-120%); z-index:20; display:none; box-shadow:0 6px 18px rgba(0,0,0,.4); }
+  .legend-row { display:flex; flex-wrap:wrap; gap:14px; font-size:11px; color:var(--fg-muted); margin-top:10px; font-weight:700; }
+  .legend-row span { display:flex; align-items:center; gap:5px; }
+  .legend-dot { width:9px; height:9px; border-radius:2px; display:inline-block; }
+
+  .bar-clickable, .dot-clickable, .cell-clickable { cursor:pointer; }
+
+  /* alerts timeline */
+  .alert-list { display:flex; flex-direction:column; gap:7px; max-height:300px; overflow-y:auto; }
+  .alert-item { display:flex; align-items:center; gap:10px; background:var(--bg-card-2); border:1px solid var(--border); border-left:3px solid var(--amber); border-radius:9px; padding:9px 12px; cursor:pointer; }
+  .alert-item:hover { border-color:var(--accent); }
+  .alert-item .a-time { font-family:var(--mono); font-size:11px; color:var(--fg-sub); font-weight:700; white-space:nowrap; }
+  .alert-item .a-msg { font-size:12px; font-weight:700; flex:1; }
+  .alert-item .a-sub { font-size:10px; font-weight:800; color:var(--amber); background:var(--amber-dim); border-radius:5px; padding:2px 7px; }
+  .alert-item .a-date { font-family:var(--mono); font-size:10px; color:var(--fg-sub); font-weight:700; white-space:nowrap; }
+  .alert-item .a-when { display:flex; flex-direction:column; gap:1px; align-items:flex-end; }
+
+  /* resumo por tipo de alerta */
+  .alert-summary { display:flex; flex-direction:column; gap:7px; }
+  .as-row { display:flex; align-items:center; gap:11px; background:var(--bg-card-2); border:1px solid var(--border); border-radius:9px; padding:9px 12px; cursor:pointer; transition:border-color .15s; }
+  .as-row:hover, .as-row.active { border-color:var(--accent); }
+  .as-row.active { background:var(--accent-dim); }
+  .as-count { font-family:var(--mono); font-size:17px; font-weight:800; color:var(--amber); min-width:34px; text-align:right; }
+  .as-msg { font-size:12px; font-weight:700; flex:1; }
+  .as-peak { font-size:10.5px; color:var(--fg-sub); font-weight:700; white-space:nowrap; }
+
+  /* context box */
+  .ctx { display:grid; grid-template-columns: 1.2fr 1fr; gap:16px; }
+  @media (max-width:820px){ .ctx { grid-template-columns:1fr; } }
+  .ctx .ctx-stat { display:flex; flex-direction:column; gap:12px; }
+  .ctx .big-stat { background:var(--bg-card-2); border:1px solid var(--border); border-radius:12px; padding:13px 15px; }
+  .ctx .big-stat .bs-label { font-size:11.5px; color:var(--fg-sub); font-weight:800; }
+  .ctx .big-stat .bs-value { font-family:var(--mono); font-size:23px; font-weight:800; color:var(--accent); margin-top:3px; }
+  .ctx .big-stat .bs-foot { font-size:11px; color:var(--fg-muted); font-weight:600; margin-top:3px; }
+  .ctx-note { font-size:11.5px; color:var(--fg-muted); line-height:1.6; }
+  .ctx-note b { color:var(--fg); }
+  .ctx-note a { color:var(--accent); }
+
+  /* modal popup */
+  #overlay { position:fixed; inset:0; background:rgba(5,8,13,.6); backdrop-filter:blur(2px); z-index:200; display:none; align-items:center; justify-content:center; padding:20px; }
+  #popup { background:var(--bg-card); border:1px solid var(--border); border-radius:16px; padding:0; width:460px; max-width:94vw; box-shadow:0 20px 50px rgba(0,0,0,.6); overflow:hidden; }
+  #popup .pop-head { padding:16px 20px; border-bottom:1px solid var(--border); display:flex; align-items:flex-start; gap:12px; }
+  #popup .pop-icon { width:38px; height:38px; border-radius:10px; background:var(--accent-dim); display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+  #popup .pop-title { font-size:15px; font-weight:800; }
+  #popup .pop-kicker { font-size:11px; font-weight:800; color:var(--fg-sub); text-transform:uppercase; letter-spacing:.4px; margin-bottom:2px; }
+  #popup .pop-close { margin-left:auto; background:var(--bg-chip); border:1px solid var(--border); color:var(--fg-muted); border-radius:8px; width:28px; height:28px; cursor:pointer; font-size:15px; font-weight:800; flex-shrink:0; }
+  #popup .pop-body { padding:16px 20px 20px; font-size:13px; color:var(--fg-muted); line-height:1.6; }
+  #popup .pop-body b { color:var(--fg); }
+  #popup .pop-metric { font-family:var(--mono); font-size:30px; font-weight:800; color:var(--accent); margin:4px 0 8px; }
+  #popup .pop-foot { margin-top:14px; display:flex; flex-wrap:wrap; gap:8px; }
+  #popup .pop-link { display:inline-flex; align-items:center; gap:6px; background:var(--accent-dim); color:var(--accent); border:1px solid var(--accent); border-radius:8px; padding:7px 12px; font-size:12px; font-weight:800; text-decoration:none; }
+  #popup .pop-tag { background:var(--bg-chip); border:1px solid var(--border); border-radius:8px; padding:7px 11px; font-size:11.5px; font-weight:700; color:var(--fg-muted); }
+  #popup .pop-insight { background:var(--bg-card-2); border:1px solid var(--border); border-left:3px solid var(--green); border-radius:9px; padding:10px 13px; margin-top:12px; font-size:12px; }
+  #popup .pop-insight .pi-title { font-weight:800; color:var(--green); margin-bottom:3px; font-size:11px; text-transform:uppercase; letter-spacing:.3px; }
+
+  footer.page-footer { text-align:center; color: var(--fg-sub); font-size:11px; font-weight:600; padding: 18px 6px 4px; line-height:1.7; }
+  footer.page-footer code { font-family: var(--mono); background: var(--bg-chip); border:1px solid var(--border); border-radius:5px; padding:1px 5px; }
+  footer.page-footer a { color:var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <nav class="top-nav">
+    <a href="../index.html" class="nav-item">🏠 Início</a>
+    <a href="../durante/demo/index.html" class="nav-item">🛰️ Visão Geral (ao vivo)</a>
+    <a href="desempenho.html" class="nav-item active">📈 Desempenho</a>
+    <a href="rdv-e-log-de-urna.html" class="nav-item">🔎 RDV &amp; Log</a>
+  </nav>
+
+  <header class="hero">
+    <div>
+      <h1>📈 Desempenho da Seção — Aprendizado pós-eleição</h1>
+      <div class="sub">
+        Painel reconstruído a partir do <b>Log de Urna</b> (<code>logd.dat</code>) da seção.
+        Cada indicador e cada ponto do gráfico é <b>clicável</b> — abre uma explicação curta
+        de como ler o número e o que o presidente de seção pode melhorar.
+      </div>
+      <div class="meta-chips" id="metaChips"></div>
+    </div>
+    <div class="badge-aviso" id="statusBadge">carregando log…</div>
+  </header>
+
+  <!-- Aviso: dados públicos -->
+  <div class="pub-note">
+    🔎 <b>Dados públicos.</b> Tudo nesta página vem dos arquivos oficiais da urna e pode ser conferido no portal
+    de resultados do TSE —
+    <a href="https://resultados.tse.jus.br/oficial/app/index.html#/eleicao/6257/uf/pe/mu/25313/zn/0150/cargo/1/vis/nominal/se/0328/dados-de-urna/rdv" target="_blank" rel="noopener">RDV desta seção (Recife · Zona 0150 · Seção 0328)</a>.
+  </div>
+
+  <!-- Guia de contexto: Boletim de Urna -->
+  <div class="bu-card" id="buCard" style="display:none;">
+    <div class="bu-locbar">
+      <span class="bu-pin">📍</span>
+      <span class="bu-loc" id="buLoc">—<small id="buLocSub">—</small></span>
+      <span class="bu-turno">Turno <b id="buTurno">1º</b></span>
+    </div>
+    <div class="bu-status">
+      <span class="bs-i">Situação da seção<b>Totalizada</b></span>
+      <span class="bs-i">Situação do arquivo<b>Totalizado</b></span>
+      <span class="bs-i">Abertura UE<b id="buAbertura">—</b></span>
+      <span class="bs-i">Fechamento UE<b id="buFechamento">—</b></span>
+    </div>
+    <div class="bu-grid" id="buGrid"></div>
+    <div class="bu-foot">
+      <span>Modelo: <b id="buModelo">—</b></span>
+      <span>Código UE: <b id="buCodigo">—</b></span>
+      <span>Município: <b id="buMun">—</b></span>
+      <span>Zona: <b id="buZona">—</b></span>
+      <span>Local: <b id="buLocal">—</b></span>
+      <span>Seção: <b id="buSecao">—</b></span>
+    </div>
+    <div class="bu-src">
+      Identificadores, abertura/fechamento, habilitação biométrica e comparecimento são extraídos do próprio
+      <b>Log de Urna</b>. Eleitores aptos, habilitação biográfica/sem biometria e faltosos vêm do
+      <b>Boletim de Urna</b> (bu.dat) da seção. Todos públicos e conferíveis no
+      <a href="https://resultados.tse.jus.br/oficial/app/index.html#/eleicao/6257/uf/pe/mu/25313/zn/0150/cargo/1/vis/nominal/se/0328/dados-de-urna/rdv" target="_blank" rel="noopener">portal de resultados do TSE →</a>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <section class="block">
+    <h2>⚡ Indicadores-chave do dia</h2>
+    <div class="section-sub">Visão rápida de produtividade, tempo e qualidade. Clique em qualquer cartão para entender o número.</div>
+    <div class="kpi-grid" id="kpiGrid"></div>
+  </section>
+
+  <!-- Plano de melhoria (box horizontal completo) -->
+  <section class="block">
+    <h2>✅ O que melhorar na próxima — top 5 ações</h2>
+    <div class="section-sub">Prioridades extraídas automaticamente deste Log de Urna: quanto maior a pontuação, mais aquele ponto pesou nesta seção. Clique numa fatia ou num item.</div>
+    <div class="plano-box">
+      <div class="plano-radial">
+        <div class="chart-svg-wrap"><svg id="chartMelhoriasRadial" viewBox="0 0 300 300"></svg><div class="hover-tip" id="tipMelhoriasRadial"></div></div>
+        <div class="plano-radial-cap">Pontuação de prioridade (0–100) por ação</div>
+      </div>
+      <div class="plano-lista" id="planoLista"></div>
+    </div>
+  </section>
+
+  <!-- Charts -->
+  <section class="block">
+    <h2>📊 Gráficos interativos</h2>
+    <div class="section-sub">Passe o mouse para ver o valor; clique numa barra/ponto para o detalhe daquele momento ou eleitor.</div>
+    <div class="chart-grid">
+      <div class="chart-card">
+        <div class="chart-title">🗳️ Produtividade — eleitores por hora</div>
+        <div class="chart-sub">Quantos votos foram computados em cada faixa de hora.</div>
+        <div class="chart-svg-wrap"><svg id="chartThroughput" viewBox="0 0 520 240"></svg><div class="hover-tip" id="tipThroughput"></div></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">🕰️ Tempo de execução ao longo do dia</div>
+        <div class="chart-sub">Da habilitação até o voto computado, no <b>eixo das horas</b> — mostra se a seção acelera ou desacelera conforme o dia passa. Cada ponto é um eleitor; linha = tendência (média móvel).</div>
+        <div class="chart-svg-wrap"><svg id="chartExecHora" viewBox="0 0 520 240"></svg><div class="hover-tip" id="tipExecHora"></div></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">⏳ Espera entre eleitores (fila)</div>
+        <div class="chart-sub">Tempo ocioso entre um voto computado e o próximo eleitor ser identificado.</div>
+        <div class="chart-svg-wrap"><svg id="chartWait" viewBox="0 0 520 240"></svg><div class="hover-tip" id="tipWait"></div></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">⚡ Tempo de reação do eleitor</div>
+        <div class="chart-sub">Da habilitação até a 1ª ação na cabine (1º botão/voto). Mostra quanto o eleitor demora a começar.</div>
+        <div class="chart-svg-wrap"><svg id="chartReacao" viewBox="0 0 520 240"></svg><div class="hover-tip" id="tipReacao"></div></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">🖐️ Biometria — tentativas de digital</div>
+        <div class="chart-sub">Quantos eleitores foram identificados na 1ª tentativa vs. precisaram repetir.</div>
+        <div class="chart-svg-wrap"><svg id="chartBio" viewBox="0 0 520 240"></svg><div class="hover-tip" id="tipBio"></div></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">🕒 Biometria ao longo do dia — capturas e repetições</div>
+        <div class="chart-sub">Por hora: total de <b>solicitações de digital</b> e, dentro delas, quantas foram <b>repetições</b> (2ª tentativa ou além). Mostra em que horários a biometria mais falhou de primeira.</div>
+        <div class="chart-svg-wrap"><svg id="chartBioHora" viewBox="0 0 520 240"></svg><div class="hover-tip" id="tipBioHora"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Operação da mesa (presidente/mesário) -->
+  <section class="block">
+    <h2>🧑‍⚖️ Operação da mesa — tempos do presidente/mesário</h2>
+    <div class="section-sub">
+      Dois tempos que dependem da <b>equipe da seção</b> (não do eleitor), no intervalo entre um eleitor sair e o próximo
+      ser liberado. Clique nos pontos para o detalhe.
+    </div>
+    <div class="chart-grid">
+      <div class="chart-card">
+        <div class="chart-title">⌨️ Tempo para começar a identificar o próximo eleitor</div>
+        <div class="chart-sub">Da urna liberar a tela de identificação (<code>Aguardando digitação</code>) até o mesário <b>digitar o identificador</b>. Mede a prontidão de chamar o próximo da fila. Linha = mediana.</div>
+        <div class="chart-svg-wrap"><svg id="chartPresInicio" viewBox="0 0 520 240"></svg><div class="hover-tip" id="tipPresInicio"></div></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">🪪 Tempo para habilitar o eleitor</div>
+        <div class="chart-sub">Do mesário digitar o identificador até <b>“Eleitor foi habilitado”</b> (inclui a captura da digital/biometria). Mede a parte da habilitação sob a mesa. Linha = mediana.</div>
+        <div class="chart-svg-wrap"><svg id="chartPresHabilita" viewBox="0 0 520 240"></svg><div class="hover-tip" id="tipPresHabilita"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Fila por hora + ociosidade -->
+  <section class="block">
+    <h2>🚦 Filas &amp; ociosidade ao longo do dia</h2>
+    <div class="section-sub">Quando a fila apertou e quando a urna ficou parada. Clique nas barras/períodos para o detalhe.</div>
+    <div class="chart-grid">
+      <div class="chart-card">
+        <div class="chart-title">🕐 Piores horários de fila (espera por hora)</div>
+        <div class="chart-sub">Barra = espera média na hora · losango = pior espera registrada naquela hora.</div>
+        <div class="chart-svg-wrap"><svg id="chartEsperaHora" viewBox="0 0 520 240"></svg><div class="hover-tip" id="tipEsperaHora"></div></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">💤 Períodos ociosos (sem ninguém votando)</div>
+        <div class="chart-sub">Intervalos ≥ <span id="limiarOcioso">2</span> min entre um voto e a habilitação do próximo eleitor.</div>
+        <div class="chart-svg-wrap"><svg id="chartOciosidade" viewBox="0 0 520 240"></svg><div class="hover-tip" id="tipOciosidade"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Teclas indevidas -->
+  <section class="block">
+    <h2>👆 Teclas indevidas — <span id="teclasTotal">0</span> no dia</h2>
+    <div class="section-sub">
+      São toques <b>no teclado da cabine de votação</b> (o <b>Terminal do Eleitor</b>, onde o eleitor digita o número) —
+      <b>não</b> no microterminal do mesário. No log aparecem como <code>Tecla indevida pressionada</code>, sempre
+      dentro do fluxo de voto (entre a habilitação e o voto computado): é o <b>eleitor</b> apertando uma tecla que não vale
+      naquele instante (ex.: número durante a tela de confirmação). A média por eleitor esconde os extremos; por isso
+      separamos <b>por eleitor</b> (para achar quem apertou muito) e <b>por horário</b>. Clique para o detalhe.
+    </div>
+    <div class="chart-grid">
+      <div class="chart-card">
+        <div class="chart-title">🧑 Por eleitor (ordenado — maiores primeiro)</div>
+        <div class="chart-sub">Cada barra é um eleitor. Barras vermelhas = muito acima da média (<span id="teclasMedia">0</span>/eleitor).</div>
+        <div class="chart-svg-wrap"><svg id="chartTeclasEleitor" viewBox="0 0 520 240"></svg><div class="hover-tip" id="tipTeclasEleitor"></div></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">🕒 Por faixa de hora</div>
+        <div class="chart-sub">Total de teclas indevidas <b>no Terminal do Eleitor (cabine)</b> em cada hora do dia.</div>
+        <div class="chart-svg-wrap"><svg id="chartTeclasHora" viewBox="0 0 520 240"></svg><div class="hover-tip" id="tipTeclasHora"></div></div>
+      </div>
+    </div>
+    <div class="sim-cta">
+      <span class="sim-ico">🕹️</span>
+      <span class="sim-txt">
+        <b>Quer entender por que esse número é tão alto?</b> Abra o <b>Simulador de Votação do TSE</b> e vote
+        apertando teclas fora de hora (número durante a tela de confirmação, teclas repetidas) — cada uma dessas
+        seria uma "tecla indevida" no log. É a forma mais rápida de o presidente de seção <b>reproduzir e explicar
+        a métrica</b> para a equipe.
+      </span>
+      <a class="sim-btn" href="https://www.tse.jus.br/eleicoes/simulador-de-votacao" target="_blank" rel="noopener">🕹️ Abrir simulador do TSE →</a>
+    </div>
+  </section>
+
+  <!-- Volume de eventos -->
+  <section class="block">
+    <h2>📡 Volume de eventos no log</h2>
+    <div class="section-sub">Volume total por hora (quão movimentada a urna esteve), os eventos <b>indesejáveis / fora da programação normal</b> por hora, e — bem compacto — a lista dos tipos indesejáveis do dia.</div>
+    <div class="chart-grid" style="grid-template-columns: 1fr 1fr 0.8fr;">
+      <div class="chart-card">
+        <div class="chart-title">📈 Eventos por hora (todos)</div>
+        <div class="chart-sub">Todos os tipos somados (identificação, biometria, votos, teclas, etc.).</div>
+        <div class="chart-svg-wrap"><svg id="chartEventos" viewBox="0 0 520 220"></svg><div class="hover-tip" id="tipEventos"></div></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">⚠️ Eventos indesejáveis por hora</div>
+        <div class="chart-sub">Fora do fluxo normal: identificador inválido, inatividade, biometria estranha, habilitação cancelada, alertas.</div>
+        <div class="chart-svg-wrap"><svg id="chartIndesejaveis" viewBox="0 0 520 220"></svg><div class="hover-tip" id="tipIndesejaveis"></div></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title" style="font-size:12px;">🗂️ Tipos (dia)</div>
+        <div class="chart-sub">Indesejáveis por tipo.</div>
+        <div class="mini-list" id="indesejTipos"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RDV: mapa de votos -->
+  <section class="block">
+    <h2>🗳️ Mapa de votos (RDV)</h2>
+    <div class="section-sub">
+      Reconstruído do <b>RDV</b> (Registro Digital do Voto), a lista embaralhada de votos da urna — sem nome
+      nem ordem real, só os números. Os três mapas abaixo mostram os <b>votos nominais</b> por candidato
+      (sem brancos nem nulos). Clique numa barra para o detalhe. Dados conferíveis no
+      <a href="https://resultados.tse.jus.br/oficial/app/index.html#/eleicao/6257/uf/pe/mu/25313/zn/0150/cargo/1/vis/nominal/se/0328/dados-de-urna/rdv" target="_blank" rel="noopener" style="color:var(--accent);">portal do TSE</a>.
+    </div>
+    <div id="rdvAviso" class="badge-aviso" style="display:none; margin-bottom:12px;"></div>
+    <div class="chart-grid" id="rdvGrid3" style="grid-template-columns: 1fr 1fr 1fr;">
+      <div class="chart-card">
+        <div class="chart-title">🏛️ Presidente</div>
+        <div class="chart-sub" id="rdvSubPres">—</div>
+        <div class="chart-svg-wrap"><svg id="chartRdvPres" viewBox="0 0 360 260"></svg><div class="hover-tip" id="tipRdvPres"></div></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">🏢 Governador</div>
+        <div class="chart-sub" id="rdvSubGov">—</div>
+        <div class="chart-svg-wrap"><svg id="chartRdvGov" viewBox="0 0 360 260"></svg><div class="hover-tip" id="tipRdvGov"></div></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">⚖️ Senador</div>
+        <div class="chart-sub" id="rdvSubSen">—</div>
+        <div class="chart-svg-wrap"><svg id="chartRdvSen" viewBox="0 0 360 260"></svg><div class="hover-tip" id="tipRdvSen"></div></div>
+      </div>
+    </div>
+    <div class="chart-grid" style="margin-top:16px; grid-template-columns: 1fr 1fr;">
+      <div class="chart-card">
+        <div class="chart-title">❓ Brancos e nulos por cargo — onde o eleitor teve mais dúvida/erro</div>
+        <div class="chart-sub">
+          Quantos votos em branco e nulos houve <b>por cargo</b>. Cargos com mais brancos/nulos são onde o eleitor
+          mais hesitou ou errou — tipicamente os de número mais longo (deputados, senador).
+        </div>
+        <div class="chart-svg-wrap"><svg id="chartRdvNulos" viewBox="0 0 520 260"></svg><div class="hover-tip" id="tipRdvNulos"></div></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">🔢 Números digitados que foram anulados</div>
+        <div class="chart-sub">
+          O RDV <b>guarda o número digitado</b> no voto nulo. Aqui, os números que mais geraram <b>voto nulo</b> —
+          revela confusões (ex.: digitar o nº de presidente no cargo de governador) e anulações propositais (<code>00</code>, <code>0000</code>). Clique numa barra para o cargo.
+        </div>
+        <div class="chart-svg-wrap"><svg id="chartRdvNulosNum" viewBox="0 0 520 260"></svg><div class="hover-tip" id="tipRdvNulosNum"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Timeline + alerts -->
+  <section class="block">
+    <h2>🧭 Linha do tempo &amp; alertas</h2>
+    <div class="section-sub">Cada alerta do dia, em ordem. Clique para ver o que significa e como agir numa próxima eleição.</div>
+    <div class="chart-grid" style="grid-template-columns: 1.4fr 1fr;">
+      <div class="chart-card">
+        <div class="chart-title">📉 Ritmo acumulado ao longo do dia</div>
+        <div class="chart-sub">Curva de eleitores atendidos — inclinação = velocidade da fila.</div>
+        <div class="chart-svg-wrap"><svg id="chartCumulative" viewBox="0 0 520 260"></svg><div class="hover-tip" id="tipCumulative"></div></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">⚠️ Alertas registrados (<span id="alertCount">0</span>)</div>
+        <div class="chart-sub">Cada alerta com data e hora. Clique para o significado.</div>
+        <div class="alert-list" id="alertList"></div>
+      </div>
+    </div>
+
+    <!-- resumo de alertas por tipo -->
+    <div style="margin-top:16px;">
+      <div class="chart-title" style="margin-bottom:2px;">🧮 Resumo por tipo de alerta</div>
+      <div class="chart-sub" style="margin-bottom:10px;">Quantas vezes cada tipo aconteceu — e em quais horários. Clique numa linha para ver só aquele tipo no gráfico ao lado.</div>
+      <div class="chart-grid" style="grid-template-columns: 1fr 1fr;">
+        <div class="alert-summary" id="alertSummary"></div>
+        <div class="chart-card">
+          <div class="chart-title" id="alertHoraTitle">🕐 Ocorrências por hora — todos os tipos</div>
+          <div class="chart-sub">Clique numa barra para ver os alertas daquela hora.</div>
+          <div class="chart-svg-wrap"><svg id="chartAlertHora" viewBox="0 0 520 220"></svg><div class="hover-tip" id="tipAlertHora"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TSE context -->
+  <section class="block">
+    <h2>🇧🇷 Contexto — Biometria no Brasil (TSE)</h2>
+    <div class="section-sub">Para o presidente de seção entender a escala do processo em que sua urna se encaixa.</div>
+    <div class="ctx">
+      <div class="ctx-stat">
+        <div class="big-stat"><div class="bs-label">👥 Eleitorado apto (ago/2026)</div><div class="bs-value">~160 milhões</div><div class="bs-foot">brasileiros aptos a votar, incluindo o exterior (UF <b>ZZ</b>) e registros biométricos.</div></div>
+        <div class="big-stat"><div class="bs-label">🖐️ Cadastramento biométrico nacional</div><div class="bs-value">89,01%</div><div class="bs-foot">do eleitorado apto já possui identificação biométrica.</div></div>
+        <div class="big-stat"><div class="bs-label">🏅 Paraíba (PB)</div><div class="bs-value">4º lugar</div><div class="bs-foot">entre os estados com maior percentual de biometria (96,33%).</div></div>
+      </div>
+      <div class="ctx-note">
+        <p style="margin-bottom:10px;">A <b>biometria</b> é o que a sua urna usa quando pede a digital do eleitor
+        (os eventos <code>Solicita/Capturada a digital</code> no log). Quando ela falha, o
+        mesário usa a habilitação manual — e isso aparece aqui como <b>tempo de identificação</b> maior.</p>
+        <p style="margin-bottom:10px;">Entender a média nacional ajuda a calibrar a expectativa: numa seção com
+        quase 90% de biometria, a maioria dos eleitores deveria passar na <b>1ª tentativa</b>. Muitas
+        repetições podem indicar leitor sujo, dedo seco/úmido ou cadastro antigo — algo que o presidente
+        pode orientar durante o dia.</p>
+        <p style="font-size:10.5px; color:var(--fg-sub);">Fonte: <b>Biometria — Justiça Eleitoral</b> (painel de Cadastramento Biométrico do TSE,
+        mês de referência ago/2026). Números nacionais e de PB citados do painel oficial.
+        <a href="https://www.tse.jus.br/eleicoes/biometria-e-urna-eletronica/biometria-1" target="_blank" rel="noopener">Saber mais no TSE →</a></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Arquivos da urna: RDV -->
+  <section class="block">
+    <h2>🗂️ Arquivos da urna — como abrir o RDV</h2>
+    <div class="section-sub">O Log de Urna (<code>logd.dat</code>) que alimenta este painel é texto. Já o <b>RDV</b> (Registro Digital do Voto) é binário ASN.1 DER — não abre no editor de texto.</div>
+    <div class="cmd-block">
+      <div class="cmd-title">💻 Visualizar o conteúdo do RDV no terminal</div>
+      <pre><span class="cmt"># decodifica a estrutura ASN.1 e rola o resultado com o 'less'</span>
+openssl asn1parse -inform DER -in RDV_o03220pe2531301500328_1791484080073.dat | less</pre>
+      <div class="cmd-foot">
+        O <code>openssl</code> já vem no Linux/macOS. Se a saída listar <code>SEQUENCE</code>, <code>INTEGER</code>,
+        <code>ENUMERATED</code> e <code>GENERALSTRING</code> sem erro, o arquivo é um RDV íntegro.
+        Guia completo (RDV, Boletim de Urna e Log de Urna): <a href="rdv-e-log-de-urna.html">🔎 RDV &amp; Log de Urna</a>.
+      </div>
+    </div>
+  </section>
+
+  <footer class="page-footer">
+    v1 · gerado a partir de <code id="footSrc">logd.dat</code> · dados reais de uma seção · gerado em <span id="footGen">—</span><br>
+    Projeto <a href="https://github.com/rafarocha/at" target="_blank" rel="noopener">at — Timeline for Admins</a> · GNU GPLv3
+  </footer>
+</div>
+
+<!-- popup -->
+<div id="overlay">
+  <div id="popup" role="dialog" aria-modal="true">
+    <div class="pop-head">
+      <div class="pop-icon" id="popIcon">📊</div>
+      <div>
+        <div class="pop-kicker" id="popKicker">INDICADOR</div>
+        <div class="pop-title" id="popTitle">—</div>
+      </div>
+      <button class="pop-close" id="popClose" aria-label="Fechar">×</button>
+    </div>
+    <div class="pop-body" id="popBody"></div>
+  </div>
+</div>
+
+<script id="dadosDesempenho" type="application/json">__DADOS_JSON__</script>
+<script src="desempenho.js"></script>
+</body>
+</html>

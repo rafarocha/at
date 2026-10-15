@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🛰️ [Exemplo] Visão Geral — Sample 2 · Pessimista 10:30</title>
+<title>🛰️ [Exemplo] Visão Geral — Sample 1 · Otimista 16:12</title>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
 <style>
   :root {
@@ -107,10 +107,12 @@
 <div class="wrap">
 
   <nav class="top-nav">
-    <a href="index.html" class="nav-item active">🏠 Visão Geral</a>
+    <a href="../../index.html" class="nav-item">🏠 Início</a>
+    <a href="index.html" class="nav-item active">🛰️ Visão Geral</a>
     <a href="secao.html" class="nav-item">🔍 Detalhe por Seção</a>
     <a href="painel.html" class="nav-item">📊 Painel Gestor</a>
     <a href="sunday.html" class="nav-item">📖 Guia de Bolso</a>
+    <a href="../../apos/desempenho.html" class="nav-item">📈 Desempenho</a>
   </nav>
 
   <header class="hero">
@@ -232,7 +234,7 @@
     const m = Math.floor(min % 60).toString().padStart(2, "0");
     return h + ":" + m;
   }
-  function nowMinutes() { return 630; }
+  function nowMinutes() { return 972; }
   function toMinutes(hhmmish) {
     if (!hhmmish) return null;
     const m = hhmmish.trim().match(/(\d{1,2}):(\d{2})(?::\d{2})?\s*$/);
