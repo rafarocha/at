@@ -276,7 +276,7 @@
       .attr("fill", "var(--fg-muted)").attr("font-size", "10px").attr("font-weight", "800")
       .text((m, i) => (i + 1) + "º");
     g.append("text").attr("text-anchor", "middle").attr("dy", "0.35em")
-      .attr("fill", "var(--fg-sub)").attr("font-size", "9px").attr("font-weight", "800").text("TOP 5");
+      .attr("fill", "var(--fg-sub)").attr("font-size", "9px").attr("font-weight", "800").text("AÇÕES");
 
     // --- lista ao lado ---
     const box = document.getElementById("planoLista");

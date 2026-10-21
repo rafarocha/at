@@ -452,6 +452,14 @@ def main():
     tot_sol = sum(b["solicitacoes"] for b in biometria_por_hora)
     taxa_rep_bio = (100 * tot_rep / tot_sol) if tot_sol else 0
 
+    # tempo "perdido" = espera entre eleitores sobre o total de tempo ocupado
+    # (espera + execução). É o tempo que a mesa pode recuperar habilitando o
+    # próximo eleitor assim que o atual termina.
+    soma_espera = sum(v["wait_s"] for v in voters if v.get("wait_s") is not None)
+    soma_exec = sum(v["exec_s"] for v in voters if v.get("exec_s") is not None)
+    pct_tempo_perdido = round(100 * soma_espera / (soma_espera + soma_exec), 1) if (soma_espera + soma_exec) else 0
+    agg["pct_tempo_perdido"] = pct_tempo_perdido
+
     def score(valor, meta_boa, meta_ruim):
         """0 quando valor<=meta_boa; 100 quando valor>=meta_ruim; linear no meio."""
         if meta_ruim == meta_boa:
@@ -459,20 +467,24 @@ def main():
         s = 100 * (valor - meta_boa) / (meta_ruim - meta_boa)
         return int(max(0, min(100, round(s))))
 
-    candidatos = [
+    # --- #1 fixo: assim que terminar o voto, já habilitar o próximo ---------
+    acao_prontidao = {
+        "acao": "Ao finalizar o voto, já ir habilitando o próximo eleitor — não deixar a urna parada",
+        "icone": "⏳", "para": "Presidente/mesário",
+        "score": max(score(pct_tempo_perdido, 10, 40),
+                     score(agg["pres_inicio_medio_s"], 10, 45)),
+        "evidencia": f"{pct_tempo_perdido:.0f}% do tempo de atendimento foi espera entre eleitores · média de {int(agg['espera_media_s'])}s de espera por eleitor · {int(agg['pres_inicio_medio_s'])}s até a mesa começar a identificar o próximo",
+        "metrica": "tempo perdido na fila",
+    }
+
+    # --- demais ações, ordenadas naturalmente pelo score --------------------
+    meio = [
         {
-            "acao": "Orientar o eleitor na cabine (ordem dos cargos + “confira e aperte VERDE”)",
+            "acao": "Após ~10s sem o eleitor confirmar sequer 1 candidato, já interagir e avisar que ele está demorando",
             "icone": "🧭", "para": "Presidente/mesário",
             "score": score(teclas_por_eleitor_media, 1.5, 6),
-            "evidencia": f"{agg['teclas_indevidas']} teclas indevidas no dia (~{teclas_por_eleitor_media:.1f} por eleitor)",
+            "evidencia": f"{agg['teclas_indevidas']} teclas indevidas no dia (~{teclas_por_eleitor_media:.1f} por eleitor) — sinal de eleitor travado/inseguro na cabine",
             "metrica": "teclas indevidas",
-        },
-        {
-            "acao": "Mostrar o simulador de votação do TSE a quem está na fila",
-            "icone": "🕹️", "para": "Secretário",
-            "score": score(agg["exec_medio_s"], 45, 110),
-            "evidencia": f"execução média de {int(agg['exec_medio_s'])}s por eleitor (mediana {int(agg['exec_mediana_s'])}s)",
-            "metrica": "tempo de execução",
         },
         {
             "acao": "Limpar o leitor biométrico e orientar dedo limpo/seco e pressão firme",
@@ -482,18 +494,11 @@ def main():
             "metrica": "repetição de biometria",
         },
         {
-            "acao": "Conferir o título do próximo eleitor enquanto o atual ainda vota",
-            "icone": "⏳", "para": "Presidente/mesário",
-            "score": score(agg["pres_inicio_medio_s"], 10, 45),
-            "evidencia": f"{int(agg['pres_inicio_medio_s'])}s em média até começar a identificar o próximo (espera média na fila {int(agg['espera_media_s'])}s)",
-            "metrica": "prontidão da mesa",
-        },
-        {
-            "acao": "Acompanhar o eleitor que trava: abordar após ~10s sem apertar tecla",
-            "icone": "⚡", "para": "Presidente/mesário",
-            "score": score(agg["reacao_media_s"], 8, 40),
-            "evidencia": f"reação média de {int(agg['reacao_media_s'])}s até a 1ª ação na cabine (máx {int(agg['reacao_max_s'])}s)",
-            "metrica": "reação do eleitor",
+            "acao": "Direcionar ao simulador do TSE 1 a cada 5 da fila — e qualquer um com dúvida, dificuldade ou pouca instrução",
+            "icone": "🕹️", "para": "Secretário",
+            "score": score(agg["exec_medio_s"], 45, 110),
+            "evidencia": f"execução média de {int(agg['exec_medio_s'])}s por eleitor (mediana {int(agg['exec_mediana_s'])}s)",
+            "metrica": "tempo de execução",
         },
         {
             "acao": "Digitar o identificador com atenção para evitar título/documento inválido",
@@ -503,7 +508,18 @@ def main():
             "metrica": "alertas",
         },
     ]
-    melhorias = sorted(candidatos, key=lambda x: -x["score"])[:5]
+    meio = sorted(meio, key=lambda x: -x["score"])
+
+    # --- último fixo: acomodar pessoas sentadas (prioridade) ----------------
+    acao_acomodar = {
+        "acao": "Acomodar quem espera sentado — sobretudo idosos, gestantes e PcD (prioridade)",
+        "icone": "🪑", "para": "Secretário/mesário",
+        "score": score(agg["espera_media_s"], 15, 90),
+        "evidencia": f"espera média de {int(agg['espera_media_s'])}s por eleitor, com pico de {int(agg['espera_max_s'])}s — tempo em pé que pesa para quem tem prioridade",
+        "metrica": "conforto na espera",
+    }
+
+    melhorias = [acao_prontidao] + meio + [acao_acomodar]
 
     data = {
         "fonte": os.path.basename(path),

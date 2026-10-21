@@ -259,8 +259,8 @@
 
   <!-- Plano de melhoria (box horizontal completo) -->
   <section class="block">
-    <h2>✅ O que melhorar na próxima — top 5 ações</h2>
-    <div class="section-sub">Prioridades extraídas automaticamente deste Log de Urna: quanto maior a pontuação, mais aquele ponto pesou nesta seção. Clique numa fatia ou num item.</div>
+    <h2>✅ O que melhorar na próxima — ações prioritárias</h2>
+    <div class="section-sub">Prioridades extraídas automaticamente deste Log de Urna: quanto maior a pontuação, mais aquele ponto pesou nesta seção. A 1ª ação (não deixar a urna parada) é a de maior ganho de tempo. Clique numa fatia ou num item.</div>
     <div class="plano-box">
       <div class="plano-radial">
         <div class="chart-svg-wrap"><svg id="chartMelhoriasRadial" viewBox="0 0 300 300"></svg><div class="hover-tip" id="tipMelhoriasRadial"></div></div>
@@ -547,7 +547,7 @@ openssl asn1parse -inform DER -in RDV_o03220pe2531301500328_1791484080073.dat | 
 
 <script id="dadosDesempenho" type="application/json">{
  "fonte": "logd.dat",
- "gerado_em": "15/10/2026 10:17:01",
+ "gerado_em": "21/10/2026 17:59:33",
  "meta": {
   "urna": "02318954",
   "versao": "10.23.0.0 - Praia da Barra do Cahy",
@@ -586,6 +586,14 @@ openssl asn1parse -inform DER -in RDV_o03220pe2531301500328_1791484080073.dat | 
  },
  "melhorias": [
   {
+   "acao": "Ao finalizar o voto, já ir habilitando o próximo eleitor — não deixar a urna parada",
+   "icone": "⏳",
+   "para": "Presidente/mesário",
+   "score": 71,
+   "evidencia": "31% do tempo de atendimento foi espera entre eleitores · média de 33s de espera por eleitor · 25s até a mesa começar a identificar o próximo",
+   "metrica": "tempo perdido na fila"
+  },
+  {
    "acao": "Digitar o identificador com atenção para evitar título/documento inválido",
    "icone": "⌨️",
    "para": "Mesário",
@@ -594,11 +602,11 @@ openssl asn1parse -inform DER -in RDV_o03220pe2531301500328_1791484080073.dat | 
    "metrica": "alertas"
   },
   {
-   "acao": "Orientar o eleitor na cabine (ordem dos cargos + “confira e aperte VERDE”)",
+   "acao": "Após ~10s sem o eleitor confirmar sequer 1 candidato, já interagir e avisar que ele está demorando",
    "icone": "🧭",
    "para": "Presidente/mesário",
    "score": 56,
-   "evidencia": "1227 teclas indevidas no dia (~4.0 por eleitor)",
+   "evidencia": "1227 teclas indevidas no dia (~4.0 por eleitor) — sinal de eleitor travado/inseguro na cabine",
    "metrica": "teclas indevidas"
   },
   {
@@ -610,7 +618,7 @@ openssl asn1parse -inform DER -in RDV_o03220pe2531301500328_1791484080073.dat | 
    "metrica": "repetição de biometria"
   },
   {
-   "acao": "Mostrar o simulador de votação do TSE a quem está na fila",
+   "acao": "Direcionar ao simulador do TSE 1 a cada 5 da fila — e qualquer um com dúvida, dificuldade ou pouca instrução",
    "icone": "🕹️",
    "para": "Secretário",
    "score": 44,
@@ -618,12 +626,12 @@ openssl asn1parse -inform DER -in RDV_o03220pe2531301500328_1791484080073.dat | 
    "metrica": "tempo de execução"
   },
   {
-   "acao": "Conferir o título do próximo eleitor enquanto o atual ainda vota",
-   "icone": "⏳",
-   "para": "Presidente/mesário",
-   "score": 43,
-   "evidencia": "25s em média até começar a identificar o próximo (espera média na fila 33s)",
-   "metrica": "prontidão da mesa"
+   "acao": "Acomodar quem espera sentado — sobretudo idosos, gestantes e PcD (prioridade)",
+   "icone": "🪑",
+   "para": "Secretário/mesário",
+   "score": 25,
+   "evidencia": "espera média de 33s por eleitor, com pico de 344s — tempo em pé que pesa para quem tem prioridade",
+   "metrica": "conforto na espera"
   }
  ],
  "agg": {
@@ -647,7 +655,8 @@ openssl asn1parse -inform DER -in RDV_o03220pe2531301500328_1791484080073.dat | 
   "pres_inicio_max_s": 135,
   "pres_habilita_medio_s": 21.0,
   "pres_habilita_mediana_s": 17.0,
-  "pres_habilita_max_s": 82
+  "pres_habilita_max_s": 82,
+  "pct_tempo_perdido": 31.3
  },
  "throughput": [
   {
@@ -11160,7 +11169,7 @@ openssl asn1parse -inform DER -in RDV_o03220pe2531301500328_1791484080073.dat | 
       .attr("fill", "var(--fg-muted)").attr("font-size", "10px").attr("font-weight", "800")
       .text((m, i) => (i + 1) + "º");
     g.append("text").attr("text-anchor", "middle").attr("dy", "0.35em")
-      .attr("fill", "var(--fg-sub)").attr("font-size", "9px").attr("font-weight", "800").text("TOP 5");
+      .attr("fill", "var(--fg-sub)").attr("font-size", "9px").attr("font-weight", "800").text("AÇÕES");
 
     // --- lista ao lado ---
     const box = document.getElementById("planoLista");

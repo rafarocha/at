@@ -1,6 +1,6 @@
 {
  "fonte": "logd.dat",
- "gerado_em": "15/10/2026 10:17:01",
+ "gerado_em": "21/10/2026 17:59:33",
  "meta": {
   "urna": "02318954",
   "versao": "10.23.0.0 - Praia da Barra do Cahy",
@@ -39,6 +39,14 @@
  },
  "melhorias": [
   {
+   "acao": "Ao finalizar o voto, já ir habilitando o próximo eleitor — não deixar a urna parada",
+   "icone": "⏳",
+   "para": "Presidente/mesário",
+   "score": 71,
+   "evidencia": "31% do tempo de atendimento foi espera entre eleitores · média de 33s de espera por eleitor · 25s até a mesa começar a identificar o próximo",
+   "metrica": "tempo perdido na fila"
+  },
+  {
    "acao": "Digitar o identificador com atenção para evitar título/documento inválido",
    "icone": "⌨️",
    "para": "Mesário",
@@ -47,11 +55,11 @@
    "metrica": "alertas"
   },
   {
-   "acao": "Orientar o eleitor na cabine (ordem dos cargos + “confira e aperte VERDE”)",
+   "acao": "Após ~10s sem o eleitor confirmar sequer 1 candidato, já interagir e avisar que ele está demorando",
    "icone": "🧭",
    "para": "Presidente/mesário",
    "score": 56,
-   "evidencia": "1227 teclas indevidas no dia (~4.0 por eleitor)",
+   "evidencia": "1227 teclas indevidas no dia (~4.0 por eleitor) — sinal de eleitor travado/inseguro na cabine",
    "metrica": "teclas indevidas"
   },
   {
@@ -63,7 +71,7 @@
    "metrica": "repetição de biometria"
   },
   {
-   "acao": "Mostrar o simulador de votação do TSE a quem está na fila",
+   "acao": "Direcionar ao simulador do TSE 1 a cada 5 da fila — e qualquer um com dúvida, dificuldade ou pouca instrução",
    "icone": "🕹️",
    "para": "Secretário",
    "score": 44,
@@ -71,12 +79,12 @@
    "metrica": "tempo de execução"
   },
   {
-   "acao": "Conferir o título do próximo eleitor enquanto o atual ainda vota",
-   "icone": "⏳",
-   "para": "Presidente/mesário",
-   "score": 43,
-   "evidencia": "25s em média até começar a identificar o próximo (espera média na fila 33s)",
-   "metrica": "prontidão da mesa"
+   "acao": "Acomodar quem espera sentado — sobretudo idosos, gestantes e PcD (prioridade)",
+   "icone": "🪑",
+   "para": "Secretário/mesário",
+   "score": 25,
+   "evidencia": "espera média de 33s por eleitor, com pico de 344s — tempo em pé que pesa para quem tem prioridade",
+   "metrica": "conforto na espera"
   }
  ],
  "agg": {
@@ -100,7 +108,8 @@
   "pres_inicio_max_s": 135,
   "pres_habilita_medio_s": 21.0,
   "pres_habilita_mediana_s": 17.0,
-  "pres_habilita_max_s": 82
+  "pres_habilita_max_s": 82,
+  "pct_tempo_perdido": 31.3
  },
  "throughput": [
   {
