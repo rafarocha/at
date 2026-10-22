@@ -103,38 +103,53 @@
   function renderBoletim(d) {
     const b = d.boletim; if (!b) return;
     document.getElementById("buCard").style.display = "";
+    // remove zeros à esquerda para exibição (ex.: "0329" -> "329", "0150" -> "150")
+    const semZero = (v) => (v == null || v === "" ? "—" : String(v).replace(/^0+(?=\d)/, ""));
     const mun = b.municipio || "—";
     document.getElementById("buLoc").firstChild.nodeValue = "Município " + mun + " · PE";
-    document.getElementById("buLocSub").textContent = "Zona " + (b.zona || "—") + " · Seção " + (b.secao || "—") + " · Local " + (b.local || "—");
+    document.getElementById("buLocSub").textContent = "Zona " + semZero(b.zona) + " · Seção " + semZero(b.secao) + " · Local " + semZero(b.local);
     document.getElementById("buTurno").textContent = (b.turno || "1º turno").replace(" turno", "");
     document.getElementById("buAbertura").textContent = b.abertura_ue || "—";
     document.getElementById("buFechamento").textContent = b.fechamento_ue || "—";
     document.getElementById("buModelo").textContent = b.modelo || "—";
     document.getElementById("buCodigo").textContent = b.codigo_ue || "—";
     document.getElementById("buMun").textContent = mun;
-    document.getElementById("buZona").textContent = b.zona || "—";
-    document.getElementById("buLocal").textContent = b.local || "—";
-    document.getElementById("buSecao").textContent = b.secao || "—";
+    document.getElementById("buZona").textContent = semZero(b.zona);
+    document.getElementById("buLocal").textContent = semZero(b.local);
+    document.getElementById("buSecao").textContent = semZero(b.secao);
 
     const pad = (n) => (n == null ? "—" : String(n).padStart(4, "0"));
+    // quando o Boletim de Urna não foi coletado (sem aptos), a habilitação não-biométrica
+    // é derivada do log (comparecimento − biométrica) e mostrada num único cartão.
+    const temBU = b.eleitores_aptos != null;
     const cells = [
       { l: "👥 Eleitores aptos", v: pad(b.eleitores_aptos), hl: false,
-        help: "Total de eleitores habilitados a votar nesta seção (fonte: Boletim de Urna)." },
+        help: temBU ? "Total de eleitores habilitados a votar nesta seção (fonte: Boletim de Urna)."
+                    : "Não disponível: o Boletim de Urna (bu.dat) desta seção não foi coletado. Este número não aparece no Log de Urna." },
       { l: "✅ Comparecimento", v: pad(b.comparecimento), hl: true,
-        help: "Eleitores que efetivamente votaram — igual ao total de votos computados no log (" + fmt(b.comparecimento) + ")." },
+        help: "Eleitores que efetivamente votaram — igual ao total de votos computados no log (" + fmt(b.comparecimento) + "). Extraído do próprio log." },
       { l: "🚫 Faltosos", v: pad(b.eleitores_faltosos), hl: false,
-        help: "Aptos que não compareceram (" + pad(b.eleitores_aptos) + " aptos − " + pad(b.comparecimento) + " comparecimento). Fonte: Boletim de Urna." },
+        help: temBU ? "Aptos que não compareceram (" + pad(b.eleitores_aptos) + " aptos − " + pad(b.comparecimento) + " comparecimento). Fonte: Boletim de Urna."
+                    : "Não disponível sem o Boletim de Urna (depende do total de aptos, que só o BU traz)." },
       { l: "📊 % comparecimento", v: (b.pct_comparecimento != null ? b.pct_comparecimento + "%" : "—"), hl: true,
-        help: "Comparecimento sobre aptos. Útil para comparar seções." },
+        help: temBU ? "Comparecimento sobre aptos. Útil para comparar seções."
+                    : "Não calculável sem o total de aptos (Boletim de Urna)." },
       { l: "🖐️ Habilitação biométrica", v: pad(b.habilitacao_biometrica), hl: false,
         help: "Eleitores identificados pela digital (contado direto no log: " + fmt(b.habilitacao_biometrica) + " eventos de habilitação biométrica)." },
-      { l: "📷 Habilitação biográfica", v: pad(b.habilitacao_biografica), hl: false,
-        help: "Identificação por foto/dados (sem leitura de digital válida). Fonte: Boletim de Urna." },
-      { l: "⌨️ Sem biometria", v: pad(b.habilitacao_sem_biometria), hl: false,
-        help: "Habilitação manual pelo mesário, sem biometria. Fonte: Boletim de Urna." },
-      { l: "🗳️ Eleitores aptos originais", v: pad(b.eleitores_aptos_originais), hl: false,
-        help: "Aptos antes de inclusões temporárias (temporários: " + pad(b.eleitores_aptos_temporarios) + "). Fonte: Boletim de Urna." },
     ];
+    if (temBU) {
+      cells.push(
+        { l: "📷 Habilitação biográfica", v: pad(b.habilitacao_biografica), hl: false,
+          help: "Identificação por foto/dados (sem leitura de digital válida). Fonte: Boletim de Urna." },
+        { l: "⌨️ Sem biometria", v: pad(b.habilitacao_sem_biometria), hl: false,
+          help: "Habilitação manual pelo mesário, sem biometria. Fonte: Boletim de Urna." },
+        { l: "🗳️ Aptos originais", v: pad(b.eleitores_aptos_originais), hl: false,
+          help: "Aptos antes de inclusões temporárias (temporários: " + pad(b.eleitores_aptos_temporarios) + "). Fonte: Boletim de Urna." });
+    } else {
+      cells.push(
+        { l: "⌨️ Hab. não-biométrica", v: pad(b.habilitacao_nao_biometrica), hl: false,
+          help: "Derivado do log: comparecimento (" + fmt(b.comparecimento) + ") − habilitação biométrica (" + fmt(b.habilitacao_biometrica) + "). Reúne biográfica + sem biometria, que só o Boletim de Urna separa." });
+    }
     const grid = document.getElementById("buGrid");
     grid.innerHTML = cells.map((c, i) => `
       <div class="bu-cell ${c.hl ? "hl" : ""}" data-i="${i}">

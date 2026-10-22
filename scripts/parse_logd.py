@@ -409,16 +409,37 @@ def main():
     #   abertura/fechamento, habilitação biométrica (contagem) e comparecimento
     #   (= nº de votos computados). Os demais campos (eleitores aptos, habilitação
     #   biográfica, sem biometria, faltosos) vêm do BOLETIM DE URNA (bu.dat), não do
-    #   log — ficam aqui como constante editável, pré-preenchida com os valores do
-    #   Boletim desta seção (fonte: tela do BU no portal do TSE).
-    BU_SECAO_0328 = {
-        "eleitores_aptos": 394,
-        "eleitores_aptos_originais": 394,
-        "eleitores_aptos_temporarios": 0,
-        "habilitacao_biografica": 13,
-        "habilitacao_sem_biometria": 8,
-        "eleitores_faltosos": 90,
+    #   log — ficam aqui como tabela editável POR SEÇÃO, pré-preenchida com os
+    #   valores do Boletim (fonte: tela do BU no portal do TSE). Seções sem entrada
+    #   aqui saem com esses campos em branco (None) — o resto vem do log/RDV.
+    BU_POR_SECAO = {
+        "0328": {
+            "eleitores_aptos": 394, "eleitores_aptos_originais": 394,
+            "eleitores_aptos_temporarios": 0, "habilitacao_biografica": 13,
+            "habilitacao_sem_biometria": 8, "eleitores_faltosos": 90,
+        },
+        # 329 e 330: o Boletim de Urna não foi coletado para estas seções, então
+        # os campos exclusivos do BU (aptos/faltosos/biográfica/sem biometria) ficam
+        # None. O que o LOG comprova — comparecimento e habilitação biométrica — é
+        # preenchido automaticamente abaixo, e a habilitação não-biométrica é
+        # derivada (comparecimento − biométrica).
+        "0329": {
+            "eleitores_aptos": None, "eleitores_aptos_originais": None,
+            "eleitores_aptos_temporarios": None, "habilitacao_biografica": None,
+            "habilitacao_sem_biometria": None, "eleitores_faltosos": None,
+        },
+        "0330": {
+            "eleitores_aptos": None, "eleitores_aptos_originais": None,
+            "eleitores_aptos_temporarios": None, "habilitacao_biografica": None,
+            "habilitacao_sem_biometria": None, "eleitores_faltosos": None,
+        },
     }
+    _bu_vazio = {
+        "eleitores_aptos": None, "eleitores_aptos_originais": None,
+        "eleitores_aptos_temporarios": None, "habilitacao_biografica": None,
+        "habilitacao_sem_biometria": None, "eleitores_faltosos": None,
+    }
+    bu_secao = dict(BU_POR_SECAO.get(meta["secao"], _bu_vazio))
     comparecimento = agg["total_eleitores"]
     abertura_ue = meta["pronta"]
     fechamento_ue = None
@@ -437,8 +458,13 @@ def main():
         "comparecimento": comparecimento,
         "habilitacao_biometrica": hab_tipos.get("biométrica", 0),
         # vindos do Boletim de Urna (bu.dat):
-        **BU_SECAO_0328,
+        **bu_secao,
     }
+    # habilitação não-biométrica derivada do log (comparecimento − biométrica).
+    # Quando o BU separa biográfica e sem-biometria, esses campos ficam preenchidos;
+    # quando não temos o BU, mostramos o total não-biométrico derivado.
+    nao_bio = comparecimento - boletim["habilitacao_biometrica"]
+    boletim["habilitacao_nao_biometrica"] = nao_bio if nao_bio >= 0 else None
     # % comparecimento (se tivermos os aptos)
     if boletim["eleitores_aptos"]:
         boletim["pct_comparecimento"] = round(100 * comparecimento / boletim["eleitores_aptos"], 1)
